@@ -1,19 +1,43 @@
-package entities;
+package storage.entities;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+
+@Embeddable
 public class Location {
-    private double latitude;
-    private double longitude;
+    @Column(name = "lat", nullable = false)
+    private double lat;
 
-    public Location(double latitude, double longitude){
-        this.longitude = longitude;
-        this.latitude = latitude;
+    @Column(name = "lng", nullable = false)
+    private double lng;
+
+    public Location(double lat, double lng) {
+        this.lng = lng;
+        this.lat = lat;
     }
 
-    public double getLatitude(){
-        return latitude;
+    public Location() {
+
     }
 
-    public double getLongitude(){
-        return longitude;
+    public double getLat(){
+        return lat;
+    }
+
+    public double getLng(){
+        return lng;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public void setLng(double lng) {
+        this.lng = lng;
+    }
+
+    @Override
+    public String toString() {
+        return "[" + lng + ", " + lat + "]";
     }
 }

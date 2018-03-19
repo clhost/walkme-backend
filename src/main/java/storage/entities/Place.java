@@ -1,18 +1,64 @@
-package entities;
+package storage.entities;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "wm_place")
 public class Place {
-    private int id;
+    @Id
+    @Column(name = "id", unique = true, nullable = false)
+    private String id;
+
+    @Column(name = "place_name", nullable = false)
+    private String name;
+
+    @Column(name = "category", nullable = false)
+    private String category;
+
+    @Column(name = "gis_category", nullable = false)
+    private String gisCategory;
+
+    @Column(name = "address_name", nullable = false)
+    private String addressName;
+
+    @Column(name = "address_comment", nullable = false)
+    private String addressComment;
+
+    @Embedded
     private Location location;
+
+    @Transient
     private Schedule schedule;
 
-    public Place(int id, Location location, Schedule schedule) {
-        this.id = id;
-        this.location = location;
-        this.schedule = schedule;
+    @Column(name = "json_schedule")
+    private String scheduleAsJsonString;
+
+    public Place() {
+
     }
 
-    public int getId() {
+    public String getId() {
         return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public String getGisCategory() {
+        return gisCategory;
+    }
+
+    public String getAddressName() {
+        return addressName;
+    }
+
+    public String getAddressComment() {
+        return addressComment;
     }
 
     public Location getLocation() {
@@ -22,5 +68,58 @@ public class Place {
     public Schedule getSchedule() {
         return schedule;
     }
-}
 
+    public String getScheduleAsJsonString() {
+        return scheduleAsJsonString;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public void setGisCategory(String gisCategory) {
+        this.gisCategory = gisCategory;
+    }
+
+    public void setAddressName(String addressName) {
+        this.addressName = addressName;
+    }
+
+    public void setAddressComment(String addressComment) {
+        this.addressComment = addressComment;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public void setSchedule(Schedule schedule) {
+        this.schedule = schedule;
+    }
+
+    public void setScheduleAsJsonString(String scheduleAsJsonString) {
+        this.scheduleAsJsonString = scheduleAsJsonString;
+    }
+
+    @Override
+    public String toString() {
+        return "(" +
+                id.substring(0, 15) + "..., " +
+                name + ", " +
+                category + ", " +
+                gisCategory + ", (" +
+                addressName + "), " +
+                addressComment + ", " +
+                location + ", " +
+                schedule +
+                ")";
+    }
+}
