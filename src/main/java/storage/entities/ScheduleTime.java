@@ -20,8 +20,6 @@ public class ScheduleTime {
 
     @Override
     public String toString() {
-        return "[sw=" + start +
-                ", fw=" + finish +
-                "]";
+        return "[sw=" + start + ", fw=" + finish + "]";
     }
 }
