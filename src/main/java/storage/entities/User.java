@@ -3,7 +3,7 @@ package storage.entities;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "e_user")
+@Table(name = "wm_user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,7 +13,7 @@ public class User {
     @Column(name = "salt", unique = true, nullable = false)
     private String salt;
 
-    @Column(name = "auth_token", nullable = false)
+    @Column(name = "auth_token", unique = true, nullable = false)
     private String authToken;
 
     @Column(name = "ok_refresh_token")
