@@ -12,8 +12,8 @@ public class Location {
     private double lng;
 
     public Location(double lat, double lng) {
-        this.lng = lng;
         this.lat = lat;
+        this.lng = lng;
     }
 
     public Location() { }
@@ -36,6 +36,6 @@ public class Location {
 
     @Override
     public String toString() {
-        return "[" + lng + ", " + lat + "]";
+        return "[" + lat + ", " + lng + "]";
     }
 }

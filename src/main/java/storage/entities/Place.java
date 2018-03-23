@@ -12,8 +12,8 @@ public class Place {
     @Column(name = "place_name", nullable = false)
     private String name;
 
-    @Column(name = "category", nullable = false)
-    private String category;
+    @Column(name = "category_id", nullable = false)
+    private int categoryId;
 
     @Column(name = "gis_category", nullable = false)
     private String gisCategory;
@@ -45,8 +45,8 @@ public class Place {
         return name;
     }
 
-    public String getCategory() {
-        return category;
+    public Integer getCategoryId() {
+        return categoryId;
     }
 
     public String getGisCategory() {
@@ -81,8 +81,8 @@ public class Place {
         this.name = name;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
 
     public void setGisCategory(String gisCategory) {
@@ -112,9 +112,9 @@ public class Place {
     @Override
     public String toString() {
         return "(" +
-                id.substring(0, 15) + "..., " +
+                id + ", " +
                 name + ", " +
-                category + ", " +
+                categoryId + ", " +
                 gisCategory + ", (" +
                 addressName + "), " +
                 addressComment + ", " +
