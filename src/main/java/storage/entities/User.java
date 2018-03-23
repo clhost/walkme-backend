@@ -49,6 +49,10 @@ public class User {
         this.avatar = avatar;
     }
 
+    public User() {
+
+    }
+
     public long getId() {
         return id;
     }
