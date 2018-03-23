@@ -1,6 +1,6 @@
 package storage.validator;
 
-import storage.mappers.WalkMeCategory;
+import storage.entities.WalkMeCategory;
 
 @FunctionalInterface
 public interface Repair<T> {

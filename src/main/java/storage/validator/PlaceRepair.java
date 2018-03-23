@@ -1,7 +1,7 @@
 package storage.validator;
 
 import storage.entities.Place;
-import storage.mappers.WalkMeCategory;
+import storage.entities.WalkMeCategory;
 
 public class PlaceRepair implements Repair<Place> {
     @Override
@@ -10,8 +10,8 @@ public class PlaceRepair implements Repair<Place> {
             place.setGisCategory(c.toString());
         }
 
-        if (place.getCategory() == null) {
-            place.setCategory(c.toString());
+        if (place.getCategoryId() == 0) {
+            place.setCategoryId(c.id());
         }
 
         if (place.getAddressComment() == null) {
