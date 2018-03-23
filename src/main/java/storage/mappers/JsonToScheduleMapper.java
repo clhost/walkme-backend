@@ -22,6 +22,7 @@ public class JsonToScheduleMapper implements Mapper<Schedule, JsonObject> {
         days.put("fri", Day.FRIDAY);
         days.put("sat", Day.SATURDAY);
     }
+
     @Override
     public Schedule map(JsonObject jsonObject) {
         Schedule schedule = new Schedule();
