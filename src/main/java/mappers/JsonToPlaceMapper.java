@@ -1,4 +1,4 @@
-package storage.mappers;
+package mappers;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

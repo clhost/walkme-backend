@@ -1,4 +1,4 @@
-package storage.mappers;
+package mappers;
 
 @FunctionalInterface
 public interface Mapper<E, T> {
