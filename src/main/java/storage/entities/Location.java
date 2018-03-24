@@ -1,14 +1,18 @@
 package storage.entities;
 
+import com.google.gson.annotations.Expose;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
 public class Location {
     @Column(name = "lat", nullable = false)
+    @Expose
     private double lat;
 
     @Column(name = "lng", nullable = false)
+    @Expose
     private double lng;
 
     public Location(double lat, double lng) {

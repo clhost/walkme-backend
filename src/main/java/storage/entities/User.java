@@ -118,6 +118,36 @@ public class User {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+
+        User user = (User) o;
+
+        if (id != user.id) return false;
+        if (socialId != user.socialId) return false;
+        if (salt != null ? !salt.equals(user.salt) : user.salt != null) return false;
+        if (authToken != null ? !authToken.equals(user.authToken) : user.authToken != null) return false;
+        if (firstName != null ? !firstName.equals(user.firstName) : user.firstName != null) return false;
+        if (lastName != null ? !lastName.equals(user.lastName) : user.lastName != null) return false;
+
+        return avatar != null ? avatar.equals(user.avatar) : user.avatar == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (id ^ (id >>> 32));
+        result = 31 * result + (salt != null ? salt.hashCode() : 0);
+        result = 31 * result + (authToken != null ? authToken.hashCode() : 0);
+        result = 31 * result + (okRefreshToken != null ? okRefreshToken.hashCode() : 0);
+        result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
+        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
+        result = 31 * result + (int) (socialId ^ (socialId >>> 32));
+        result = 31 * result + (avatar != null ? avatar.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "(" +
                 id + ", " +

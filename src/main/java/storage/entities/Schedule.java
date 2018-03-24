@@ -1,8 +1,11 @@
 package storage.entities;
 
+import com.google.gson.annotations.Expose;
+
 import java.util.HashMap;
 
 public class Schedule {
+    @Expose
     private HashMap<Day, ScheduleTime> scheduleInfo;
 
     public Schedule(HashMap<Day, ScheduleTime> scheduleInfo){

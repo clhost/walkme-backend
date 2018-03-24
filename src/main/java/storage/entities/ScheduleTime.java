@@ -1,8 +1,13 @@
 package storage.entities;
 
 
+import com.google.gson.annotations.Expose;
+
 public class ScheduleTime {
+    @Expose
     private long start;
+
+    @Expose
     private long finish;
 
     public ScheduleTime(long start, long finish) {

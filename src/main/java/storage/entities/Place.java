@@ -1,5 +1,7 @@
 package storage.entities;
 
+import com.google.gson.annotations.Expose;
+
 import javax.persistence.*;
 
 @Entity
@@ -7,27 +9,35 @@ import javax.persistence.*;
 public class Place {
     @Id
     @Column(name = "id", unique = true, nullable = false)
+    @Expose
     private String id;
 
     @Column(name = "place_name", nullable = false)
+    @Expose
     private String name;
 
     @Column(name = "category_id", nullable = false)
+    @Expose
     private int categoryId;
 
     @Column(name = "gis_category", nullable = false)
+    @Expose
     private String gisCategory;
 
     @Column(name = "address_name", nullable = false)
+    @Expose
     private String addressName;
 
     @Column(name = "address_comment", nullable = false)
+    @Expose
     private String addressComment;
 
     @Embedded
+    @Expose
     private Location location;
 
     @Transient
+    @Expose
     private Schedule schedule;
 
     @Column(name = "json_schedule")
