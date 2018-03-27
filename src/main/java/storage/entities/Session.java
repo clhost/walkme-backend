@@ -13,7 +13,7 @@ public class Session {
     @Column(name = "id", unique = true, nullable = false)
     private long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
 
