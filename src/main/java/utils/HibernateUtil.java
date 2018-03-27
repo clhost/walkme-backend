@@ -2,29 +2,36 @@ package utils;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.boot.Metadata;
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.registry.StandardServiceRegistry;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import storage.entities.Category;
+import storage.entities.Location;
+import storage.entities.Place;
+import storage.entities.User;
+
+import java.io.FileInputStream;
+import java.util.Properties;
 
 
 public class HibernateUtil {
     private static SessionFactory factory;
-    private static StandardServiceRegistry registry;
 
-    static {
+
+    public static void start() {
         try {
-            StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder();
+            Properties properties = new Properties();
+            properties.load(new FileInputStream("hibernate.properties"));
 
-            registry = builder.configure("hibernate.cfg.xml").build();
-            Metadata metadata = new MetadataSources(registry).getMetadataBuilder().build();
-            factory = metadata.getSessionFactoryBuilder().build();
+            factory = new Configuration()
+                    .addProperties(properties)
+                    .addAnnotatedClass(Place.class)
+                    .addAnnotatedClass(Location.class)
+                    .addAnnotatedClass(User.class)
+                    .addAnnotatedClass(storage.entities.Session.class)
+                    .addAnnotatedClass(Category.class)
+                    .buildSessionFactory();
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (registry != null) {
-                StandardServiceRegistryBuilder.destroy(registry);
-            }
         }
     }
 
@@ -33,8 +40,16 @@ public class HibernateUtil {
     }
 
     public static void shutdown() {
-        if (registry != null) {
-            StandardServiceRegistryBuilder.destroy(registry);
-        }
+        factory.close();
+    }
+
+    public static void setNamesUTF8() {
+        Session session = factory.openSession();
+        session.beginTransaction();
+
+        session.createNativeQuery("SET NAMES UTF8").executeUpdate();
+
+        session.getTransaction().commit();
+        session.close();
     }
 }

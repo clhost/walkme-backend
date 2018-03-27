@@ -5,6 +5,7 @@ import io.netty.handler.codec.Headers;
 import io.netty.handler.codec.http.*;
 
 public class ResponseBuilder {
+    public static final String JSON_BAD_REQUEST = "{ \"status: \"400, \"error: \"bad request }";
 
     /**
      * @param status response status
