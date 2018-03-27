@@ -81,4 +81,24 @@ public class SessionService {
     public void deleteSession(Long userId) {
         sessions.remove(userId);
     }
+
+    public void clear() {
+        org.hibernate.Session session = null;
+
+        try {
+            session = HibernateUtil.getSession();
+            session.beginTransaction();
+
+            Query<Session> query = session.createNativeQuery(
+                    "delete from " + SESSION_TABLE_NAME + ";",
+                    Session.class);
+
+            query.executeUpdate();
+            session.getTransaction().commit();
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+    }
 }
