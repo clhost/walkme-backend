@@ -1,5 +1,8 @@
 package core;
 
+import helpers.ConfigHelper;
+import helpers.OKHelper;
+import helpers.VKHelper;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -23,8 +26,6 @@ public class Server {
     private final int port;
     private final String host;
 
-    private static final String LOCAL_PROPERTIES = "local.properties";
-    private static final String HIBERNATE_PROPERTIES = "hibernate.properties";
 
     private Server(final String host, final int port) {
         if (System.getProperty("os.name").equalsIgnoreCase("linux")) {
@@ -43,13 +44,7 @@ public class Server {
 
     @SuppressWarnings("unchecked")
     public void run() {
-        // start hibernate
-        HibernateUtil.start();
-        HibernateUtil.setNamesUTF8();
-
-        // initialize all existing sessions
-        SessionService.getInstance().loadFromDatabase();
-
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> SessionService.getInstance().clear()));
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap
@@ -74,7 +69,21 @@ public class Server {
         }
     }
 
+    private static void init() {
+        // start hibernate
+        HibernateUtil.start();
+        HibernateUtil.setNamesUTF8();
+
+        // initialize all existing sessions
+        SessionService.getInstance().loadFromDatabase();
+
+        // init vk and ok helpers application info
+        VKHelper.init();
+        OKHelper.init();
+    }
+
     public static Server configure() {
+        init();
         Server server = null;
         Configurations confs = new Configurations();
 
@@ -83,17 +92,17 @@ public class Server {
 
         try {
 
-            locBuilder = confs.propertiesBuilder(LOCAL_PROPERTIES);
-            hibBuilder = confs.propertiesBuilder(HIBERNATE_PROPERTIES);
+            locBuilder = confs.propertiesBuilder(ConfigHelper.LOCAL_PROPERTIES);
+            hibBuilder = confs.propertiesBuilder(ConfigHelper.HIBERNATE_PROPERTIES);
 
             PropertiesConfiguration locProps = locBuilder.getConfiguration();
             PropertiesConfiguration hibProps = hibBuilder.getConfiguration();
 
-            String port = locProps.getString("server_port");
-            String host = locProps.getString("server_host");
-            String url = locProps.getString("db_url");
-            String login = locProps.getString("db_login");
-            String password = locProps.getString("db_password");
+            String port = locProps.getString("server.port");
+            String host = locProps.getString("server.host");
+            String url = locProps.getString("db.url");
+            String login = locProps.getString("db.login");
+            String password = locProps.getString("db.password");
 
             if (port == null) {
                 throw new NullPointerException("Port is missing.");
@@ -116,11 +125,11 @@ public class Server {
             }
 
             if (login != null && !login.equals("")) {
-                hibProps.setProperty("db_login", login);
+                hibProps.setProperty("db.login", login);
             }
 
             if (password != null && !password.equals("")) {
-                hibProps.setProperty("db_password", password);
+                hibProps.setProperty("db.password", password);
             }
 
             hibBuilder.save();
