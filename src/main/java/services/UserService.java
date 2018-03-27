@@ -6,6 +6,7 @@ import storage.entities.User;
 import org.hibernate.Session;
 import utils.HibernateUtil;
 
+import javax.persistence.NoResultException;
 import java.util.List;
 
 /**
@@ -14,6 +15,9 @@ import java.util.List;
 public class UserService implements GenericEntityService<User, String> {
     private static final String USER_TABLE_NAME = "wm_user";
 
+    /**
+     * return null, if user doesn't exists
+     */
     @Override
     public User get(String val, String column) throws Exception {
         User user;
@@ -30,14 +34,26 @@ public class UserService implements GenericEntityService<User, String> {
                             "select * from " +
                             USER_TABLE_NAME + " where " + column + " = :uid", User.class);
                     nativeQuery.setParameter("uid", Long.parseLong(val));
-                    user = nativeQuery.getSingleResult();
+
+                    try {
+                        user = nativeQuery.getSingleResult();
+                    } catch (NoResultException e) {
+                        user = null;
+                    }
+
                     break;
                 case UserFields.SOCIAL_ID:
                     nativeQuery = session.createNativeQuery(
                             "select * from " +
                                     USER_TABLE_NAME + " where " + column + " = :sid", User.class);
                     nativeQuery.setParameter("sid", Long.parseLong(val));
-                    user = nativeQuery.getSingleResult();
+
+                    try {
+                        user = nativeQuery.getSingleResult();
+                    } catch (NoResultException e) {
+                        user = null;
+                    }
+
                     break;
                 default:
                     throw new UnsupportedOperationException("Get by " + column + " is still unsupported.");
