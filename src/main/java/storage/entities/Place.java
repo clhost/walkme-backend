@@ -41,7 +41,7 @@ public class Place {
     @Expose
     private Schedule schedule;
 
-    @Column(name = "json_schedule")
+    @Column(name = "json_schedule", length = 1000)
     private String scheduleAsJsonString;
 
     public Place() {
@@ -123,7 +123,7 @@ public class Place {
     @Override
     public String toString() {
         return "Place{" +
-                "id='" + (id == null ? null : id.substring(1, 10)) + '\'' +
+                "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", categoryId=" + category.getId() +
                 ", gisCategory='" + gisCategory + '\'' +
@@ -131,7 +131,6 @@ public class Place {
                 ", addressComment='" + addressComment + '\'' +
                 ", location=" + location +
                 ", schedule=" + schedule +
-                ", scheduleAsJsonString='" + scheduleAsJsonString + '\'' +
                 '}';
     }
 }
