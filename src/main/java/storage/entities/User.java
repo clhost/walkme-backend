@@ -23,7 +23,7 @@ public class User {
     @Expose
     private String lastName;
 
-    @Column(name = "social_id", nullable = false)
+    @Column(name = "social_id", nullable = false, unique = true)
     @Expose
     private long socialId;
 
