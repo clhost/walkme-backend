@@ -22,6 +22,12 @@ public class ResponseBuilder {
             "       \"message\": fake success \t\n" +
             "   }\n" +
             "}";
+    public static final String JSON_STUB_BAD_REQUEST = "{ \n" +
+            "   \"result\": {\n" +
+            "       \"status\": 400, \n" +
+            "       \"message\":  supported only stub version\t\n" +
+            "   }\n" +
+            "}";
 
     /**
      * @param status response status
