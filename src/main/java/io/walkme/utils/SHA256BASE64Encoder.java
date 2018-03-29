@@ -1,4 +1,4 @@
-package utils;
+package io.walkme.utils;
 
 
 import java.io.UnsupportedEncodingException;
@@ -28,7 +28,9 @@ public class SHA256BASE64Encoder {
             byte[] bytes = str.getBytes("UTF-8");
 
             pass = digest.digest(bytes);
-            return Base64.getEncoder().encodeToString(pass);
+
+            String result = Base64.getEncoder().encodeToString(pass);
+            return result.substring(0, result.length() - 1);
         } catch (UnsupportedEncodingException e) {
             return null;
         }
@@ -40,7 +42,7 @@ public class SHA256BASE64Encoder {
         int n = random.nextInt(10) + 10;
 
         for (int i = 0; i < n; i++) {
-            builder.append(Character.toString((char) (random.nextInt(126 - 33) + 33)));
+            builder.append(Character.toString((char) (random.nextInt(122 - 65) + 65)));
         }
 
         return builder.toString();

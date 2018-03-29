@@ -1,14 +1,21 @@
 package services;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.query.Query;
 import storage.entities.Session;
 import utils.HibernateUtil;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SessionService {
     private static final String SESSION_TABLE_NAME = "wm_session";
     private static SessionService instance;
+    private static final Logger logger = LogManager.getLogger(SessionService.class);
 
     /**
      * key - user id
@@ -16,7 +23,31 @@ public class SessionService {
      */
     private final ConcurrentHashMap<Long, String> sessions = new ConcurrentHashMap<>();
 
+    private SessionService() {
+        new Thread(() -> {
+            Scanner sc = new Scanner(System.in);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            while (true) {
+                String text;//sc.next();
+                try {
+                    text = reader.readLine();
+                    if (text.equals("/sessions")) {
+                        sessions.forEach((a, s) -> System.out.println("[" + a + "=" + s + "]"));
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
     public static SessionService getInstance() {
+        logger.info("Getting instance");
+        logger.error("Getting instance");
+        logger.warn("Getting instance");
+        logger.trace("Getting instance");
+        logger.debug("Getting instance");
+        logger.fatal("Getting instance");
         SessionService result = instance;
         if (result == null) {
             synchronized (SessionService.class) {
@@ -100,5 +131,10 @@ public class SessionService {
                 session.close();
             }
         }
+    }
+
+    public static void main(String[] args) {
+        SessionService.getInstance();
+        System.exit(0);
     }
 }

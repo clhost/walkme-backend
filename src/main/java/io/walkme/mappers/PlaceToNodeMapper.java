@@ -1,21 +1,12 @@
 package mappers;
 
-import routemaker.*;
-import services.PlaceService;
-import storage.entities.Place;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class PlaceToNodeMapper implements Mapper<Node, Place> {
-    @Override
+public class PlaceToNodeMapper {//implements Mapper<Node, Place> {
+    /*@Override
     public Node map(Place place) {
-        Map<storage.entities.Day, storage.entities.ScheduleTime> fromMap = place.getSchedule().getScheduleInfo();
+        Map<Day, ScheduleTime> fromMap = place.getSchedule().getScheduleInfo();
         Map<Day, ScheduleTime> toMap = new HashMap<>();
 
-        for (Map.Entry<storage.entities.Day, storage.entities.ScheduleTime> entry : fromMap.entrySet()) {
+        for (Map.Entry<Day, ScheduleTime> entry : fromMap.entrySet()) {
             Day day;
             switch (entry.getKey()) {
                 case MONDAY:
@@ -50,11 +41,11 @@ public class PlaceToNodeMapper implements Mapper<Node, Place> {
         return new Node(
                 place.getId(),
                 new Location(place.getLocation().getLat(), place.getLocation().getLng()),
-                schedule);
-    }
+                schedule);*/
+
 
     public static void main(String[] args) throws Exception {
-        Mapper<Node, Place> mapper = new PlaceToNodeMapper();
+        /*Mapper<Node, Place> mapper = new PlaceToNodeMapper();
         PlaceService placeService = new PlaceService();
 
         Place place1 = placeService.get
@@ -66,12 +57,19 @@ public class PlaceToNodeMapper implements Mapper<Node, Place> {
         System.out.println(place1);
         System.out.println(place2);
 
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
+        String a = gson.toJson(place1, Place.class);
+        //JsonElement element = gson.toJsonTree(place1, Place.class);
+        System.out.println("===================");
+        System.out.println(a);
+        System.out.println("===================");
+
         List<Node> nodes = new ArrayList<>();
         nodes.add(mapper.map(place1));
         nodes.add(mapper.map(place2));
 
         System.out.println("\nAfter algorithm: ");
-        Ways ways = new Ways(100, nodes);
-        System.out.println(ways.getWays());
+        Ways ways = new Ways(100, nodes, new Location(59.923062, 30.358118));
+        System.out.println(ways.getWays());*/
     }
 }

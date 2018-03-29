@@ -2,7 +2,10 @@ package mappers;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import storage.entities.*;
+import io.walkme.storage.entities.*;
+import storage.entities.Location;
+import storage.entities.Place;
+import storage.entities.Schedule;
 
 import java.util.Map;
 

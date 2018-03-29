@@ -1,14 +1,13 @@
 package utils;
 
 import io.netty.buffer.Unpooled;
-import io.netty.handler.codec.Headers;
 import io.netty.handler.codec.http.*;
 
 public class ResponseBuilder {
     public static final String JSON_BAD_REQUEST = "{ \"status: \"400, \"error: \"bad request }";
 
     /**
-     * @param status response status
+     * @param status io.walkme.response status
      * @param data data into body
      */
     public static FullHttpResponse buildJsonResponse(HttpResponseStatus status, String data) {

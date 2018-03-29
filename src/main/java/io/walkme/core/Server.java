@@ -1,8 +1,8 @@
 package core;
 
+import helpers.VKHelper;
 import helpers.ConfigHelper;
 import helpers.OKHelper;
-import helpers.VKHelper;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -44,7 +44,6 @@ public class Server {
 
     @SuppressWarnings("unchecked")
     public void run() {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> SessionService.getInstance().clear()));
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap
@@ -77,7 +76,7 @@ public class Server {
         // initialize all existing sessions
         SessionService.getInstance().loadFromDatabase();
 
-        // init vk and ok helpers application info
+        // init vk and ok io.walkme.helpers application info
         VKHelper.init();
         OKHelper.init();
     }
