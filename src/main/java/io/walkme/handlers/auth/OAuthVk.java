@@ -73,10 +73,12 @@ class OAuthVk {
             builder.append(line);
         }
 
+        System.out.println(builder.toString());
+
         jsonObject = new JsonParser().parse(builder.toString()).getAsJsonObject();
         Optional<String> firstName = Optional.empty(), lastName = Optional.empty();
         for (Map.Entry<String, JsonElement> element : jsonObject.entrySet()) {
-            if (element.getKey().equals("io/walkme/response")) {
+            if (element.getKey().equals("response")) {
                 JsonObject object = element.getValue().getAsJsonArray().get(0).getAsJsonObject();
                 firstName = Optional.of(object.get("first_name").getAsString());
                 lastName = Optional.of(object.get("last_name").getAsString());
