@@ -5,13 +5,14 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
+import io.walkme.core.GlobalProps;
+import io.walkme.graph.PlaceProvider;
+import io.walkme.graph.stub.RouteFinder;
 import io.walkme.response.RouteBuilder;
 import io.walkme.response.RouteEntity;
 import io.walkme.services.GenericEntityService;
 import io.walkme.services.PlaceService;
 import io.walkme.services.SessionService;
-import io.walkme.services.UserService;
-import io.walkme.services.fields.PlaceFields;
 import io.walkme.storage.entities.*;
 import io.walkme.utils.ResponseBuilder;
 
@@ -35,7 +36,7 @@ public class GetRouteHandler extends ChannelInboundHandlerAdapter {
     private static final String PARAM_LNG = "lng";
     private static final String PARAM_CATEGORIES = "categories";
 
-    private static final GenericEntityService<User, String  > userService = new UserService();
+    private static final GenericEntityService<Place, String> placeService = new PlaceService();
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -77,9 +78,24 @@ public class GetRouteHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void handleRoute(ChannelHandlerContext ctx, Map<String, List<String>> params) throws Exception {
-        PlaceService placeService = new PlaceService();
+        if (GlobalProps.isStub) {
+            Place p1 = PlaceProvider.randomPlace();
+            Place p2 = PlaceProvider.randomPlace();
 
-        Place place1 = placeService.get
+            List<Location> points = RouteFinder.getInstance().findRandomPath(p1, p2);
+
+            List<RouteEntity> entities = new ArrayList<>();
+            entities.add(RouteEntity.of(p1));
+            entities.add(RouteEntity.of(p2));
+
+            ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
+                    HttpResponseStatus.OK, RouteBuilder.asJson(200, entities, points)));
+        } else {
+            ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
+                    HttpResponseStatus.OK, ResponseBuilder.JSON_STUB_BAD_REQUEST));
+        }
+
+        /*Place place1 = placeService.get
                 ("5348552838479901_nehhg2p8p713845B56IG0GGGlszk9z26G6G433A4G5" +
                                 "BA04HArgewB4979B3IG22G0J5CI5G4k4gyuvG45516384A7991H3J2H42",
                         PlaceFields.ID);
@@ -98,6 +114,6 @@ public class GetRouteHandler extends ChannelInboundHandlerAdapter {
         locs.add(new Location(30.333, 30.1232));
 
         ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
-                HttpResponseStatus.OK, RouteBuilder.asJson(200, entities, locs)));
+                HttpResponseStatus.OK, RouteBuilder.asJson(200, entities, locs)));*/
     }
 }
