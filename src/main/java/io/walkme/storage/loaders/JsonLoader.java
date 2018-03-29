@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import io.walkme.services.CategoryService;
 import io.walkme.services.GenericEntityService;
 import io.walkme.services.PlaceService;
 import io.walkme.storage.entities.Place;
@@ -55,6 +56,7 @@ public class JsonLoader implements Loader<File> {
         HibernateUtil.start();
 
         System.out.println("Starting...");
+        CategoryService.upload();
         long a = System.currentTimeMillis();
         loader.load(new File("nodejs-dataset/bary_spb.json"));
         System.out.println(System.currentTimeMillis() - a);
