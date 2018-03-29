@@ -1,7 +1,7 @@
 package io.walkme.core;
 
 import io.walkme.handlers.auth.AuthHandler;
-import io.walkme.handlers.distance.GetRouteHandler;
+import io.walkme.handlers.route.GetRouteHandler;
 import io.walkme.handlers.test.InfoHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
