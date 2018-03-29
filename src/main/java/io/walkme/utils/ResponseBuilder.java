@@ -12,13 +12,11 @@ public class ResponseBuilder {
             "   \"status\": 403, \n" +
             "   \"error\": \"unauthorized\" \t\n" +
             "}";
-    public static final String JSON_FAKE_REQUEST = "{ \n" +
-            "   \"status\": 200, \n" +
-            "   \"message\": \"fake success\" \t\n" +
-            "}";
+    public static final String JSON_FAKE_REQUEST = " ";
+
     public static final String JSON_STUB_BAD_REQUEST = "{ \n" +
             "   \"status\": 400, \n" +
-            "   \"message\": \"supported only stub version\" \t\n" +
+            "   \"error\": \"supported only stub version\" \t\n" +
             "}";
 
     /**
