@@ -1,4 +1,4 @@
-package storage.entities;
+package io.walkme.storage.entities;
 
 public enum WalkMeCategory {
     BAR(1, "бар");

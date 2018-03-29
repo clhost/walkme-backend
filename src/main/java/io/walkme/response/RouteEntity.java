@@ -1,9 +1,9 @@
-package response;
+package io.walkme.response;
 
-import storage.entities.Day;
-import storage.entities.Location;
-import storage.entities.Place;
-import utils.DateUtil;
+import io.walkme.storage.entities.Day;
+import io.walkme.storage.entities.Location;
+import io.walkme.storage.entities.Place;
+import io.walkme.utils.DateUtil;
 
 import java.time.LocalDateTime;
 

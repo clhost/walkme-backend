@@ -1,4 +1,4 @@
-package storage.entities;
+package io.walkme.storage.entities;
 
 import org.hibernate.annotations.Check;
 

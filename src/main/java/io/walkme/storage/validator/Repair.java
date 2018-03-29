@@ -1,6 +1,6 @@
-package storage.validator;
+package io.walkme.storage.validator;
 
-import storage.entities.WalkMeCategory;
+import io.walkme.storage.entities.WalkMeCategory;
 
 @FunctionalInterface
 public interface Repair<T> {

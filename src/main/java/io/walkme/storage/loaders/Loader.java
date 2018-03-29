@@ -1,4 +1,4 @@
-package storage.loaders;
+package io.walkme.storage.loaders;
 
 @FunctionalInterface
 public interface Loader<T> {

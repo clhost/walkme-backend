@@ -1,16 +1,16 @@
-package services;
+package io.walkme.services;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.hibernate.Session;
 import org.hibernate.query.NativeQuery;
-import services.fields.PlaceFields;
-import storage.entities.Place;
-import storage.entities.Schedule;
-import mappers.JsonToScheduleMapper;
-import mappers.Mapper;
-import storage.entities.WalkMeCategory;
-import utils.HibernateUtil;
+import io.walkme.services.fields.PlaceFields;
+import io.walkme.storage.entities.Place;
+import io.walkme.storage.entities.Schedule;
+import io.walkme.mappers.JsonToScheduleMapper;
+import io.walkme.mappers.Mapper;
+import io.walkme.storage.entities.WalkMeCategory;
+import io.walkme.utils.HibernateUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -128,12 +128,12 @@ public class PlaceService implements GenericEntityService<Place, String> {
 
     @Override
     public void delete(String val, String key) throws Exception {
-
+        throw new UnsupportedOperationException("Delete is still unsupported.");
     }
 
     @Override
     public void update(Place place) throws Exception {
-
+        throw new UnsupportedOperationException("Update is still unsupported.");
     }
 
     public static void main(String[] args) throws Exception {

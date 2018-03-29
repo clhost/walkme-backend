@@ -1,8 +1,8 @@
-package core;
+package io.walkme.core;
 
-import helpers.VKHelper;
-import helpers.ConfigHelper;
-import helpers.OKHelper;
+import io.walkme.helpers.ConfigHelper;
+import io.walkme.helpers.OKHelper;
+import io.walkme.helpers.VKHelper;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -15,8 +15,8 @@ import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
-import services.SessionService;
-import utils.HibernateUtil;
+import io.walkme.services.SessionService;
+import io.walkme.utils.HibernateUtil;
 
 
 public class Server {
@@ -76,7 +76,7 @@ public class Server {
         // initialize all existing sessions
         SessionService.getInstance().loadFromDatabase();
 
-        // init vk and ok io.walkme.helpers application info
+        // init vk and ok helpers application info
         VKHelper.init();
         OKHelper.init();
     }

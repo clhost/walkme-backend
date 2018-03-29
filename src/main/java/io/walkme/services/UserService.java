@@ -1,10 +1,12 @@
-package services;
+package io.walkme.services;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.query.NativeQuery;
-import services.fields.UserFields;
-import storage.entities.User;
+import io.walkme.services.fields.UserFields;
+import io.walkme.storage.entities.User;
 import org.hibernate.Session;
-import utils.HibernateUtil;
+import io.walkme.utils.HibernateUtil;
 
 import javax.persistence.NoResultException;
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.List;
  */
 public class UserService implements GenericEntityService<User, String> {
     private static final String USER_TABLE_NAME = "wm_user";
+    private static final Logger logger = LogManager.getLogger(UserService.class);
 
     /**
      * return null, if user doesn't exists
@@ -84,6 +87,7 @@ public class UserService implements GenericEntityService<User, String> {
 
             session.save(user);
 
+            logger.info("Saving user: " + user + ".");
             session.getTransaction().commit();
         } finally {
             if (session != null) {
@@ -120,6 +124,7 @@ public class UserService implements GenericEntityService<User, String> {
                     throw new UnsupportedOperationException("Delete by " + column + " is still unsupported.");
             }
 
+            logger.info("Deleting user by " + column + " of " + val + ".");
             session.getTransaction().commit();
         } finally {
             if (session != null) {

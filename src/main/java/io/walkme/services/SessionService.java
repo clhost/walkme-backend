@@ -1,10 +1,10 @@
-package services;
+package io.walkme.services;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.query.Query;
-import storage.entities.Session;
-import utils.HibernateUtil;
+import io.walkme.storage.entities.Session;
+import io.walkme.utils.HibernateUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -42,12 +42,6 @@ public class SessionService {
     }
 
     public static SessionService getInstance() {
-        logger.info("Getting instance");
-        logger.error("Getting instance");
-        logger.warn("Getting instance");
-        logger.trace("Getting instance");
-        logger.debug("Getting instance");
-        logger.fatal("Getting instance");
         SessionService result = instance;
         if (result == null) {
             synchronized (SessionService.class) {

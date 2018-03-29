@@ -1,4 +1,4 @@
-package services;
+package io.walkme.services;
 
 import java.util.List;
 

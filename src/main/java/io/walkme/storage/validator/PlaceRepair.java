@@ -1,8 +1,8 @@
-package storage.validator;
+package io.walkme.storage.validator;
 
-import storage.entities.Category;
-import storage.entities.Place;
-import storage.entities.WalkMeCategory;
+import io.walkme.storage.entities.Category;
+import io.walkme.storage.entities.Place;
+import io.walkme.storage.entities.WalkMeCategory;
 
 public class PlaceRepair implements Repair<Place> {
     @Override

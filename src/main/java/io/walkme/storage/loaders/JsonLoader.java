@@ -1,19 +1,21 @@
-package storage.loaders;
+package io.walkme.storage.loaders;
 
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import services.GenericEntityService;
-import services.PlaceService;
-import storage.entities.Place;
-import mappers.JsonToPlaceMapper;
-import mappers.Mapper;
-import storage.entities.WalkMeCategory;
-import storage.validator.PlaceRepair;
-import storage.validator.Repair;
-import utils.HibernateUtil;
+import io.walkme.services.GenericEntityService;
+import io.walkme.services.PlaceService;
+import io.walkme.storage.entities.Place;
+import io.walkme.mappers.JsonToPlaceMapper;
+import io.walkme.mappers.Mapper;
+import io.walkme.storage.entities.WalkMeCategory;
+import io.walkme.storage.validator.PlaceRepair;
+import io.walkme.storage.validator.Repair;
+import io.walkme.utils.HibernateUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 
@@ -21,6 +23,7 @@ public class JsonLoader implements Loader<File> {
     private static final GenericEntityService<Place, String> placeService = new PlaceService();
     private static final Mapper<Place, JsonObject> mapper = new JsonToPlaceMapper();
     private static final Repair<Place> repair = new PlaceRepair();
+    private static final Logger logger = LogManager.getLogger(JsonLoader.class);
 
     @Override
     public void load(File file) {
@@ -38,12 +41,12 @@ public class JsonLoader implements Loader<File> {
             for (JsonElement element : jsonArray) {
                 Place place = mapper.map(element.getAsJsonObject());
                 place = repair.repair(place, WalkMeCategory.BAR);
-                System.out.println(place);
                 placeService.save(place);
+                System.out.println("Saving: " + place);
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 

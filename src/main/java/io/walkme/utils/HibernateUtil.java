@@ -1,12 +1,14 @@
-package utils;
+package io.walkme.utils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
-import storage.entities.Category;
-import storage.entities.Location;
-import storage.entities.Place;
-import storage.entities.User;
+import io.walkme.storage.entities.Category;
+import io.walkme.storage.entities.Location;
+import io.walkme.storage.entities.Place;
+import io.walkme.storage.entities.User;
 
 import java.io.FileInputStream;
 import java.util.Properties;
@@ -14,6 +16,7 @@ import java.util.Properties;
 
 public class HibernateUtil {
     private static SessionFactory factory;
+    private static final Logger logger = LogManager.getLogger(HibernateUtil.class);
 
 
     public static void start() {
@@ -26,12 +29,12 @@ public class HibernateUtil {
                     .addAnnotatedClass(Place.class)
                     .addAnnotatedClass(Location.class)
                     .addAnnotatedClass(User.class)
-                    .addAnnotatedClass(storage.entities.Session.class)
+                    .addAnnotatedClass(io.walkme.storage.entities.Session.class)
                     .addAnnotatedClass(Category.class)
                     .buildSessionFactory();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 

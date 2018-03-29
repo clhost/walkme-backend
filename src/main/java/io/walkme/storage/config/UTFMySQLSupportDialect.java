@@ -1,4 +1,4 @@
-package storage.config;
+package io.walkme.storage.config;
 
 import org.hibernate.dialect.MySQL57Dialect;
 

@@ -1,6 +1,6 @@
-package services.fields;
+package io.walkme.services.fields;
 
-import storage.entities.Place;
+import io.walkme.storage.entities.Place;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;

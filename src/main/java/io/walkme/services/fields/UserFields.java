@@ -1,6 +1,6 @@
-package services.fields;
+package io.walkme.services.fields;
 
-import storage.entities.User;
+import io.walkme.storage.entities.User;
 
 import javax.persistence.Column;
 import java.lang.reflect.Field;

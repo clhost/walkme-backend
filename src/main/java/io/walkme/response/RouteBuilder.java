@@ -1,7 +1,7 @@
-package response;
+package io.walkme.response;
 
 import com.google.gson.*;
-import storage.entities.Location;
+import io.walkme.storage.entities.Location;
 
 import java.util.List;
 

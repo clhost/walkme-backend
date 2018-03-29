@@ -1,4 +1,4 @@
-package helpers;
+package io.walkme.helpers;
 
 import java.io.File;
 import java.io.FileInputStream;

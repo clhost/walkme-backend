@@ -1,4 +1,6 @@
-package helpers;
+package io.walkme.helpers;
+
+import io.walkme.utils.HibernateUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -56,5 +58,10 @@ public class VKHelper {
         return API_URL + "users.get?user_ids=" + userId + "&" +
                 "access_token=" + accessToken + "&" +
                 "v=" + API_VERSION;
+    }
+
+    public static void main(String[] args) {
+        VKHelper.init();
+        System.out.println(VKHelper.authString());
     }
 }
