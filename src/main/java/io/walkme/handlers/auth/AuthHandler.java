@@ -45,6 +45,11 @@ public class AuthHandler extends ChannelInboundHandlerAdapter {
 
         if (tokens.length < 2) {
             ctx.fireChannelRead(msg);
+        } if (tokens[0].equals(API_PREFIX) && tokens[1].equals(API_FAKE)) {
+            ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
+                    HttpResponseStatus.OK,
+                    ResponseBuilder.JSON_FAKE_REQUEST
+            ));
         } else if (tokens[0].equals(API_PREFIX) && tokens[1].equals(API_AUTH)) {
             handleAuth(ctx, params);
         } else {

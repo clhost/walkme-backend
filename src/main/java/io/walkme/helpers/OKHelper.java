@@ -3,6 +3,8 @@ package io.walkme.helpers;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Properties;
 
 public class OKHelper {
@@ -36,7 +38,7 @@ public class OKHelper {
                 "client_id=" + CLIENT_ID + "&" +
                 "scope=" + SCOPE + "&" +
                 "response_type=code" + "&" +
-                "redirect_uri=" + REDIRECT_URI + "&" +
+                "redirect_uri=" + encodeURIComponent(REDIRECT_URI) + "&" +
                 "state=" + STATE;
     }
 
@@ -45,7 +47,24 @@ public class OKHelper {
                 "code=" + code + "&" +
                 "client_id=" + CLIENT_ID + "&" +
                 "client_secret=" + CLIENT_SECRET + "&" +
-                "redirect_uri=" + REDIRECT_URI + "&" +
+                "redirect_uri=" + encodeURIComponent(REDIRECT_URI) + "&" +
                 "grant_type=authorization_code";
+    }
+
+    private static String encodeURIComponent(String s) {
+        String result;
+        try {
+            result = URLEncoder.encode(s, "UTF-8")
+                    .replaceAll("\\+", "%20")
+                    .replaceAll("\\%21", "!")
+                    .replaceAll("\\%27", "'")
+                    .replaceAll("\\%28", "(")
+                    .replaceAll("\\%29", ")")
+                    .replaceAll("\\%7E", "~");
+        } catch (UnsupportedEncodingException e){
+            result = s;
+        }
+
+        return result;
     }
 }

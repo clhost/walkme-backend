@@ -1,4 +1,4 @@
-package io.walkme.handlers.distance;
+package io.walkme.handlers.route;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -29,7 +29,6 @@ import java.util.Map;
 public class GetRouteHandler extends ChannelInboundHandlerAdapter {
     private static final String API_PREFIX = "api";
     private static final String API_GET_ROUTE = "getRoute";
-    private static final String API_FAKE = "fake";
 
     private static final String PARAM_TOKEN = "token";
     private static final String PARAM_LAT = "lat";
@@ -63,11 +62,6 @@ public class GetRouteHandler extends ChannelInboundHandlerAdapter {
                         HttpResponseStatus.FORBIDDEN,
                         ResponseBuilder.JSON_UNAUTHORIZED_REQUEST));
             }
-        } else if (tokens[0].equals(API_PREFIX) && tokens[1].equals(API_FAKE)) {
-            ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
-                    HttpResponseStatus.OK,
-                    ResponseBuilder.JSON_FAKE_REQUEST
-            ));
         } else {
             ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                     HttpResponseStatus.BAD_REQUEST,

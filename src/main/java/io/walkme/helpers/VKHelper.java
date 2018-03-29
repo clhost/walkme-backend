@@ -62,12 +62,7 @@ public class VKHelper {
                 "v=" + API_VERSION;
     }
 
-    public static void main(String[] args) {
-        VKHelper.init();
-        System.out.println(VKHelper.authString());
-    }
-
-    public static String encodeURIComponent(String s){
+    private static String encodeURIComponent(String s) {
         String result;
         try {
             result = URLEncoder.encode(s, "UTF-8")
@@ -77,12 +72,15 @@ public class VKHelper {
                     .replaceAll("\\%28", "(")
                     .replaceAll("\\%29", ")")
                     .replaceAll("\\%7E", "~");
-        }
-
-        catch (UnsupportedEncodingException e){
+        } catch (UnsupportedEncodingException e){
             result = s;
         }
 
         return result;
+    }
+
+    public static void main(String[] args) {
+        VKHelper.init();
+        System.out.println(VKHelper.authString());
     }
 }
