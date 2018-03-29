@@ -4,7 +4,24 @@ import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.*;
 
 public class ResponseBuilder {
-    public static final String JSON_BAD_REQUEST = "{ \"status: \"400, \"error: \"bad request }";
+    public static final String JSON_BAD_REQUEST = "{ \n" +
+            "   \"result\": {\n" +
+            "       \"status\": 400, \n" +
+            "       \"error\": bad request \t\n" +
+            "   }\n" +
+            "}";
+    public static final String JSON_UNAUTHORIZED_REQUEST = "{ \n" +
+            "   \"result\": {\n" +
+            "       \"status\": 403, \n" +
+            "       \"error\": unauthorized \t\n" +
+            "   }\n" +
+            "}";
+    public static final String JSON_FAKE_REQUEST = "{ \n" +
+            "   \"result\": {\n" +
+            "       \"status\": 200, \n" +
+            "       \"message\": fake success \t\n" +
+            "   }\n" +
+            "}";
 
     /**
      * @param status response status
