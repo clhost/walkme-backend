@@ -5,28 +5,20 @@ import io.netty.handler.codec.http.*;
 
 public class ResponseBuilder {
     public static final String JSON_BAD_REQUEST = "{ \n" +
-            "   \"result\": {\n" +
-            "       \"status\": 400, \n" +
-            "       \"error\": bad request \t\n" +
-            "   }\n" +
+            "   \"status\": 400, \n" +
+            "   \"error\": \"bad request\" \t\n" +
             "}";
     public static final String JSON_UNAUTHORIZED_REQUEST = "{ \n" +
-            "   \"result\": {\n" +
-            "       \"status\": 403, \n" +
-            "       \"error\": unauthorized \t\n" +
-            "   }\n" +
+            "   \"status\": 403, \n" +
+            "   \"error\": \"unauthorized\" \t\n" +
             "}";
     public static final String JSON_FAKE_REQUEST = "{ \n" +
-            "   \"result\": {\n" +
-            "       \"status\": 200, \n" +
-            "       \"message\": fake success \t\n" +
-            "   }\n" +
+            "   \"status\": 200, \n" +
+            "   \"message\": \"fake success\" \t\n" +
             "}";
     public static final String JSON_STUB_BAD_REQUEST = "{ \n" +
-            "   \"result\": {\n" +
-            "       \"status\": 400, \n" +
-            "       \"message\":  supported only stub version\t\n" +
-            "   }\n" +
+            "   \"status\": 400, \n" +
+            "   \"message\": \"supported only stub version\" \t\n" +
             "}";
 
     /**
