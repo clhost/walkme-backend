@@ -20,20 +20,13 @@ public class Initializer extends ChannelInitializer<SocketChannel> {
     protected void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
 
-        // HTTP decode io.walkme.handlers
+        // HTTP decode handlers
         pipeline.addLast(new HttpServerCodec());
         pipeline.addLast(new HttpObjectAggregator(Short.MAX_VALUE));
 
-        // AUTH io.walkme.handlers
+        // AUTH handlers
         pipeline.addLast(new InfoHandler(true));
         pipeline.addLast(auth, "auth", new AuthHandler());
         pipeline.addLast(route, "route", new GetRouteHandler());
-
-        // REST API io.walkme.handlers
-        //pipeline.addLast("post_distance", new PostDistanceHandler());
-        //pipeline.addLast("rest_create", new CreateEventHandler());
-        //pipeline.addLast("rest_get", new GetEventHandler());у
-        //pipeline.addLast("rest_update", new UpdateEventHandler());
-        //pipeline.addLast("rest_delete", new DeleteEventHandler());
     }
 }
