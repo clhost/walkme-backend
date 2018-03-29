@@ -1,6 +1,8 @@
 package io.walkme.utils;
 
 
+import org.apache.commons.codec.binary.Hex;
+
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -29,7 +31,7 @@ public class SHA256BASE64Encoder {
 
             pass = digest.digest(bytes);
 
-            String result = Base64.getEncoder().encodeToString(pass);
+            String result = Hex.encodeHexString(pass);
             return result.substring(0, result.length() - 1);
         } catch (UnsupportedEncodingException e) {
             return null;
