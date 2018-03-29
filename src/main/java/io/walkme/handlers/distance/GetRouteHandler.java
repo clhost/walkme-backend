@@ -16,7 +16,6 @@ import io.walkme.storage.entities.*;
 import io.walkme.utils.ResponseBuilder;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +28,7 @@ import java.util.Map;
 public class GetRouteHandler extends ChannelInboundHandlerAdapter {
     private static final String API_PREFIX = "api";
     private static final String API_GET_ROUTE = "getRoute";
+    private static final String API_FAKE = "fake";
 
     private static final String PARAM_TOKEN = "token";
     private static final String PARAM_LAT = "lat";
@@ -53,13 +53,24 @@ public class GetRouteHandler extends ChannelInboundHandlerAdapter {
 
         if (tokens.length < 2) {
             ctx.fireChannelRead(msg);
-        } else if (params.get("token") != null && params.get("token").size() > 0 &&
-                        SessionService.getInstance().isSessionExist(params.get("token").get(0))) {
-            if (tokens[0].equals(API_PREFIX) && tokens[1].equals(API_GET_ROUTE)) {
+        } else if (tokens[0].equals(API_PREFIX) && tokens[1].equals(API_GET_ROUTE)) {
+            if (params.get("token") != null && params.get("token").size() > 0 &&
+                    SessionService.getInstance().isSessionExist(params.get("token").get(0))) {
                 handleRoute(ctx, params);
+            } else {
+                ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
+                        HttpResponseStatus.FORBIDDEN,
+                        ResponseBuilder.JSON_UNAUTHORIZED_REQUEST));
             }
+        } else if (tokens[0].equals(API_PREFIX) && tokens[1].equals(API_FAKE)) {
+            ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
+                    HttpResponseStatus.OK,
+                    ResponseBuilder.JSON_FAKE_REQUEST
+            ));
         } else {
-            ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(HttpResponseStatus.OK, "{ \"error:\" unauthorized }"));
+            ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
+                    HttpResponseStatus.BAD_REQUEST,
+                    ResponseBuilder.JSON_BAD_REQUEST));
         }
 
         ctx.close();
