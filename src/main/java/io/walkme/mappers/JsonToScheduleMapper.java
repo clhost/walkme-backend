@@ -1,12 +1,12 @@
-package mappers;
+package io.walkme.mappers;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import storage.entities.Day;
-import storage.entities.Schedule;
-import storage.entities.ScheduleTime;
-import utils.DateUtil;
+import io.walkme.storage.entities.Day;
+import io.walkme.storage.entities.Schedule;
+import io.walkme.storage.entities.ScheduleTime;
+import io.walkme.utils.DateUtil;
 
 import java.util.HashMap;
 import java.util.Map;

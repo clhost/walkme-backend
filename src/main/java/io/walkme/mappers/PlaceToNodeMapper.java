@@ -1,12 +1,12 @@
-package mappers;
+package io.walkme.mappers;
 
 public class PlaceToNodeMapper {//implements Mapper<Node, Place> {
     /*@Override
     public Node map(Place place) {
-        Map<Day, ScheduleTime> fromMap = place.getSchedule().getScheduleInfo();
+        Map<io.walkme.storage.entities.Day, io.walkme.storage.entities.ScheduleTime> fromMap = place.getSchedule().getScheduleInfo();
         Map<Day, ScheduleTime> toMap = new HashMap<>();
 
-        for (Map.Entry<Day, ScheduleTime> entry : fromMap.entrySet()) {
+        for (Map.Entry<io.walkme.storage.entities.Day, io.walkme.storage.entities.ScheduleTime> entry : fromMap.entrySet()) {
             Day day;
             switch (entry.getKey()) {
                 case MONDAY:

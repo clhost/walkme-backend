@@ -1,4 +1,4 @@
-package mappers;
+package io.walkme.mappers;
 
 @FunctionalInterface
 public interface Mapper<E, T> {
