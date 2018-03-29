@@ -6,15 +6,14 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
+import java.util.Base64;
 
 public class SHA256BASE64Encoder {
     private MessageDigest digest;
-    private BASE64Encoder base64Encoder;
 
     public SHA256BASE64Encoder() {
         try {
             digest = MessageDigest.getInstance("SHA-256");
-            base64Encoder = new BASE64Encoder();
         } catch (NoSuchAlgorithmException e) {
             throw new SecurityException("In SHA256BASE64Encoder constructor:" + e.getMessage());
         }
@@ -30,7 +29,7 @@ public class SHA256BASE64Encoder {
             byte[] bytes = str.getBytes("UTF-8");
 
             pass = digest.digest(bytes);
-            return base64Encoder.encode(pass);
+            return Base64.getEncoder().encodeToString(pass);
         } catch (UnsupportedEncodingException e) {
             return null;
         }
