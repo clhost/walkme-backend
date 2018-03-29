@@ -50,4 +50,9 @@ public class InfoHandler extends ChannelInboundHandlerAdapter {
 
         ctx.fireChannelRead(msg);
     }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        cause.printStackTrace();
+    }
 }

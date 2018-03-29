@@ -106,7 +106,12 @@ class OAuthVk {
         }
 
         ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(HttpResponseStatus.OK,
-                "{\n" + "    \"token\": " + sessionToken + "\n" + "}"));
+                "{ \n   \"result\": {\n" +
+                        "       \"status\": 200, \n" +
+                        "       \"token\":  \"" + sessionToken + "\"\t\n" +
+                        "   }\n" +
+                        "}"
+        ));
         ctx.close();
     }
 }

@@ -35,18 +35,18 @@ public class OKHelper {
 
     public static String authString() {
         return OAUTH_URL + "authorize?" +
-                "client_id=" + CLIENT_ID + "&" +
-                "scope=" + SCOPE + "&" +
+                "client_id=" + encodeURIComponent(CLIENT_ID) + "&" +
+                "scope=" + encodeURIComponent(SCOPE) + "&" +
                 "response_type=code" + "&" +
                 "redirect_uri=" + encodeURIComponent(REDIRECT_URI) + "&" +
-                "state=" + STATE;
+                "state=" + encodeURIComponent(STATE);
     }
 
     public static String accessTokenString(String code) {
         return API_URL +
-                "code=" + code + "&" +
-                "client_id=" + CLIENT_ID + "&" +
-                "client_secret=" + CLIENT_SECRET + "&" +
+                "code=" + encodeURIComponent(code) + "&" +
+                "client_id=" + encodeURIComponent(CLIENT_ID) + "&" +
+                "client_secret=" + encodeURIComponent(CLIENT_SECRET) + "&" +
                 "redirect_uri=" + encodeURIComponent(REDIRECT_URI) + "&" +
                 "grant_type=authorization_code";
     }

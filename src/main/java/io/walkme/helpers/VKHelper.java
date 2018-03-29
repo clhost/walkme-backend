@@ -39,27 +39,27 @@ public class VKHelper {
 
     public static String authString() {
         return OAUTH_URL + "authorize?" +
-                "client_id=" + CLIENT_ID + "&" +
+                "client_id=" + encodeURIComponent(CLIENT_ID) + "&" +
                 "redirect_uri=" + encodeURIComponent(REDIRECT_URI) + "&" +
-                "scope=" + SCOPE + "&" +
+                "scope=" + encodeURIComponent(SCOPE) + "&" +
                 "response_type=code" + "&" +
-                "v=" + API_VERSION + "&" +
-                "state=" + STATE;
+                "v=" + encodeURIComponent(API_VERSION) + "&" +
+                "state=" + encodeURIComponent(STATE);
 
     }
 
     public static String accessTokenString(String code) {
         return OAUTH_URL + "access_token?" +
-                "client_id=" + CLIENT_ID + "&" +
-                "client_secret=" +  CLIENT_SECRET + "&" +
+                "client_id=" + encodeURIComponent(CLIENT_ID) + "&" +
+                "client_secret=" +  encodeURIComponent(CLIENT_SECRET) + "&" +
                 "redirect_uri=" + encodeURIComponent(REDIRECT_URI) + "&" +
-                "code=" + code;
+                "code=" + encodeURIComponent(code);
     }
 
     public static String userProfileInfoString(String accessToken, String userId) {
-        return API_URL + "users.get?user_ids=" + userId + "&" +
-                "access_token=" + accessToken + "&" +
-                "v=" + API_VERSION;
+        return API_URL + "users.get?user_ids=" + encodeURIComponent(userId) + "&" +
+                "access_token=" + encodeURIComponent(accessToken) + "&" +
+                "v=" + encodeURIComponent(API_VERSION);
     }
 
     private static String encodeURIComponent(String s) {
