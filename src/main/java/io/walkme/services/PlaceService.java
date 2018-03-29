@@ -135,17 +135,4 @@ public class PlaceService implements GenericEntityService<Place, String> {
     public void update(Place place) throws Exception {
         throw new UnsupportedOperationException("Update is still unsupported.");
     }
-
-    public static void main(String[] args) throws Exception {
-        HibernateUtil.start();
-        PlaceService service = new PlaceService();
-
-        List<String> c = new ArrayList<>();
-        c.add(String.valueOf(WalkMeCategory.BAR.id()));
-
-        List<Place> places = service.getAll(c, PlaceFields.CATEGORY_ID);
-        for (Place p : places) {
-            System.out.println(p);
-        }
-    }
 }

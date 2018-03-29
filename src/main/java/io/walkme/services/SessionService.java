@@ -6,10 +6,6 @@ import org.hibernate.query.Query;
 import io.walkme.storage.entities.Session;
 import io.walkme.utils.HibernateUtil;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SessionService {
@@ -24,21 +20,7 @@ public class SessionService {
     private final ConcurrentHashMap<Long, String> sessions = new ConcurrentHashMap<>();
 
     private SessionService() {
-        new Thread(() -> {
-            Scanner sc = new Scanner(System.in);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            while (true) {
-                String text;//sc.next();
-                try {
-                    text = reader.readLine();
-                    if (text.equals("/sessions")) {
-                        sessions.forEach((a, s) -> System.out.println("[" + a + "=" + s + "]"));
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+
     }
 
     public static SessionService getInstance() {
@@ -125,10 +107,5 @@ public class SessionService {
                 session.close();
             }
         }
-    }
-
-    public static void main(String[] args) {
-        SessionService.getInstance();
-        System.exit(0);
     }
 }
