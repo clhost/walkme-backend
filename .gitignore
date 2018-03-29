@@ -9,6 +9,12 @@
 !settings.gradle
 !*.java
 !*.md
+!*.yaml
+
+# Some needed files
+!local.properties
+!hibernate.properties
+!nodejs-dataset/bary_spb.json
 
 # ...even if they are in subdirectories
 !*/

@@ -1,12 +1,16 @@
-group 'com.events.clhost'
+group 'io.walkme'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'application'
 
 sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    maven {
+        url 'https://jitpack.io'
+    }
 }
 
 dependencies {
@@ -18,5 +22,33 @@ dependencies {
 
     //database
     compile 'org.hibernate:hibernate-core:5.2.15.Final'
+    compile 'org.hibernate:hibernate-c3p0:5.2.15.Final'
     compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.13'
+    compile 'com.mchange:c3p0:0.9.5.2'
+
+    //HTTP client
+    compile 'org.apache.httpcomponents:fluent-hc:4.5.3'
+
+    //utils
+    compile 'org.apache.commons:commons-configuration2:2.2'
+    compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
+
+    // logging
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.0'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.0'
+    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.5.0'
+
+    //route [stub]
+    compile 'com.graphhopper:graphhopper-core:0.10.0'
+    compile 'com.graphhopper:graphhopper-reader-gtfs:0.10.alpha6'
+    compile 'commons-io:commons-io:2.5'
+    compile 'org.openstreetmap.osmosis:osmosis-osm-binary:0.46'
+}
+
+task first(type: JavaExec) {
+
+}
+
+run {
+    mainClassName = "io.walkme.core.Server"
 }
