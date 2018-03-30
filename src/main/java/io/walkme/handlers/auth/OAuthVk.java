@@ -106,9 +106,10 @@ class OAuthVk {
         }
 
         ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(HttpResponseStatus.OK,
-                "{ \n   \"result\": {\n" +
-                        "       \"status\": 200, \n" +
-                        "       \"token\":  \"" + sessionToken + "\"\t\n" +
+                "{ \n" +
+                        "    \"status\": 200, \n" +
+                        "    \"result\": {\n" +
+                        "       \"token\": \"" + sessionToken + "\"\t\n" +
                         "   }\n" +
                         "}"
         ));
