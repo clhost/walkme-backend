@@ -1,6 +1,7 @@
 package io.walkme.core;
 
 import io.walkme.handlers.auth.AuthHandler;
+import io.walkme.handlers.auth.TokenHandler;
 import io.walkme.handlers.route.GetRouteHandler;
 import io.walkme.handlers.test.InfoHandler;
 import io.netty.channel.ChannelInitializer;
@@ -26,6 +27,7 @@ public class Initializer extends ChannelInitializer<SocketChannel> {
 
         // AUTH handlers
         pipeline.addLast(new InfoHandler(true));
+        pipeline.addLast(new TokenHandler());
         pipeline.addLast(auth, "auth", new AuthHandler());
         pipeline.addLast(route, "route", new GetRouteHandler());
     }
