@@ -2,6 +2,7 @@ package io.walkme.core;
 
 import io.walkme.handlers.auth.AuthHandler;
 import io.walkme.handlers.auth.TokenHandler;
+import io.walkme.handlers.categories.GetCategoriesHandler;
 import io.walkme.handlers.route.GetRouteHandler;
 import io.walkme.handlers.test.InfoHandler;
 import io.netty.channel.ChannelInitializer;
@@ -26,9 +27,10 @@ public class Initializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast(new HttpObjectAggregator(Short.MAX_VALUE));
 
         // AUTH handlers
-        pipeline.addLast(new InfoHandler(true));
-        pipeline.addLast(new TokenHandler());
+        pipeline.addLast("info", new InfoHandler(true));
+        pipeline.addLast("token", new TokenHandler());
         pipeline.addLast(auth, "auth", new AuthHandler());
+        pipeline.addLast("categories", new GetCategoriesHandler());
         pipeline.addLast(route, "route", new GetRouteHandler());
     }
 }

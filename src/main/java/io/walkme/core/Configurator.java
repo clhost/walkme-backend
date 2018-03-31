@@ -6,6 +6,7 @@ import io.walkme.helpers.OKHelper;
 import io.walkme.helpers.VKHelper;
 import io.walkme.services.CategoryService;
 import io.walkme.services.SessionService;
+import io.walkme.services.fields.PlaceFields;
 import io.walkme.storage.Dropper;
 import io.walkme.storage.entities.WalkMeCategory;
 import io.walkme.storage.loaders.JsonLoader;
@@ -17,8 +18,11 @@ import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Session;
+import org.hibernate.query.NativeQuery;
 
 import java.io.File;
+import java.math.BigInteger;
 
 public class Configurator {
     private static Configurations confs = new Configurations();
@@ -84,27 +88,33 @@ public class Configurator {
         return server;
     }
 
-    /**
-     * Changes hibernate.properties hibernate.hbm2ddl.auto to create-drop.
-     */
-    static void isStub() {
+
+    private static void isStub() {
         try {
             PropertiesConfiguration locProps = locBuilder.getConfiguration();
-            String stub = locProps.getString("server.route.stub");
+            String stub = locProps.getString("server.stub.enable");
+            String dbReload = locProps.getString("server.stub.db_reload");
 
-            if (stub != null && stub.equals("true")) {
+            if (stub != null && stub.equals("on")) {
                 RouteFinder.init();
 
-                CategoryService.upload();
+                if (dbReload != null && dbReload.equals("true")) {
+                    long a = ifExists();
 
-                Runtime.getRuntime().addShutdownHook(new Thread(Dropper::drop));
+                    if (a != 0) {
+                        Dropper.drop();
+                        HibernateUtil.start();
+                    }
 
-                Loader<File> loader = new JsonLoader();
-                loader.load(new File("nodejs-dataset/spb-1.json"), WalkMeCategory.BAR);
-                loader.load(new File("nodejs-dataset/spb-2.json"), WalkMeCategory.EAT);
-                loader.load(new File("nodejs-dataset/spb-3.json"), WalkMeCategory.FUN);
-                loader.load(new File("nodejs-dataset/spb-4.json"), WalkMeCategory.PARKS);
-                loader.load(new File("nodejs-dataset/spb-5.json"), WalkMeCategory.WALK);
+                    Runtime.getRuntime().addShutdownHook(new Thread(Dropper::drop));
+                    load();
+                } else if (dbReload != null && dbReload.equals("false")) {
+                    long a = ifExists();
+
+                    if (a == 0) {
+                        load();
+                    }
+                }
 
                 GlobalProps.setIsStub(true);
             }
@@ -113,6 +123,42 @@ public class Configurator {
             e.printStackTrace();
         }
 
+    }
+
+    private static long ifExists() {
+        Session session = null;
+
+        try {
+            session = HibernateUtil.getSession();
+            session.beginTransaction();
+
+            NativeQuery query = session.createNativeQuery("select count(*) from " + PlaceFields.TABLE_NAME);
+            BigInteger i = (BigInteger) query.getSingleResult();
+            session.getTransaction().commit();
+
+            return i.longValue();
+        }
+        finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+    }
+
+    static void load() {
+        System.out.println("#3 ДРОПАЕМ");
+
+        CategoryService.upload();
+
+        System.out.println("#4 ДРОПАЕМ");
+
+
+        Loader<File> loader = new JsonLoader();
+        //loader.load(new File("nodejs-dataset/spb-1.json"), WalkMeCategory.BAR);
+        //loader.load(new File("nodejs-dataset/spb-2.json"), WalkMeCategory.EAT);
+        //loader.load(new File("nodejs-dataset/spb-3.json"), WalkMeCategory.FUN);
+        //loader.load(new File("nodejs-dataset/spb-4.json"), WalkMeCategory.PARKS);
+        loader.load(new File("nodejs-dataset/spb-5.json"), WalkMeCategory.WALK);
     }
 
     static void init() {

@@ -15,6 +15,7 @@ import java.util.List;
  * Ignore: location, scheduleAsJsonString, schedule
  */
 public class PlaceFields {
+    public static final String TABLE_NAME = "wm_place";
     public static final String ID = "id";
     public static final String NAME = "place_name";
     public static final String CATEGORY_ID = "category_id";
