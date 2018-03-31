@@ -69,7 +69,7 @@ public class AuthHandler extends ChannelInboundHandlerAdapter {
                 new OAuthVk().handle(ctx, params);
                 break;
             case OK:
-                OAuthOk.handle(ctx, params);
+                new OAuthOk().handle(ctx, params);
                 break;
             default:
                 ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
@@ -81,6 +81,7 @@ public class AuthHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        logger.error(cause.getMessage());
+        //logger.error(cause.getMessage());
+        cause.printStackTrace();
     }
 }

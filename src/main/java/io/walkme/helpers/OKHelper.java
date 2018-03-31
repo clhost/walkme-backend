@@ -12,9 +12,11 @@ public class OKHelper extends SocialHelper {
     private static String API_URL;
     private static String CLIENT_ID;
     private static String CLIENT_SECRET;
+    private static String CLIENT_PUBLIC;
     private static String SCOPE;
     private static String REDIRECT_URI;
     private static final String STATE = "ok";
+
 
     public static void init() {
         Properties properties = new Properties();
@@ -29,6 +31,7 @@ public class OKHelper extends SocialHelper {
         API_URL = properties.getProperty("ok.api_url");
         CLIENT_ID = properties.getProperty("ok.client_id");
         CLIENT_SECRET = properties.getProperty("ok.client_secret");
+        CLIENT_PUBLIC = properties.getProperty("ok.client_public");
         REDIRECT_URI = properties.getProperty("ok.redirect_uri");
         SCOPE = properties.getProperty("ok.scope");
     }
@@ -49,5 +52,24 @@ public class OKHelper extends SocialHelper {
                 "client_secret=" + encodeURIComponent(CLIENT_SECRET) + "&" +
                 "redirect_uri=" + encodeURIComponent(REDIRECT_URI) + "&" +
                 "grant_type=authorization_code";
+    }
+
+    public static String userProfileInfoString(String accessToken, String sig) {
+        return "https://api.ok.ru/fb.do?application_key=" + encodeURIComponent(CLIENT_PUBLIC) +
+                "&method=users.getCurrentUser&sig=" + encodeURIComponent(sig) +
+                "&access_token=" + encodeURIComponent(accessToken);
+    }
+
+    public static String clientSecret() {
+        return CLIENT_SECRET;
+    }
+
+    public static String clientPublic() {
+        return CLIENT_PUBLIC;
+    }
+
+    public static void main(String[] args) {
+        OKHelper.init();
+        System.out.println(OKHelper.authString());
     }
 }
