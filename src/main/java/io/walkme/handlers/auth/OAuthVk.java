@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import io.walkme.helpers.VKHelper;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import io.walkme.response.ResultBuilder;
 import org.apache.http.client.fluent.Request;
 import io.walkme.services.GenericEntityService;
 import io.walkme.services.SessionService;
@@ -15,8 +16,11 @@ import io.walkme.storage.entities.Session;
 import io.walkme.storage.entities.User;
 import io.walkme.utils.ResponseBuilder;
 import io.walkme.utils.SHA256BASE64Encoder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
@@ -24,95 +28,133 @@ import java.util.Map;
 import java.util.Optional;
 
 class OAuthVk {
+    private static final String ACCESS_TOKEN = "access_token";
+    private static final String USER_ID = "user_id";
+    private static final String RESPONSE = "response";
+    private static final String FIRST_NAME = "first_name";
+    private static final String LAST_NAME = "last_name";
+
     private static final SHA256BASE64Encoder tokenEncoder = new SHA256BASE64Encoder();
     private static final SessionService sessionService = SessionService.getInstance();
     private static final GenericEntityService<User, String> userService = new UserService();
 
+    private String code;
+    private String salt;
+    private String sessionToken;
+    private String accessToken;
+    private String userId;
+    private String firstName;
+    private String lastName;
 
-    static void handle(ChannelHandlerContext ctx, Map<String, List<String>> params) throws Exception {
-        String code = params.get("code").get(0);
+    private Request apacheRequest;
+    private InputStream stream;
+    private BufferedReader reader;
+    private StringBuilder respBuilder;
 
-        Request apacheRequest = Request.Get(VKHelper.accessTokenString(code));
-        InputStream stream = apacheRequest.execute().returnResponse().getEntity().getContent();
+    private ChannelHandlerContext ctx;
+    private Logger logger = LogManager.getLogger(OAuthVk.class);
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-        StringBuilder builder = new StringBuilder();
+    void handle(ChannelHandlerContext ctx, Map<String, List<String>> params) throws Exception {
+        this.ctx = ctx;
 
-        String line;
-        while ((line = reader.readLine()) != null) {
-            builder.append(line);
-        }
+        // get access token --------------------------------------------------------------------------------------------
+        code = params.get("code").get(0);
 
-        JsonObject jsonObject = new JsonParser().parse(builder.toString()).getAsJsonObject();
-        Optional<String> accessToken = Optional.empty(), userId = Optional.empty();
-        for (Map.Entry<String, JsonElement> element : jsonObject.entrySet()) {
-            if (element.getKey().equals("access_token")) {
-                accessToken = Optional.of(element.getValue().getAsString());
-            }
-
-            if (element.getKey().equals("user_id")) {
-                userId = Optional.of(element.getValue().getAsString());
-            }
-        }
-
-        String salt = SHA256BASE64Encoder.salt();
-        String sessionToken = tokenEncoder.encode(salt + System.currentTimeMillis());
-
-
-        // get profile info
-        if (accessToken.isPresent() && userId.isPresent()) {
-            apacheRequest = Request.Get(VKHelper.userProfileInfoString(accessToken.get(), userId.get()));
-        }
-
+        apacheRequest = Request.Get(VKHelper.accessTokenString(code));
         stream = apacheRequest.execute().returnResponse().getEntity().getContent();
 
         reader = new BufferedReader(new InputStreamReader(stream));
-        builder.setLength(0);
+        respBuilder = new StringBuilder();
 
+        String line;
         while ((line = reader.readLine()) != null) {
-            builder.append(line);
+            respBuilder.append(line);
         }
 
-        System.out.println(builder.toString());
+        JsonObject jsonObject = new JsonParser().parse(respBuilder.toString()).getAsJsonObject();
 
-        jsonObject = new JsonParser().parse(builder.toString()).getAsJsonObject();
-        Optional<String> firstName = Optional.empty(), lastName = Optional.empty();
         for (Map.Entry<String, JsonElement> element : jsonObject.entrySet()) {
-            if (element.getKey().equals("response")) {
-                JsonObject object = element.getValue().getAsJsonArray().get(0).getAsJsonObject();
-                firstName = Optional.of(object.get("first_name").getAsString());
-                lastName = Optional.of(object.get("last_name").getAsString());
+            if (element.getKey().equals(ACCESS_TOKEN)) {
+                accessToken = element.getValue().getAsString();
+            }
+
+            if (element.getKey().equals(USER_ID)) {
+                userId = element.getValue().getAsString();
             }
         }
 
-        if (!userId.isPresent() || !accessToken.isPresent()) {
-            throw new Exception("User id or access token is empty.");
+
+        // generate salt and session token -----------------------------------------------------------------------------
+        salt = SHA256BASE64Encoder.salt();
+        sessionToken = tokenEncoder.encode(salt + System.currentTimeMillis());
+
+        profileInfo();
+    }
+
+    private void profileInfo() throws Exception {
+        if (accessToken == null && userId == null) {
+            logger.warn("Can't authorize. Access token is null. Cause: invalid code " + code + ".");
+            ctx.writeAndFlush(ResultBuilder.asJson(403, "can't authorize.", ResultBuilder.ResultType.ERROR));
+            ctx.close();
+            return;
         }
 
+        apacheRequest = Request.Get(VKHelper.userProfileInfoString(accessToken, userId));
+        stream = apacheRequest.execute().returnResponse().getEntity().getContent();
+
+        reader = new BufferedReader(new InputStreamReader(stream));
+        respBuilder.setLength(0);
+
+        String line;
+        while ((line = reader.readLine()) != null) {
+            respBuilder.append(line);
+        }
+
+
+        JsonObject jsonObject = new JsonParser().parse(respBuilder.toString()).getAsJsonObject();
+
+        for (Map.Entry<String, JsonElement> element : jsonObject.entrySet()) {
+            if (element.getKey().equals(RESPONSE)) {
+                JsonObject object = element.getValue().getAsJsonArray().get(0).getAsJsonObject();
+                firstName = object.get(FIRST_NAME).getAsString();
+                lastName = object.get(LAST_NAME).getAsString();
+            }
+        }
+
+        if (firstName == null || accessToken == null) {
+            logger.warn("Can't get profile info.");
+            ctx.writeAndFlush(ResultBuilder.asJson(403, "can't authorize.", ResultBuilder.ResultType.ERROR));
+            ctx.close();
+            return;
+        }
+
+        saveUser();
+    }
+
+    private void saveUser() throws Exception {
         User user = new User();
         user.setSalt(salt);
-        user.setFirstName(firstName.orElse("default"));
-        user.setLastName(lastName.orElse("default"));
-        user.setSocialId(Long.parseLong(userId.get()));
-        user.setAvatar("empty");
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setSocialId(Long.parseLong(userId));
+        user.setAvatar("empty"); // temporary
 
         User exUser = userService.get(String.valueOf(user.getSocialId()), UserFields.SOCIAL_ID);
         if (exUser == null) {
             userService.save(user);
-            sessionService.saveSession(new Session(user, sessionToken, accessToken.get(), "vk"));
+            sessionService.saveSession(new Session(user, sessionToken, accessToken, "vk"));
         } else {
             sessionToken = tokenEncoder.encode(exUser.getSalt() + System.currentTimeMillis());
-            sessionService.saveSession(new Session(exUser, sessionToken, accessToken.get(), "vk"));
+            sessionService.saveSession(new Session(exUser, sessionToken, accessToken, "vk"));
         }
 
+        JsonObject object = new JsonObject();
+        object.addProperty("token", sessionToken);
+
         ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(HttpResponseStatus.OK,
-                "{ \n" +
-                        "    \"status\": 200, \n" +
-                        "    \"result\": {\n" +
-                        "       \"token\": \"" + sessionToken + "\"\t\n" +
-                        "   }\n" +
-                        "}"
-        ));
+                ResultBuilder.asJson(
+                        200, object,
+                        ResultBuilder.ResultType.RESULT)));
         ctx.close();
     }
 }

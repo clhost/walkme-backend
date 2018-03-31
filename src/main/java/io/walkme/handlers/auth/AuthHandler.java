@@ -5,6 +5,8 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.*;
 
 import io.walkme.utils.ResponseBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.Map;
@@ -28,6 +30,9 @@ public class AuthHandler extends ChannelInboundHandlerAdapter {
     private static final String API_FAKE = "fake";
     private static final String API_AUTH = "auth";
     private static final String API_PREFIX = "api";
+
+    private final Logger logger = LogManager.getLogger(AuthHandler.class);
+
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -61,7 +66,7 @@ public class AuthHandler extends ChannelInboundHandlerAdapter {
     private void handleAuth(ChannelHandlerContext ctx, Map<String, List<String>> params) throws Exception {
         switch (params.get(STATE).get(0)) {
             case VK:
-                OAuthVk.handle(ctx, params);
+                new OAuthVk().handle(ctx, params);
                 break;
             case OK:
                 OAuthOk.handle(ctx, params);
@@ -76,6 +81,6 @@ public class AuthHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        cause.printStackTrace();
+        logger.error(cause.getMessage());
     }
 }
