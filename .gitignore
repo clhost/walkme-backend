@@ -14,7 +14,10 @@
 # Some needed files
 !local.properties
 !hibernate.properties
-!nodejs-dataset/bary_spb.json
+!*.json
+
+# And map
+!maps/*
 
 # ...even if they are in subdirectories
 !*/
