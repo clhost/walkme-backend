@@ -7,7 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Properties;
 
-public class OKHelper {
+public class OKHelper extends SocialHelper {
     private static String OAUTH_URL;
     private static String API_URL;
     private static String CLIENT_ID;
@@ -49,22 +49,5 @@ public class OKHelper {
                 "client_secret=" + encodeURIComponent(CLIENT_SECRET) + "&" +
                 "redirect_uri=" + encodeURIComponent(REDIRECT_URI) + "&" +
                 "grant_type=authorization_code";
-    }
-
-    private static String encodeURIComponent(String s) {
-        String result;
-        try {
-            result = URLEncoder.encode(s, "UTF-8")
-                    .replaceAll("\\+", "%20")
-                    .replaceAll("\\%21", "!")
-                    .replaceAll("\\%27", "'")
-                    .replaceAll("\\%28", "(")
-                    .replaceAll("\\%29", ")")
-                    .replaceAll("\\%7E", "~");
-        } catch (UnsupportedEncodingException e){
-            result = s;
-        }
-
-        return result;
     }
 }

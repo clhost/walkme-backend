@@ -9,7 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Properties;
 
-public class VKHelper {
+public class VKHelper extends SocialHelper {
     private static String OAUTH_URL;
     private static String API_URL;
     private static String CLIENT_ID;
@@ -60,23 +60,6 @@ public class VKHelper {
         return API_URL + "users.get?user_ids=" + encodeURIComponent(userId) + "&" +
                 "access_token=" + encodeURIComponent(accessToken) + "&" +
                 "v=" + encodeURIComponent(API_VERSION);
-    }
-
-    private static String encodeURIComponent(String s) {
-        String result;
-        try {
-            result = URLEncoder.encode(s, "UTF-8")
-                    .replaceAll("\\+", "%20")
-                    .replaceAll("\\%21", "!")
-                    .replaceAll("\\%27", "'")
-                    .replaceAll("\\%28", "(")
-                    .replaceAll("\\%29", ")")
-                    .replaceAll("\\%7E", "~");
-        } catch (UnsupportedEncodingException e){
-            result = s;
-        }
-
-        return result;
     }
 
     public static void main(String[] args) {
