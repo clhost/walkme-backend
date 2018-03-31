@@ -146,18 +146,13 @@ public class Configurator {
     }
 
     static void load() {
-        System.out.println("#3 ДРОПАЕМ");
-
         CategoryService.upload();
 
-        System.out.println("#4 ДРОПАЕМ");
-
-
         Loader<File> loader = new JsonLoader();
-        //loader.load(new File("nodejs-dataset/spb-1.json"), WalkMeCategory.BAR);
-        //loader.load(new File("nodejs-dataset/spb-2.json"), WalkMeCategory.EAT);
-        //loader.load(new File("nodejs-dataset/spb-3.json"), WalkMeCategory.FUN);
-        //loader.load(new File("nodejs-dataset/spb-4.json"), WalkMeCategory.PARKS);
+        loader.load(new File("nodejs-dataset/spb-1.json"), WalkMeCategory.BAR);
+        loader.load(new File("nodejs-dataset/spb-2.json"), WalkMeCategory.EAT);
+        loader.load(new File("nodejs-dataset/spb-3.json"), WalkMeCategory.FUN);
+        loader.load(new File("nodejs-dataset/spb-4.json"), WalkMeCategory.PARKS);
         loader.load(new File("nodejs-dataset/spb-5.json"), WalkMeCategory.WALK);
     }
 
