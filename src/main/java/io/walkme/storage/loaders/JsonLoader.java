@@ -27,7 +27,7 @@ public class JsonLoader implements Loader<File> {
     private static final Logger logger = LogManager.getLogger(JsonLoader.class);
 
     @Override
-    public void load(File file) {
+    public void load(File file, WalkMeCategory c) {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
             StringBuilder builder = new StringBuilder();
@@ -41,7 +41,7 @@ public class JsonLoader implements Loader<File> {
 
             for (JsonElement element : jsonArray) {
                 Place place = mapper.map(element.getAsJsonObject());
-                place = repair.repair(place, WalkMeCategory.BAR);
+                place = repair.repair(place, c);
                 placeService.save(place);
                 System.out.println("Saving: " + place);
             }
@@ -58,7 +58,7 @@ public class JsonLoader implements Loader<File> {
         System.out.println("Starting...");
         CategoryService.upload();
         long a = System.currentTimeMillis();
-        loader.load(new File("nodejs-dataset/bary_spb.json"));
+        loader.load(new File("nodejs-dataset/bary_spb.json"), WalkMeCategory.BAR);
         System.out.println(System.currentTimeMillis() - a);
     }
 }
