@@ -7,6 +7,7 @@ import io.walkme.helpers.VKHelper;
 import io.walkme.services.CategoryService;
 import io.walkme.services.SessionService;
 import io.walkme.storage.Dropper;
+import io.walkme.storage.entities.WalkMeCategory;
 import io.walkme.storage.loaders.JsonLoader;
 import io.walkme.storage.loaders.Loader;
 import io.walkme.utils.HibernateUtil;
@@ -26,13 +27,13 @@ public class Configurator {
     private static final Logger logger = LogManager.getLogger(Configurator.class);
 
     static {
+        System.out.println("#1");
         locBuilder = confs.propertiesBuilder(ConfigHelper.LOCAL_PROPERTIES);
         hibBuilder = confs.propertiesBuilder(ConfigHelper.HIBERNATE_PROPERTIES);
+        System.out.println("#2");
     }
 
     public static Server configure() {
-        init();
-
         Server server = null;
 
         try {
@@ -66,15 +67,16 @@ public class Configurator {
             }
 
             if (login != null && !login.equals("")) {
-                hibProps.setProperty("db.login", login);
+                hibProps.setProperty("hibernate.connection.username", login);
             }
 
             if (password != null && !password.equals("")) {
-                hibProps.setProperty("db.password", password);
+                hibProps.setProperty("hibernate.connection.password", password);
             }
 
-            isStub();
             hibBuilder.save();
+            init();
+            isStub();
             server = new Server(host, Integer.parseInt(port));
         } catch (ConfigurationException e) {
             e.printStackTrace();
@@ -99,7 +101,7 @@ public class Configurator {
                 Runtime.getRuntime().addShutdownHook(new Thread(Dropper::drop));
 
                 Loader<File> loader = new JsonLoader();
-                loader.load(new File("nodejs-dataset/bary_spb.json"));
+                loader.load(new File("nodejs-dataset/bary_spb.json"), WalkMeCategory.BAR);
 
                 GlobalProps.setIsStub(true);
             }

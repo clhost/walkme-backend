@@ -8,6 +8,8 @@ import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 public class Server {
@@ -16,7 +18,8 @@ public class Server {
     private final Class socketChannelClass;
     private final int port;
     private final String host;
-
+    private ChannelFuture cf;
+    private final Logger logger = LogManager.getLogger(Server.class);
 
     Server(final String host, final int port) {
         if (System.getProperty("os.name").equalsIgnoreCase("linux")) {
@@ -43,10 +46,11 @@ public class Server {
                     .childHandler(new Initializer())
             .option(ChannelOption.SO_BACKLOG, 128);
 
-            ChannelFuture cf = bootstrap.bind(host, port).syncUninterruptibly();
+            cf = bootstrap.bind(host, port).syncUninterruptibly();
 
             cf.addListener(future -> {
                 if (future.isDone()) {
+                    logger.info("Server has been started.");
                     System.out.println("Server has been started. \n* Host: " + host + "\n* Port: " + port +
                     "\n* Server socket channel: " + socketChannelClass.getSimpleName());
                 }
@@ -59,7 +63,22 @@ public class Server {
         }
     }
 
+    void close() {
+        bossGroup.shutdownGracefully();
+        workerGroup.shutdownGracefully();
+        cf.channel().closeFuture().syncUninterruptibly();
+        logger.info("Server has been shutdown.");
+    }
+
+    public void start() {
+        run();
+    }
+
+    public void shutdown() {
+        close();
+    }
+
     public static void main(String[] args) {
-        Configurator.configure().run();
+        Configurator.configure().start();
     }
 }
