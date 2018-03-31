@@ -27,10 +27,9 @@ public class Configurator {
     private static final Logger logger = LogManager.getLogger(Configurator.class);
 
     static {
-        System.out.println("#1");
+        StartInfo.start = System.currentTimeMillis();
         locBuilder = confs.propertiesBuilder(ConfigHelper.LOCAL_PROPERTIES);
         hibBuilder = confs.propertiesBuilder(ConfigHelper.HIBERNATE_PROPERTIES);
-        System.out.println("#2");
     }
 
     public static Server configure() {
@@ -101,7 +100,11 @@ public class Configurator {
                 Runtime.getRuntime().addShutdownHook(new Thread(Dropper::drop));
 
                 Loader<File> loader = new JsonLoader();
-                loader.load(new File("nodejs-dataset/bary_spb.json"), WalkMeCategory.BAR);
+                loader.load(new File("nodejs-dataset/spb-1.json"), WalkMeCategory.BAR);
+                loader.load(new File("nodejs-dataset/spb-2.json"), WalkMeCategory.EAT);
+                loader.load(new File("nodejs-dataset/spb-3.json"), WalkMeCategory.FUN);
+                loader.load(new File("nodejs-dataset/spb-4.json"), WalkMeCategory.PARKS);
+                loader.load(new File("nodejs-dataset/spb-5.json"), WalkMeCategory.WALK);
 
                 GlobalProps.setIsStub(true);
             }
