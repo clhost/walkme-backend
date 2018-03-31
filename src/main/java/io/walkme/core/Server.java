@@ -51,8 +51,11 @@ public class Server {
             cf.addListener(future -> {
                 if (future.isDone()) {
                     logger.info("Server has been started.");
-                    System.out.println("Server has been started. \n* Host: " + host + "\n* Port: " + port +
-                    "\n* Server socket channel: " + socketChannelClass.getSimpleName());
+                    System.out.println("Server has been started. \n" +
+                                            "* Host: " + host + "\n" +
+                                            "* Port: " + port + "\n" +
+                                            "* Server socket channel: " + socketChannelClass.getSimpleName() + "\n" +
+                                            "* Time: " + (System.currentTimeMillis() - StartInfo.start));
                 }
             });
 
