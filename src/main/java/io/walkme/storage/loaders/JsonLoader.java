@@ -8,6 +8,7 @@ import com.google.gson.JsonParser;
 import io.walkme.services.CategoryService;
 import io.walkme.services.GenericEntityService;
 import io.walkme.services.PlaceService;
+import io.walkme.storage.Dropper;
 import io.walkme.storage.entities.Place;
 import io.walkme.mappers.JsonToPlaceMapper;
 import io.walkme.mappers.Mapper;
@@ -41,24 +42,38 @@ public class JsonLoader implements Loader<File> {
 
             for (JsonElement element : jsonArray) {
                 Place place = mapper.map(element.getAsJsonObject());
+
+                if (place == null) {
+                    continue;
+                }
+
                 place = repair.repair(place, c);
-                placeService.save(place);
                 System.out.println("Saving: " + place);
+                placeService.save(place);
             }
 
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            //logger.error(e.getCause().getMessage());
+            e.printStackTrace();
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         JsonLoader loader = new JsonLoader();
         HibernateUtil.start();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(Dropper::drop));
 
         System.out.println("Starting...");
         CategoryService.upload();
         long a = System.currentTimeMillis();
-        loader.load(new File("nodejs-dataset/bary_spb.json"), WalkMeCategory.BAR);
+
+        loader.load(new File("nodejs-dataset/spb-1.json"), WalkMeCategory.BAR);
+        loader.load(new File("nodejs-dataset/spb-2.json"), WalkMeCategory.EAT);
+        loader.load(new File("nodejs-dataset/spb-3.json"), WalkMeCategory.FUN);
+        loader.load(new File("nodejs-dataset/spb-4.json"), WalkMeCategory.PARKS);
+        loader.load(new File("nodejs-dataset/spb-5.json"), WalkMeCategory.WALK);
+
         System.out.println(System.currentTimeMillis() - a);
     }
 }

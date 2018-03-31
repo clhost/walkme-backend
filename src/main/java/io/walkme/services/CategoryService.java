@@ -23,8 +23,8 @@ public class CategoryService {
 
             for (Category category : categories) {
                 session.save(category);
-                session.getTransaction().commit();
             }
+            session.getTransaction().commit();
         } finally {
             if (session != null) {
                 session.close();
@@ -33,7 +33,12 @@ public class CategoryService {
     }
 
     private static void prepare() {
-        EnumSet<WalkMeCategory> enumSet = EnumSet.of(WalkMeCategory.BAR);
+        EnumSet<WalkMeCategory> enumSet = EnumSet.of(
+                WalkMeCategory.BAR,
+                WalkMeCategory.PARKS,
+                WalkMeCategory.EAT,
+                WalkMeCategory.FUN,
+                WalkMeCategory.WALK);
 
         for (WalkMeCategory w : enumSet) {
             categories.add(new Category(w.id(), w.description()));
