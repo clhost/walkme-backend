@@ -15,17 +15,15 @@ import io.walkme.services.fields.UserFields;
 import io.walkme.storage.entities.Session;
 import io.walkme.storage.entities.User;
 import io.walkme.utils.ResponseBuilder;
-import io.walkme.utils.SHA256BASE64Encoder;
+import io.walkme.utils.SHA256HEXEncoder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 class OAuthVk {
     private static final String ACCESS_TOKEN = "access_token";
@@ -34,7 +32,7 @@ class OAuthVk {
     private static final String FIRST_NAME = "first_name";
     private static final String LAST_NAME = "last_name";
 
-    private static final SHA256BASE64Encoder tokenEncoder = new SHA256BASE64Encoder();
+    private static final SHA256HEXEncoder tokenEncoder = new SHA256HEXEncoder();
     private static final SessionService sessionService = SessionService.getInstance();
     private static final GenericEntityService<User, String> userService = new UserService();
 
@@ -53,6 +51,7 @@ class OAuthVk {
 
     private ChannelHandlerContext ctx;
     private Logger logger = LogManager.getLogger(OAuthVk.class);
+    private static final JsonParser jsonParser = new JsonParser();
 
     void handle(ChannelHandlerContext ctx, Map<String, List<String>> params) throws Exception {
         this.ctx = ctx;
@@ -71,7 +70,7 @@ class OAuthVk {
             respBuilder.append(line);
         }
 
-        JsonObject jsonObject = new JsonParser().parse(respBuilder.toString()).getAsJsonObject();
+        JsonObject jsonObject = jsonParser.parse(respBuilder.toString()).getAsJsonObject();
 
         for (Map.Entry<String, JsonElement> element : jsonObject.entrySet()) {
             if (element.getKey().equals(ACCESS_TOKEN)) {
@@ -85,7 +84,7 @@ class OAuthVk {
 
 
         // generate salt and session token -----------------------------------------------------------------------------
-        salt = SHA256BASE64Encoder.salt();
+        salt = SHA256HEXEncoder.salt();
         sessionToken = tokenEncoder.encode(salt + System.currentTimeMillis());
 
         profileInfo();
@@ -111,7 +110,7 @@ class OAuthVk {
         }
 
 
-        JsonObject jsonObject = new JsonParser().parse(respBuilder.toString()).getAsJsonObject();
+        JsonObject jsonObject = jsonParser.parse(respBuilder.toString()).getAsJsonObject();
 
         for (Map.Entry<String, JsonElement> element : jsonObject.entrySet()) {
             if (element.getKey().equals(RESPONSE)) {
