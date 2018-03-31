@@ -8,7 +8,9 @@ import io.walkme.storage.entities.Schedule;
 import io.walkme.storage.entities.ScheduleTime;
 import io.walkme.utils.DateUtil;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class JsonToScheduleMapper implements Mapper<Schedule, JsonObject> {
@@ -34,19 +36,24 @@ public class JsonToScheduleMapper implements Mapper<Schedule, JsonObject> {
 
 
             if (!e.getValue().isJsonObject()) {
-                schedule.put(days.get(e.getKey()), null);
+                List<ScheduleTime> scheduleTimes = new ArrayList<>();
+                scheduleTimes.add(new ScheduleTime(-1, -1));
+                schedule.put(days.get(e.getKey()), scheduleTimes);
                 continue;
             }
 
             JsonArray arr = e.getValue().getAsJsonObject().get("workingHours").getAsJsonArray();
+            List<ScheduleTime> list = new ArrayList<>();
 
-            String to = arr.get(0).getAsJsonObject().get("to").getAsString();
-            String from = arr.get(0).getAsJsonObject().get("from").getAsString();
+            String to;
+            String from;
+            for (int i = 0; i < arr.size(); i++) {
+                to = arr.get(i).getAsJsonObject().get("to").getAsString();
+                from = arr.get(i).getAsJsonObject().get("from").getAsString();
+                list.add(new ScheduleTime(DateUtil.fromHHMMToLong(from), DateUtil.fromHHMMToLong(to)));
+            }
 
-            ScheduleTime scheduleTime =
-                    new ScheduleTime(DateUtil.fromHHMMToLong(from), DateUtil.fromHHMMToLong(to));
-
-            schedule.put(days.get(e.getKey()), scheduleTime);
+            schedule.put(days.get(e.getKey()), list);
         }
 
         return schedule;
