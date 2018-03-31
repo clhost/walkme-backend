@@ -1,4 +1,4 @@
-package io.walkme.response;
+package io.walkme.response.route;
 
 import io.walkme.storage.entities.Day;
 import io.walkme.storage.entities.Location;
@@ -42,8 +42,7 @@ public class RouteEntity {
                 place.getCategory().getId(),
                 place.getAddressName(),
                 place.getAddressComment(),
-                "с " + DateUtil.fromLongToHHMM(start) + " по " + DateUtil.fromLongToHHMM(finish)
-                );
+                "с " + DateUtil.fromLongToHHMM(start) + " по " + DateUtil.fromLongToHHMM(finish));
     }
 
     public Location getPoint() {

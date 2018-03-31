@@ -1,4 +1,4 @@
-package io.walkme.response;
+package io.walkme.response.route;
 
 import com.google.gson.*;
 import io.walkme.storage.entities.Location;
