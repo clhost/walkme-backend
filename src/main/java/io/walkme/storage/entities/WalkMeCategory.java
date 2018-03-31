@@ -1,5 +1,7 @@
 package io.walkme.storage.entities;
 
+import java.util.EnumSet;
+
 public enum WalkMeCategory {
     BAR(1, "Бар"),
     EAT(2, "Покушать"),
@@ -29,5 +31,9 @@ public enum WalkMeCategory {
 
     public String description() {
         return description;
+    }
+
+    public static EnumSet<WalkMeCategory> getAll() {
+        return EnumSet.of(BAR, EAT, FUN, PARKS, WALK);
     }
 }

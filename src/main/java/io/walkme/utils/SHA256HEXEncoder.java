@@ -9,14 +9,14 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 import java.util.Base64;
 
-public class SHA256BASE64Encoder {
+public class SHA256HEXEncoder {
     private MessageDigest digest;
 
-    public SHA256BASE64Encoder() {
+    public SHA256HEXEncoder() {
         try {
             digest = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
-            throw new SecurityException("In SHA256BASE64Encoder constructor:" + e.getMessage());
+            throw new SecurityException("In SHA256HEXEncoder constructor:" + e.getMessage());
         }
     }
 

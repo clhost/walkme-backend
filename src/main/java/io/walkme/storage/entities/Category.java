@@ -10,11 +10,11 @@ public class Category {
     private int id;
 
     @Column(name = "category_name", unique = true, nullable = false)
-    private String categoryName;
+    private String name;
 
     public Category(int id, String categoryName) {
         this.id = id;
-        this.categoryName = categoryName;
+        this.name = categoryName;
     }
 
     public Category() {}
@@ -27,19 +27,19 @@ public class Category {
         this.id = id;
     }
 
-    public String getCategoryName() {
-        return categoryName;
+    public String getName() {
+        return name;
     }
 
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
     public String toString() {
         return "Category{" +
                 "id=" + id +
-                ", categoryName='" + categoryName + '\'' +
+                ", name='" + name + '\'' +
                 '}';
     }
 }
