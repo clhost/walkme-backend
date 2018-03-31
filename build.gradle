@@ -8,9 +8,6 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
-    maven {
-        url 'https://jitpack.io'
-    }
 }
 
 dependencies {
@@ -43,10 +40,6 @@ dependencies {
     compile 'com.graphhopper:graphhopper-reader-gtfs:0.10.alpha6'
     compile 'commons-io:commons-io:2.5'
     compile 'org.openstreetmap.osmosis:osmosis-osm-binary:0.46'
-}
-
-task first(type: JavaExec) {
-
 }
 
 run {
