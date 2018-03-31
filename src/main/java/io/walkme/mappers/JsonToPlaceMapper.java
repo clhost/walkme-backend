@@ -47,20 +47,32 @@ public class JsonToPlaceMapper implements Mapper<Place, JsonObject> {
             }
 
             if (element.getKey().equals(POINT)) {
-                JsonObject object = element.getValue().getAsJsonObject();
-                String lat = object.get("lat").getAsString();
-                String lng = object.get("lng").getAsString();
+                if (element.getValue().isJsonObject()) {
+                    JsonObject object = element.getValue().getAsJsonObject();
+                    String lat = object.get("lat").getAsString();
+                    String lng = object.get("lng").getAsString();
 
-                place.setLocation(new Location(Double.parseDouble(lat), Double.parseDouble(lng)));
+                    place.setLocation(new Location(Double.parseDouble(lat), Double.parseDouble(lng)));
+                } else {
+                    return null;
+                }
             }
 
             if (element.getKey().equals(SCHEDULE)) {
-                JsonObject object = element.getValue().getAsJsonObject();
+                try {
+                    if (element.getValue().isJsonObject()) {
+                        JsonObject object = element.getValue().getAsJsonObject();
 
-                Schedule schedule = mapper.map(object);
+                        Schedule schedule = mapper.map(object);
 
-                place.setScheduleAsJsonString(object.toString());
-                place.setSchedule(schedule);
+                        place.setScheduleAsJsonString(object.toString());
+                        place.setSchedule(schedule);
+                    }
+                } catch (IllegalStateException e) {
+                    System.err.println(jsonObject.entrySet());
+                    e.printStackTrace();
+                    System.exit(0);
+                }
             }
         }
 
