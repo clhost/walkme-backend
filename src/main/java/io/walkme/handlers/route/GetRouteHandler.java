@@ -55,6 +55,8 @@ public class GetRouteHandler extends BaseHttpHandler {
             ctx.fireChannelRead(msg);
         } else if (tokens[0].equals(API_PREFIX) && tokens[1].equals(API_GET_ROUTE)){
             handleRoute(ctx, params);
+        } else {
+            ctx.fireChannelRead(msg);
         }
     }
 

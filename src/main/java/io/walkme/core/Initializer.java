@@ -4,6 +4,7 @@ import io.walkme.handlers.auth.AuthHandler;
 import io.walkme.handlers.auth.LogoutHandler;
 import io.walkme.handlers.auth.TokenHandler;
 import io.walkme.handlers.categories.GetCategoriesHandler;
+import io.walkme.handlers.info.InvalidRequestHandler;
 import io.walkme.handlers.route.GetRouteHandler;
 import io.walkme.handlers.info.InfoHandler;
 import io.netty.channel.ChannelInitializer;
@@ -35,5 +36,6 @@ public class Initializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast(logout, "logout", new LogoutHandler());
         pipeline.addLast("categories", new GetCategoriesHandler());
         pipeline.addLast(route, "route", new GetRouteHandler());
+        pipeline.addLast("invalid", new InvalidRequestHandler());
     }
 }
