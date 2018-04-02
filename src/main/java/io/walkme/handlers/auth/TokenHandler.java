@@ -1,30 +1,34 @@
 package io.walkme.handlers.auth;
 
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.QueryStringDecoder;
+import io.walkme.handlers.BaseHttpHandler;
 import io.walkme.services.SessionService;
 import io.walkme.utils.ResponseBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.Map;
 
-public class TokenHandler extends ChannelInboundHandlerAdapter {
+public class TokenHandler extends BaseHttpHandler {
+    private static final String API_AUTH = "auth";
+    private final Logger logger = LogManager.getLogger(TokenHandler.class);
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (!(msg instanceof FullHttpRequest)) {
+        if (!check(msg)) {
             ctx.fireChannelRead(msg);
             return;
         }
 
-        FullHttpRequest request = (FullHttpRequest) msg;
+        hold((FullHttpRequest) msg);
 
-        QueryStringDecoder decoder = new QueryStringDecoder(request.uri());
-        Map<String, List<String>> params = decoder.parameters();
+        String[] tokens = getTokens();
+        Map<String, List<String>> params = getParams();
 
-        if (params.get("code") != null) {
+        if (tokens.length > 1 && tokens[1].equals(API_AUTH)) {
             ctx.fireChannelRead(msg);
             return;
         }
@@ -36,8 +40,14 @@ public class TokenHandler extends ChannelInboundHandlerAdapter {
         } else {
             ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                     HttpResponseStatus.FORBIDDEN,
-                    ResponseBuilder.JSON_UNAUTHORIZED_REQUEST));
+                    ResponseBuilder.JSON_UNAUTHORIZED_RESPONSE));
             ctx.close();
         }
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        logger.error(cause.getMessage());
+        cause.printStackTrace();
     }
 }

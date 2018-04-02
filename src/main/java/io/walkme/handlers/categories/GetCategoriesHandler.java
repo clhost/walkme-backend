@@ -5,10 +5,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.QueryStringDecoder;
+import io.walkme.handlers.BaseHttpHandler;
 import io.walkme.handlers.auth.AuthHandler;
 import io.walkme.response.ResultBuilder;
 import io.walkme.storage.entities.Category;
@@ -20,8 +19,10 @@ import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetCategoriesHandler extends ChannelInboundHandlerAdapter {
-    private static final String API_PREFIX = "api";
+/**
+ * handle: /api/getCategories
+ */
+public class GetCategoriesHandler extends BaseHttpHandler {
     private static final String API_CATEGORIES = "getCategories";
 
     private final Logger logger = LogManager.getLogger(AuthHandler.class);
@@ -37,15 +38,14 @@ public class GetCategoriesHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (!(msg instanceof FullHttpRequest)) {
+        if (!check(msg)) {
             ctx.fireChannelRead(msg);
             return;
         }
 
-        FullHttpRequest request = (FullHttpRequest) msg;
+        hold((FullHttpRequest) msg);
 
-        QueryStringDecoder decoder = new QueryStringDecoder(request.uri());
-        String[] tokens = decoder.path().substring(1).split("/");
+        String[] tokens = getTokens();
 
         if (tokens.length < 2) {
             ctx.fireChannelRead(msg);
@@ -65,5 +65,11 @@ public class GetCategoriesHandler extends ChannelInboundHandlerAdapter {
         } else {
             ctx.fireChannelRead(msg);
         }
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        logger.error(cause.getMessage());
+        cause.printStackTrace();
     }
 }

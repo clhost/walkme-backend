@@ -8,13 +8,13 @@ import io.netty.handler.codec.http.QueryStringDecoder;
 import io.walkme.core.GlobalProps;
 import io.walkme.graph.PlaceProvider;
 import io.walkme.graph.stub.RouteFinder;
+import io.walkme.handlers.BaseHttpHandler;
 import io.walkme.response.route.RouteBuilder;
 import io.walkme.response.route.RouteEntity;
-import io.walkme.services.GenericEntityService;
-import io.walkme.services.PlaceService;
-import io.walkme.services.SessionService;
 import io.walkme.storage.entities.*;
 import io.walkme.utils.ResponseBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ import java.util.Map;
  *
  *
  */
-public class GetRouteHandler extends ChannelInboundHandlerAdapter {
+public class GetRouteHandler extends BaseHttpHandler {
     private static final String API_PREFIX = "api";
     private static final String API_GET_ROUTE = "getRoute";
 
@@ -35,20 +35,20 @@ public class GetRouteHandler extends ChannelInboundHandlerAdapter {
     private static final String PARAM_LNG = "lng";
     private static final String PARAM_CATEGORIES = "categories";
 
-    private static final GenericEntityService<Place, String> placeService = new PlaceService();
+    private final Logger logger = LogManager.getLogger(GetRouteHandler.class);
+
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (!(msg instanceof FullHttpRequest)) {
+        if (!check(msg)) {
             ctx.fireChannelRead(msg);
             return;
         }
 
-        FullHttpRequest request = (FullHttpRequest) msg;
+        hold((FullHttpRequest) msg);
 
-        QueryStringDecoder decoder = new QueryStringDecoder(request.uri());
-        String[] tokens = decoder.path().substring(1).split("/");
-        Map<String, List<String>> params = decoder.parameters();
+        String[] tokens = getTokens();
+        Map<String, List<String>> params = getParams();
 
 
         if (tokens.length < 2) {
@@ -60,8 +60,8 @@ public class GetRouteHandler extends ChannelInboundHandlerAdapter {
 
     private void handleRoute(ChannelHandlerContext ctx, Map<String, List<String>> params) throws Exception {
         if (GlobalProps.isStub) {
-            Place p1 = PlaceProvider.randomPlace();
-            Place p2 = PlaceProvider.randomPlace();
+            Place p1 = PlaceProvider.get0();//.randomPlace();
+            Place p2 = PlaceProvider.get1();//.randomPlace();
 
             List<Location> points = RouteFinder.getInstance().findRandomPath(p1, p2);
 
@@ -74,8 +74,14 @@ public class GetRouteHandler extends ChannelInboundHandlerAdapter {
             ctx.close();
         } else {
             ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
-                    HttpResponseStatus.OK, ResponseBuilder.JSON_STUB_BAD_REQUEST));
+                    HttpResponseStatus.OK, ResponseBuilder.JSON_STUB_BAD_RESPONSE));
             ctx.close();
         }
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        logger.error(cause.getMessage());
+        cause.printStackTrace();
     }
 }

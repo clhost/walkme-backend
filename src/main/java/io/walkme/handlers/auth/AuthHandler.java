@@ -1,9 +1,9 @@
 package io.walkme.handlers.auth;
 
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.*;
 
+import io.walkme.handlers.BaseHttpHandler;
 import io.walkme.utils.ResponseBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,33 +19,31 @@ import java.util.Map;
  * ВК: /api/auth&state=vk
  * OK: /api/auth&state=ok
  *
- * return: { "token": token_string; }
+ * return: "token": "token_string";
  * example: /api/auth&code=km32DEd&state=vk
  */
-public class AuthHandler extends ChannelInboundHandlerAdapter {
+public class AuthHandler extends BaseHttpHandler {
     private static final String VK = "vk";
     private static final String OK = "ok";
     private static final String STATE = "state";
 
     private static final String API_FAKE = "fake";
     private static final String API_AUTH = "auth";
-    private static final String API_PREFIX = "api";
 
     private final Logger logger = LogManager.getLogger(AuthHandler.class);
 
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (!(msg instanceof FullHttpRequest)) {
+        if (!check(msg)) {
             ctx.fireChannelRead(msg);
             return;
         }
 
-        FullHttpRequest request = (FullHttpRequest) msg;
+        hold((FullHttpRequest) msg);
 
-        QueryStringDecoder decoder = new QueryStringDecoder(request.uri());
-        String[] tokens = decoder.path().substring(1).split("/");
-        Map<String, List<String>> params = decoder.parameters();
+        String[] tokens = getTokens();
+        Map<String, List<String>> params = getParams();
 
 
         if (tokens.length < 2) {
@@ -53,7 +51,7 @@ public class AuthHandler extends ChannelInboundHandlerAdapter {
         } else if (tokens[0].equals(API_PREFIX) && tokens[1].equals(API_FAKE)) {
             ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                     HttpResponseStatus.OK,
-                    ResponseBuilder.JSON_FAKE_REQUEST
+                    ResponseBuilder.JSON_FAKE_RESPONSE
             ));
             ctx.close();
         } else if (tokens[0].equals(API_PREFIX) && tokens[1].equals(API_AUTH)) {
@@ -74,14 +72,14 @@ public class AuthHandler extends ChannelInboundHandlerAdapter {
             default:
                 ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                         HttpResponseStatus.BAD_REQUEST,
-                        ResponseBuilder.JSON_BAD_REQUEST));
+                        ResponseBuilder.JSON_BAD_RESPONSE));
                 ctx.close();
         }
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        //logger.error(cause.getMessage());
+        logger.error(cause.getMessage());
         cause.printStackTrace();
     }
 }
