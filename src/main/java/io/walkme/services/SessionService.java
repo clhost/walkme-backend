@@ -6,6 +6,8 @@ import org.hibernate.query.Query;
 import io.walkme.storage.entities.Session;
 import io.walkme.utils.HibernateUtil;
 
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SessionService {
@@ -85,8 +87,36 @@ public class SessionService {
         }
     }
 
-    public void deleteSession(Long userId) {
-        sessions.remove(userId);
+    public void deleteSession(String token) {
+        Map.Entry<Long, String> entry;
+        Iterator<Map.Entry<Long, String>> iterator = sessions.entrySet().iterator();
+
+        while (iterator.hasNext()) {
+            entry = iterator.next();
+            if (entry.getValue().equals(token)) {
+                iterator.remove();
+                break;
+            }
+        }
+
+        org.hibernate.Session session = null;
+
+        try {
+            session = HibernateUtil.getSession();
+            session.beginTransaction();
+
+            Query<Session> query = session.createNativeQuery(
+                    "delete from " + SESSION_TABLE_NAME + " where session_token = :st",
+                    Session.class);
+            query.setParameter("st", token);
+
+            query.executeUpdate();
+            session.getTransaction().commit();
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
     }
 
     public void clear() {
