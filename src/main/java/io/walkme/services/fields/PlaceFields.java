@@ -35,7 +35,9 @@ public class PlaceFields {
         for (Field field : thisFields) {
             field.setAccessible(true);
             try {
-                thisFieldsList.add((String) field.get(PlaceFields.class));
+                if (!field.get(Place.class).equals(PlaceFields.TABLE_NAME)) {
+                    thisFieldsList.add((String) field.get(PlaceFields.class));
+                }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }

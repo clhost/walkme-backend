@@ -11,6 +11,7 @@ import java.util.List;
  * Depends on {@link User}
  */
 public class UserFields {
+    public static final String TABLE_NAME = "wm_users";
     public static final String ID = "id";
     public static final String SALT = "salt";
     public static final String FIRST_NAME = "f_name";
@@ -30,7 +31,9 @@ public class UserFields {
         for (Field field : thisFields) {
             field.setAccessible(true);
             try {
-                thisFieldsList.add((String) field.get(UserFields.class));
+                if (!field.get(UserFields.class).equals(UserFields.TABLE_NAME)) {
+                    thisFieldsList.add((String) field.get(UserFields.class));
+                }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
