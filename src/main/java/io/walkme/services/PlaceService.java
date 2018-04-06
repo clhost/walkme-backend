@@ -117,13 +117,18 @@ public class PlaceService implements GenericEntityService<Place, String> {
 
     @Override
     public void save(Place place) throws Exception {
-        Session session = HibernateUtil.getSession();
-        session.beginTransaction();
+        Session session = null;
+        try {
+            session = HibernateUtil.getSession();
+            session.beginTransaction();
 
-        session.save(place);
-        session.getTransaction().commit();
-
-        session.close();
+            session.save(place);
+            session.getTransaction().commit();
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
     }
 
     @Override
