@@ -1,5 +1,6 @@
 package io.walkme.core;
 
+import io.netty.handler.ssl.SslContext;
 import io.walkme.handlers.auth.AuthHandler;
 import io.walkme.handlers.auth.LogoutHandler;
 import io.walkme.handlers.auth.TokenHandler;
@@ -21,10 +22,18 @@ public class Initializer extends ChannelInitializer<SocketChannel> {
     private final EventExecutorGroup auth = new DefaultEventExecutorGroup(4);
     private final EventExecutorGroup logout = new DefaultEventExecutorGroup(4);
 
+    private final SslContext sslContext;
+
+    public Initializer(SslContext sslContext) {
+        this.sslContext = sslContext;
+    }
+
+
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
 
+        pipeline.addLast(sslContext.newHandler(ch.alloc()));
         // HTTP decode handlers
         pipeline.addLast(new HttpServerCodec());
         pipeline.addLast(new HttpObjectAggregator(Short.MAX_VALUE));

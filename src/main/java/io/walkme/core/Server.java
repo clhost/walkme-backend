@@ -8,8 +8,12 @@ import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.net.ssl.SSLException;
 
 
 public class Server {
@@ -20,6 +24,7 @@ public class Server {
     private final String host;
     private ChannelFuture cf;
     private final Logger logger = LogManager.getLogger(Server.class);
+    private SslContext sslContext;
 
     Server(final String host, final int port) {
         if (System.getProperty("os.name").equalsIgnoreCase("linux")) {
@@ -34,6 +39,14 @@ public class Server {
 
         this.host = host;
         this.port = port;
+
+        try {
+            sslContext = SslContextBuilder.forServer(
+                    Server.class.getResourceAsStream("/fullchain.pem"),
+                    Server.class.getResourceAsStream("/privkey.pem")).build();
+        } catch (SSLException e) {
+            e.printStackTrace();
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -43,7 +56,7 @@ public class Server {
             bootstrap
                     .group(bossGroup, workerGroup)
                     .channel(socketChannelClass)
-                    .childHandler(new Initializer())
+                    .childHandler(new Initializer(sslContext))
             .option(ChannelOption.SO_BACKLOG, 128);
 
             cf = bootstrap.bind(host, port).syncUninterruptibly();
