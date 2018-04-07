@@ -66,10 +66,10 @@ public class AuthHandler extends BaseHttpHandler {
         switch (params.get(STATE).get(0)) {
             case VK:
                 new OAuthVk().handle(ctx, params);
-                break;
+                return;
             case OK:
                 new OAuthOk().handle(ctx, params);
-                break;
+                return;
             default:
                 ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                         HttpResponseStatus.BAD_REQUEST,
