@@ -23,8 +23,6 @@ import java.util.List;
  * handle: /api/getCategories
  */
 public class GetCategoriesHandler extends BaseHttpHandler {
-    private static final String API_CATEGORIES = "getCategories";
-
     private final Logger logger = LogManager.getLogger(AuthHandler.class);
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private static final JsonParser jsonParser = new JsonParser();

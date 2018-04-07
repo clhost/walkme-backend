@@ -17,7 +17,6 @@ import java.util.Map;
  * example: /api/logout?token=152y3teh1eb2v
  */
 public class LogoutHandler extends BaseHttpHandler {
-    private static final String API_LOGOUT = "logout";
     private Logger logger = LogManager.getLogger(LogoutHandler.class);
 
     @Override

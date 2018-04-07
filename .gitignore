@@ -15,6 +15,7 @@
 !local.properties
 !hibernate.properties
 !*.json
+!gradle/wrapper/*
 
 # And map
 !maps/*

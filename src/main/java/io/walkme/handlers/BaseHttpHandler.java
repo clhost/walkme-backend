@@ -4,8 +4,10 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.QueryStringDecoder;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class BaseHttpHandler extends ChannelInboundHandlerAdapter {
     private FullHttpRequest request;
@@ -13,6 +15,28 @@ public abstract class BaseHttpHandler extends ChannelInboundHandlerAdapter {
     private Map<String, List<String>> params;
 
     protected static final String API_PREFIX = "api";
+
+    protected static final String API_AUTH = "auth";
+    protected static final String API_FAKE = "fake";
+
+    protected static final String API_LOGOUT = "logout";
+
+    protected static final String API_CATEGORIES = "getCategories";
+
+    protected static final String API_GET_ROUTE = "getRoute";
+
+    private static Set<String> set = new HashSet<>();
+    static {
+        set.add(API_AUTH);
+        set.add(API_FAKE);
+        set.add(API_LOGOUT);
+        set.add(API_CATEGORIES);
+        set.add(API_GET_ROUTE);
+    }
+
+    public static Set<String> set() {
+        return set;
+    }
 
     protected boolean check(Object msg) {
         return msg instanceof FullHttpRequest;

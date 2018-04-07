@@ -27,11 +27,7 @@ public class AuthHandler extends BaseHttpHandler {
     private static final String OK = "ok";
     private static final String STATE = "state";
 
-    private static final String API_FAKE = "fake";
-    private static final String API_AUTH = "auth";
-
     private final Logger logger = LogManager.getLogger(AuthHandler.class);
-
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -55,7 +51,12 @@ public class AuthHandler extends BaseHttpHandler {
             ));
             ctx.close();
         } else if (tokens[0].equals(API_PREFIX) && tokens[1].equals(API_AUTH)) {
-            handleAuth(ctx, params);
+            if (params.get("code") != null && params.get("code").size() > 0) {
+                handleAuth(ctx, params);
+            } else {
+                ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
+                        HttpResponseStatus.BAD_REQUEST, ResponseBuilder.JSON_BAD_RESPONSE));
+            }
         } else {
             ctx.fireChannelRead(msg);
         }

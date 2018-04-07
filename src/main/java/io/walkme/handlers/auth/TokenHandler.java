@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 public class TokenHandler extends BaseHttpHandler {
-    private static final String API_AUTH = "auth";
     private final Logger logger = LogManager.getLogger(TokenHandler.class);
 
     @Override

@@ -1,10 +1,8 @@
 package io.walkme.handlers.route;
 
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.QueryStringDecoder;
 import io.walkme.core.GlobalProps;
 import io.walkme.graph.PlaceProvider;
 import io.walkme.graph.stub.RouteFinder;
@@ -27,9 +25,6 @@ import java.util.Map;
  *
  */
 public class GetRouteHandler extends BaseHttpHandler {
-    private static final String API_PREFIX = "api";
-    private static final String API_GET_ROUTE = "getRoute";
-
     private static final String PARAM_TOKEN = "token";
     private static final String PARAM_LAT = "lat";
     private static final String PARAM_LNG = "lng";
