@@ -32,15 +32,15 @@ public class TokenHandler extends BaseHttpHandler {
             return;
         }
 
-        for (String t : tokens) {
-            if (!set().contains(t)) {
-                ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
-                        HttpResponseStatus.BAD_REQUEST,
-                        ResponseBuilder.JSON_BAD_RESPONSE));
-                ctx.close();
-                return;
-            }
-        }
+//        for (String t : tokens) {
+//            if (!set().contains(t)) {
+//                ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
+//                        HttpResponseStatus.BAD_REQUEST,
+//                        ResponseBuilder.JSON_BAD_RESPONSE));
+//                ctx.close();
+//                return;
+//            }
+//        }
 
         if (params.get("token") != null &&
                 params.get("token").size() > 0 &&
