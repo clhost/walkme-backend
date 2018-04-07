@@ -7,7 +7,8 @@ apply plugin: 'application'
 sourceCompatibility = 1.8
 
 repositories {
-    mavenCentral()
+    //mavenCentral()
+    jcenter()
 }
 
 dependencies {
@@ -37,9 +38,10 @@ dependencies {
 
     //route [stub]
     compile 'com.graphhopper:graphhopper-core:0.10.0'
-    compile 'com.graphhopper:graphhopper-reader-gtfs:0.10.alpha6'
+    compile 'com.graphhopper:graphhopper-reader-osm:0.10.0'
     compile 'commons-io:commons-io:2.5'
     compile 'org.openstreetmap.osmosis:osmosis-osm-binary:0.46'
+    compile group: 'com.google.guava', name: 'guava', version: '11.0.2'
 }
 
 run {

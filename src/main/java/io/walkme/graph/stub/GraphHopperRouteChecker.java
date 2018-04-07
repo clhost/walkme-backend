@@ -13,6 +13,7 @@ public class GraphHopperRouteChecker implements RouteChecker {
     public GraphHopperRouteChecker(){
         instance = new GraphHopperOSM()
                 .setStoreOnFlush(false)
+                .forServer()
                 .setEncodingManager(new EncodingManager("foot"))
                 .setCHEnabled(false)
                 .setGraphHopperLocation(GRAPH_LOC)

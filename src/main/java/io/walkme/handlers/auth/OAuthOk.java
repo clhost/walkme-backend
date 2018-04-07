@@ -1,6 +1,5 @@
 package io.walkme.handlers.auth;
 
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -22,7 +21,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
@@ -31,7 +29,6 @@ import java.util.Map;
 class OAuthOk {
     private static final String ACCESS_TOKEN = "access_token";
     private static final String USER_ID = "uid";
-    private static final String RESPONSE = "response";
     private static final String FIRST_NAME = "first_name";
     private static final String LAST_NAME = "last_name";
 
@@ -79,7 +76,7 @@ class OAuthOk {
         JsonObject jsonObject = jsonParser.parse(respBuilder.toString()).getAsJsonObject();
 
         for (Map.Entry<String, JsonElement> element : jsonObject.entrySet()) {
-            if (element.getKey().equals("access_token")) {
+            if (element.getKey().equals(ACCESS_TOKEN)) {
                 accessToken = element.getValue().getAsString();
             }
         }
