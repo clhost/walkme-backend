@@ -34,7 +34,7 @@ public class TokenHandler extends BaseHttpHandler {
         }
 
         // if request to auth
-        if (tokens.length > 1 && tokens[1].equals(API_AUTH)) {
+        if (tokens.length > 1 && (tokens[1].equals(API_AUTH) || tokens[1].equals(API_FAKE))) {
             ctx.fireChannelRead(msg);
             return;
         }
