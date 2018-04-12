@@ -33,7 +33,11 @@ public class Initializer extends ChannelInitializer<SocketChannel> {
     protected void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
 
-        pipeline.addLast(sslContext.newHandler(ch.alloc()));
+        // SSL (deploy only)
+        if (ServerMode.getMode()) {
+            pipeline.addLast(sslContext.newHandler(ch.alloc()));
+        }
+
         // HTTP decode handlers
         pipeline.addLast(new HttpServerCodec());
         pipeline.addLast(new HttpObjectAggregator(Short.MAX_VALUE));

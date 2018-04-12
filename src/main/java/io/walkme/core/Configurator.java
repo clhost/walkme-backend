@@ -49,37 +49,35 @@ public class Configurator {
             String login = locProps.getString("db.login");
             String password = locProps.getString("db.password");
 
-            if (port == null) {
-                throw new NullPointerException("Port is missing.");
+            if (port == null || port.equals("")) {
+                throw new NullPointerException("server.port is missing.");
             }
 
-            if (host == null) {
-                throw new NullPointerException("Host is missing.");
-            }
-
-            if (port.equals("")) {
-                port = "8080";
-            }
-
-            if (host.equals("")) {
-                host = "localhost";
+            if (host == null || host.equals("")) {
+                throw new NullPointerException("server.host is missing.");
             }
 
             if (url != null && !url.equals("")) {
                 hibProps.setProperty("hibernate.connection.url", url);
+            } else {
+                throw new NullPointerException("db.url is missing.");
             }
 
             if (login != null && !login.equals("")) {
                 hibProps.setProperty("hibernate.connection.username", login);
+            } else {
+                throw new NullPointerException("db.username is missing");
             }
 
             if (password != null && !password.equals("")) {
                 hibProps.setProperty("hibernate.connection.password", password);
+            } else {
+                throw new NullPointerException("db.password is missing");
             }
 
             hibBuilder.save();
-            init();
-            isStub();
+            checkServerMode();
+
             server = new Server(host, Integer.parseInt(port));
         } catch (ConfigurationException e) {
             e.printStackTrace();
@@ -89,34 +87,75 @@ public class Configurator {
     }
 
 
-    private static void isStub() {
+    private static void checkServerMode() {
         try {
             PropertiesConfiguration locProps = locBuilder.getConfiguration();
             String stub = locProps.getString("server.stub.enable");
-            String dbReload = locProps.getString("server.stub.db_reload");
 
-            if (stub != null && stub.equals("on")) {
-                RouteFinder.init();
+            if (stub.equals("off")) { // prod mode
+                initProd();
+                ServerMode.setProdMode();
+                ServerMode.setAuth(true);
+                ServerMode.setGraph(true);
+            } else if (stub.equals("on")) { // stub mode
+                initHibernate();
 
-                if (dbReload != null && dbReload.equals("true")) {
+                String dbReload = locProps.getString("server.stub.db_reload");
+                String auth = locProps.getString("server.stub.auth");
+                String graph = locProps.getString("server.stub.graph");
+
+                if (dbReload == null || dbReload.equals("")) {
+                    throw new NullPointerException("server.stub.db_reload is missing.");
+                }
+
+                if (auth == null || auth.equals("")) {
+                    throw new NullPointerException("server.stub.auth is missing.");
+                }
+
+                if (graph == null || graph.equals("")) {
+                    throw new NullPointerException("server.stub.graph is missing.");
+                }
+
+
+                if (dbReload.equals("on")) {
                     long a = ifExists();
 
                     if (a != 0) {
                         Dropper.drop();
-                        HibernateUtil.start();
                     }
 
                     Runtime.getRuntime().addShutdownHook(new Thread(Dropper::drop));
                     load();
-                } else if (dbReload != null && dbReload.equals("false")) {
+                } else if (dbReload.equals("off")) {
                     long a = ifExists();
 
                     if (a == 0) {
                         load();
                     }
+                } else {
+                    throw new IllegalStateException("server.stub.db_reload must be \"on\" or \"off\"");
                 }
 
-                GlobalProps.setIsStub(true);
+                if (auth.equals("on")) {
+                    initAuth();
+                    ServerMode.setAuth(true);
+                } else if (!auth.equals("off")) {
+                    throw new IllegalStateException("server.stub.auth must be \"on\" or \"off\"");
+                }
+
+                if (graph.equals("on")) {
+                    // TODO Prod is here
+                    PlaceHolder.load();
+
+                    ServerMode.setGraph(true);
+                } else if (graph.equals("off")) {
+                    initStubGraph();
+                } else {
+                    throw new IllegalStateException("server.stub.graph must be \"on\" or \"off\"");
+                }
+
+            } else {
+                throw new IllegalStateException("server.stub.enable must be \"on\" or \"off\".");
             }
 
         } catch (ConfigurationException e) {
@@ -156,16 +195,26 @@ public class Configurator {
         loader.load(new File("nodejs-dataset/spb-5.json"), WalkMeCategory.WALK);
     }
 
-    static void init() {
+    static void initHibernate() {
         // start hibernate
         HibernateUtil.start();
         HibernateUtil.setNamesUTF8();
+    }
 
+    static void initAuth() {
         // initialize all existing sessions
         SessionService.getInstance().loadFromDatabase();
-
-        // init vk and ok helpers application info
+        // initHibernate vk and ok helpers application info
         VKHelper.init();
         OKHelper.init();
+    }
+
+    static void initStubGraph() {
+        RouteFinder.init();
+    }
+
+    static void initProd() {
+        initHibernate();
+        initAuth();
     }
 }

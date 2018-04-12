@@ -41,9 +41,11 @@ public class Server {
         this.port = port;
 
         try {
-            sslContext = SslContextBuilder.forServer(
-                    Server.class.getResourceAsStream("/fullchain.pem"),
-                    Server.class.getResourceAsStream("/privkey.pem")).build();
+            if (ServerMode.getMode()) {
+                sslContext = SslContextBuilder.forServer(
+                        Server.class.getResourceAsStream("/fullchain.pem"),
+                        Server.class.getResourceAsStream("/privkey.pem")).build();
+            }
         } catch (SSLException e) {
             e.printStackTrace();
         }
@@ -79,7 +81,7 @@ public class Server {
         }
     }
 
-    void close() {
+    private void close() {
         bossGroup.shutdownGracefully();
         workerGroup.shutdownGracefully();
         cf.channel().closeFuture().syncUninterruptibly();
@@ -95,6 +97,8 @@ public class Server {
     }
 
     public static void main(String[] args) {
-        Configurator.configure().start();
+        Server server = Configurator.configure();
+        Runtime.getRuntime().addShutdownHook(new Thread(server::shutdown));
+        server.start();
     }
 }
