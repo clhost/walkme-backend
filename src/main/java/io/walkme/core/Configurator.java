@@ -216,5 +216,6 @@ public class Configurator {
     static void initProd() {
         initHibernate();
         initAuth();
+        PlaceHolder.load();
     }
 }
