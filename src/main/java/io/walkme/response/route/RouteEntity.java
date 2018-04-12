@@ -11,19 +11,22 @@ import java.util.List;
 
 public class RouteEntity {
     private Location point;
+    private String name;
     private String category;
     private int categoryId;
     private String address;
     private String addressAdditional;
     private String workingTime;
 
-    private RouteEntity(Location location,
-                String category,
-                int categoryId,
-                String address,
-                String addressAdditional,
-                String workingTime) {
+    public RouteEntity(Location location,
+                       String name,
+                       String category,
+                       int categoryId,
+                       String address,
+                       String addressAdditional,
+                       String workingTime) {
         this.point = location;
+        this.name = name;
         this.category = category;
         this.categoryId = categoryId;
         this.address = address;
@@ -65,6 +68,7 @@ public class RouteEntity {
 
         return new RouteEntity(
                 place.getLocation(),
+                place.getName(),
                 place.getGisCategory(),
                 place.getCategory().getId(),
                 place.getAddressName(),
