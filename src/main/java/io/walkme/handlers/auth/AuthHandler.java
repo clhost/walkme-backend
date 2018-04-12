@@ -36,11 +36,6 @@ public class AuthHandler extends BaseHttpHandler {
         String[] tokens = getTokens();
         Map<String, List<String>> params = getParams();
 
-        if (!checkAuth()) { // auth off
-            ctx.fireChannelRead(msg);
-            return;
-        }
-
         if (tokens.length < 2) {
             ctx.fireChannelRead(msg);
         } else if (tokens[0].equals(API_PREFIX) && tokens[1].equals(API_FAKE)) {
@@ -50,6 +45,11 @@ public class AuthHandler extends BaseHttpHandler {
             ));
             ctx.close();
         } else if (tokens[0].equals(API_PREFIX) && tokens[1].equals(API_AUTH)) {
+            if (!checkAuth()) { // auth off
+                ctx.fireChannelRead(msg);
+                return;
+            }
+
             if (params.get("code") != null && params.get("code").size() > 0) {
                 handleAuth(ctx, params);
             } else {
