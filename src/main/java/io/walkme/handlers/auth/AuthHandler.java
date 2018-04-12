@@ -31,16 +31,15 @@ public class AuthHandler extends BaseHttpHandler {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (!check(msg)) {
-            ctx.fireChannelRead(msg);
-            return;
-        }
-
         hold((FullHttpRequest) msg);
 
         String[] tokens = getTokens();
         Map<String, List<String>> params = getParams();
 
+        if (!checkAuth()) { // auth off
+            ctx.fireChannelRead(msg);
+            return;
+        }
 
         if (tokens.length < 2) {
             ctx.fireChannelRead(msg);

@@ -21,10 +21,6 @@ public class LogoutHandler extends BaseHttpHandler {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (!check(msg)) {
-            ctx.fireChannelRead(msg);
-        }
-
         hold((FullHttpRequest) msg);
 
         String[] tokens = getTokens();

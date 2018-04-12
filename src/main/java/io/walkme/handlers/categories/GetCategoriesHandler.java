@@ -36,11 +36,6 @@ public class GetCategoriesHandler extends BaseHttpHandler {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (!check(msg)) {
-            ctx.fireChannelRead(msg);
-            return;
-        }
-
         hold((FullHttpRequest) msg);
 
         String[] tokens = getTokens();

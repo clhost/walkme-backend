@@ -3,6 +3,7 @@ package io.walkme.handlers;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.QueryStringDecoder;
+import io.walkme.core.ServerMode;
 
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +28,7 @@ public abstract class BaseHttpHandler extends ChannelInboundHandlerAdapter {
 
     private static Set<String> set = new HashSet<>();
     static {
+        set.add(API_PREFIX);
         set.add(API_AUTH);
         set.add(API_FAKE);
         set.add(API_LOGOUT);
@@ -40,6 +42,10 @@ public abstract class BaseHttpHandler extends ChannelInboundHandlerAdapter {
 
     protected boolean check(Object msg) {
         return msg instanceof FullHttpRequest;
+    }
+
+    protected boolean checkAuth() {
+        return ServerMode.getAuth();
     }
 
     protected void hold(FullHttpRequest request) {

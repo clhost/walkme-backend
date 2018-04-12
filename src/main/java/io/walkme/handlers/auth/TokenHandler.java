@@ -3,6 +3,7 @@ package io.walkme.handlers.auth;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import io.walkme.core.ServerMode;
 import io.walkme.handlers.BaseHttpHandler;
 import io.walkme.services.SessionService;
 import io.walkme.utils.ResponseBuilder;
@@ -18,7 +19,7 @@ public class TokenHandler extends BaseHttpHandler {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (!check(msg)) {
-            ctx.fireChannelRead(msg);
+            // ignore not http requests
             return;
         }
 
@@ -27,20 +28,41 @@ public class TokenHandler extends BaseHttpHandler {
         String[] tokens = getTokens();
         Map<String, List<String>> params = getParams();
 
+        if (!checkAuth()) { // auth off
+            ctx.fireChannelRead(msg);
+            return;
+        }
+
+        // if request to auth
         if (tokens.length > 1 && tokens[1].equals(API_AUTH)) {
             ctx.fireChannelRead(msg);
             return;
         }
 
-//        for (String t : tokens) {
-//            if (!set().contains(t)) {
-//                ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
-//                        HttpResponseStatus.BAD_REQUEST,
-//                        ResponseBuilder.JSON_BAD_RESPONSE));
-//                ctx.close();
-//                return;
-//            }
-//        }
+        // if main page
+        if (tokens.length == 1 && tokens[0].equals("")) {
+            ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(HttpResponseStatus.OK, "hi"));
+            return;
+        }
+
+        // if api
+        if (tokens.length == 1 && tokens[0].equals(API_PREFIX)) {
+            ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
+                    HttpResponseStatus.BAD_REQUEST,
+                    ResponseBuilder.JSON_BAD_RESPONSE));
+            ctx.close();
+            return;
+        }
+
+        for (String t : tokens) {
+            if (!set().contains(t)) {
+                ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
+                        HttpResponseStatus.BAD_REQUEST,
+                        ResponseBuilder.JSON_BAD_RESPONSE));
+                ctx.close();
+                return;
+            }
+        }
 
         if (params.get("token") != null &&
                 params.get("token").size() > 0 &&
