@@ -80,7 +80,8 @@ public class Ways {
             currentPoint = tmpPoint;
             resultPlaces.add(currentPoint);
             if (summaryTime >= MAX_WALK_TIME || resultPlaces.size() >= MAX_POINTS_PER_ONE_ROUTE) break;
-            System.out.println("Point: " + currentPoint.getPoint().getLng() + " " + currentPoint.getPoint().getLat() + " Time: " + summaryTime);
+            //System.out.println("Point: " + currentPoint.getPoint().getLng() + " " + currentPoint.getPoint().getLat()
+                    //+ " Time: " + summaryTime);
         }
     }
 
@@ -192,7 +193,7 @@ public class Ways {
                 }
             }
         }
-        System.out.println("ALL OK");
+        //System.out.println("ALL OK");
         return false;
     }
 }
