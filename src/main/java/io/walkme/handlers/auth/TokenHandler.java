@@ -28,6 +28,14 @@ public class TokenHandler extends BaseHttpHandler {
         String[] tokens = getTokens();
         Map<String, List<String>> params = getParams();
 
+        // if main page
+        if (tokens.length == 1 && tokens[0].equals("")) {
+            ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(HttpResponseStatus.OK, "hi"));
+            ctx.close();
+            release();
+            return;
+        }
+
         if (!checkAuth()) { // auth off
             ctx.fireChannelRead(msg);
             return;
@@ -39,18 +47,13 @@ public class TokenHandler extends BaseHttpHandler {
             return;
         }
 
-        // if main page
-        if (tokens.length == 1 && tokens[0].equals("")) {
-            ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(HttpResponseStatus.OK, "hi"));
-            return;
-        }
-
         // if api
         if (tokens.length == 1 && tokens[0].equals(API_PREFIX)) {
             ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                     HttpResponseStatus.BAD_REQUEST,
                     ResponseBuilder.JSON_BAD_RESPONSE));
             ctx.close();
+            release();
             return;
         }
 
@@ -60,6 +63,7 @@ public class TokenHandler extends BaseHttpHandler {
                         HttpResponseStatus.BAD_REQUEST,
                         ResponseBuilder.JSON_BAD_RESPONSE));
                 ctx.close();
+                release();
                 return;
             }
         }
@@ -73,6 +77,7 @@ public class TokenHandler extends BaseHttpHandler {
                     HttpResponseStatus.FORBIDDEN,
                     ResponseBuilder.JSON_UNAUTHORIZED_RESPONSE));
             ctx.close();
+            release();
         }
     }
 
@@ -80,5 +85,6 @@ public class TokenHandler extends BaseHttpHandler {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         logger.error(cause.getMessage());
         cause.printStackTrace();
+        release();
     }
 }

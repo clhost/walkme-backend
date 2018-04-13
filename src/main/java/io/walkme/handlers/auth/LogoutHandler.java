@@ -34,6 +34,7 @@ public class LogoutHandler extends BaseHttpHandler {
                     HttpResponseStatus.OK,
                     ResponseBuilder.JSON_LOGOUT_RESPONSE));
             ctx.close();
+            release();
         } else {
             ctx.fireChannelRead(msg);
         }
@@ -43,5 +44,6 @@ public class LogoutHandler extends BaseHttpHandler {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         logger.error(cause.getMessage());
         cause.printStackTrace();
+        release();
     }
 }

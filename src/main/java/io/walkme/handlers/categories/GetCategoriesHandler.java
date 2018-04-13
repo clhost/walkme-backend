@@ -55,6 +55,8 @@ public class GetCategoriesHandler extends BaseHttpHandler {
                     HttpResponseStatus.OK,
                     ResultBuilder.asJson(200, object, ResultBuilder.ResultType.RESULT)));
             ctx.close();
+
+            release();
         } else {
             ctx.fireChannelRead(msg);
         }

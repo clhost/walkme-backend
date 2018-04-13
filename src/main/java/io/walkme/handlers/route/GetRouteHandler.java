@@ -68,7 +68,7 @@ public class GetRouteHandler extends BaseHttpHandler {
             ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                     HttpResponseStatus.OK, RouteBuilder.asJson(200, entities, holder.getPoints())));
             ctx.close();
-
+            release();
         } else { // stub
             Place p1 = PlaceProvider.get0();//.randomPlace();
             Place p2 = PlaceProvider.get1();//.randomPlace();
@@ -82,6 +82,7 @@ public class GetRouteHandler extends BaseHttpHandler {
             ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                     HttpResponseStatus.OK, RouteBuilder.asJson(200, entities, points)));
             ctx.close();
+            release();
         }
     }
 
@@ -89,5 +90,6 @@ public class GetRouteHandler extends BaseHttpHandler {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         logger.error(cause.getMessage());
         cause.printStackTrace();
+        release();
     }
 }

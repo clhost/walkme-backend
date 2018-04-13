@@ -44,6 +44,7 @@ public class AuthHandler extends BaseHttpHandler {
                     ResponseBuilder.JSON_FAKE_RESPONSE
             ));
             ctx.close();
+            release();
         } else if (tokens[0].equals(API_PREFIX) && tokens[1].equals(API_AUTH)) {
             if (!checkAuth()) { // auth off
                 ctx.fireChannelRead(msg);
@@ -55,6 +56,8 @@ public class AuthHandler extends BaseHttpHandler {
             } else {
                 ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                         HttpResponseStatus.BAD_REQUEST, ResponseBuilder.JSON_BAD_RESPONSE));
+                ctx.close();
+                release();
             }
         } else {
             ctx.fireChannelRead(msg);
@@ -81,5 +84,6 @@ public class AuthHandler extends BaseHttpHandler {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         logger.error(cause.getMessage());
         cause.printStackTrace();
+        release();
     }
 }

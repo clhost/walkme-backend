@@ -71,4 +71,10 @@ public abstract class BaseHttpHandler extends ChannelInboundHandlerAdapter {
 
         return params;
     }
+
+    protected void release() {
+        while (request.refCnt() != 0) {
+            request.release(request.refCnt());
+        }
+    }
 }
