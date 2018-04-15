@@ -28,7 +28,7 @@ public class Ways {
     private boolean RESET_TIME = false;
 
     private final int MAX_DISTANCE_OF_INTERSECTION = 25;
-    private final int INTERSECTION_LIMIT = NEXT_STEP_POINTS_RANDOM_COUNT;
+    private final int INTERSECTION_LIMIT = 10;
 
     private final Location CITY_CENTER_SPB = new Location(59.93d, 30.31d);
     private final Location USER_START_LOCATION;
