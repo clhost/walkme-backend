@@ -21,14 +21,14 @@ public class Ways {
 
 
     private final int NEXT_STEP_POINTS_RANDOM_COUNT = 40;
-    private final double MIN_DISTANCE_BETWEEN_TWO_POINTS = 650;//meters
-    private final double MAX_DISTANCE_BETWEEN_TWO_POINTS = 1500; //meters
+    private final double MIN_DISTANCE_BETWEEN_TWO_POINTS = 500;//meters
+    private double MAX_DISTANCE_BETWEEN_TWO_POINTS = 1300; //meters
     private final double MAX_WALK_TIME = 240 * 1000 * 60; //mills
     private final int MAX_POINTS_PER_ONE_ROUTE = 5;
     private boolean RESET_TIME = false;
 
     private final int MAX_DISTANCE_OF_INTERSECTION = 25;
-    private final int INTERSECTION_LIMIT = NEXT_STEP_POINTS_RANDOM_COUNT;
+    private final int INTERSECTION_LIMIT = 20;
 
     private final Location CITY_CENTER_SPB = new Location(59.93d, 30.31d);
     private final Location USER_START_LOCATION;
@@ -118,7 +118,7 @@ public class Ways {
                 nextStep.add(nodes.get(rnd));
             }
             Node tmpPoint = getNearestPoint(currentPoint.getPoint(), nextStep);
-            if (tmpPoint == null) continue;
+            if (tmpPoint == null){ MAX_DISTANCE_BETWEEN_TWO_POINTS += 100; continue;}
             List<Location> allLocations = getAllPoints(currentPoint.getPoint(), tmpPoint.getPoint());
             alreadyUsed.add(tmpPoint.getPoint());
             if (checkIntersection(allLocations)) {
@@ -145,7 +145,7 @@ public class Ways {
         Node resultPoint = null;
         double minDistance = Double.MAX_VALUE;
         for (Node aSet : set) {
-            double currentDistance = Math.sqrt((from.getLat() - aSet.getPoint().getLat()) * (from.getLat() - aSet.getPoint().getLat()) + (aSet.getPoint().getLng() - from.getLng()) * (aSet.getPoint().getLng() - from.getLng())); //getDistance(from, set.get(i).getPoint());
+            double currentDistance = getDistance(from, aSet.getPoint());
             if (currentDistance < minDistance) {
                 double realDistance = getDistance(from, aSet.getPoint());
             if (realDistance > MIN_DISTANCE_BETWEEN_TWO_POINTS && realDistance < MAX_DISTANCE_BETWEEN_TWO_POINTS) {
