@@ -38,6 +38,7 @@ public class Ways {
     private final Location CITY_CENTER_SPB = new Location(59.93d, 30.31d);
     private final Location USER_START_LOCATION;
 
+    private static List<Node> inputNodes;
     private static List<Node> nodes;
     private static final RouteChecker routeChecker = new GraphHopperRouteChecker();
     private static boolean routeCheckerIsRunning = false;
@@ -53,8 +54,8 @@ public class Ways {
     }
 
     public static void initializePlaces(List<Node> places) {
-        if (nodes == null) {
-            nodes = places;
+        if (inputNodes == null) {
+            inputNodes = places;
         } else {
             System.out.println("ALREADY INITIALIZED");
         }
@@ -62,19 +63,21 @@ public class Ways {
 
 
     public Ways(long startTime, Location startLocation, int[] ids) throws NotInitializedException {
-        if (nodes == null || !routeCheckerIsRunning) {
+        if (inputNodes == null || !routeCheckerIsRunning) {
             throw new NotInitializedException();
         }
         this.ids = ids;
         resultPlaces = new ArrayList<>();
         resultLocations = new ArrayList<>();
         allResultLocations = new ArrayList<>();
+        nodes = new ArrayList<>();
         this.startTime = startTime;
         USER_START_LOCATION = startLocation;
     }
 
     public RouteHolder getWays() throws StartPointIsNotAvailableException, NotEnoughPointsException {
         System.out.println("**********************new way*******************");
+        filterNodes();
         do {
             RESET_TIME = false;
             execute();
@@ -235,5 +238,20 @@ public class Ways {
             distance += getDistance(points.get(i++), points.get(i));
         }
         return distance;
+    }
+
+    private void filterNodes(){
+        if(ids == null || ids.length == 0) {
+            nodes = inputNodes;
+            return;
+        }
+        for(int i=0; i<inputNodes.size(); i++){
+            for(int j=0; j<ids.length; j++){
+                if(inputNodes.get(i).getCategoryId() == ids[j]){
+                    nodes.add(inputNodes.get(i));
+                    break;
+                }
+            }
+        }
     }
 }
