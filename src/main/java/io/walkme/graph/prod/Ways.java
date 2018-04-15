@@ -86,8 +86,7 @@ public class Ways {
             if (RESET_TIME) reset();
         } while (RESET_TIME);
         System.out.println("*********************ready**********************");
-        RouteHolder rh = new RouteHolder(allResultLocations, resultPlaces);
-        return rh;
+        return new RouteHolder(allResultLocations, resultPlaces);
     }
     
     private void reset() {
@@ -149,8 +148,7 @@ public class Ways {
         Node resultPoint = null;
         double minDistance = Double.MAX_VALUE;
         for (Node aSet : set) {
-            double currentDistance = 0;
-            currentDistance = Math.sqrt((from.getLat() - aSet.getPoint().getLat()) * (from.getLat() - aSet.getPoint().getLat()) + (aSet.getPoint().getLng() - from.getLng()) * (aSet.getPoint().getLng() - from.getLng())); //getDistance(from, set.get(i).getPoint());
+            double currentDistance = Math.sqrt((from.getLat() - aSet.getPoint().getLat()) * (from.getLat() - aSet.getPoint().getLat()) + (aSet.getPoint().getLng() - from.getLng()) * (aSet.getPoint().getLng() - from.getLng())); //getDistance(from, set.get(i).getPoint());
             if (currentDistance < minDistance) {
                 double realDistance = getDistance(from, aSet.getPoint());
             if (realDistance > MIN_DISTANCE_BETWEEN_TWO_POINTS && realDistance < MAX_DISTANCE_BETWEEN_TWO_POINTS) {
