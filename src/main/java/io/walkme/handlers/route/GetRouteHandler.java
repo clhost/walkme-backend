@@ -57,7 +57,7 @@ public class GetRouteHandler extends BaseHttpHandler {
 
     private void handleRoute(ChannelHandlerContext ctx, Map<String, List<String>> params) throws Exception {
         if (ServerMode.getGraph()) { // prod
-            Ways finder = new Ways(DateUtil.fromHHMMToLong("12:00"), PlaceHolder.getAll(), null);
+            Ways finder = new Ways(DateUtil.fromHHMMToLong("12:00"), null, new int[]{});
             RouteHolder holder = finder.getWays();
             List<RouteEntity> entities = new ArrayList<>();
 

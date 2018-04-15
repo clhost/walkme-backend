@@ -14,10 +14,12 @@ import java.util.Set;
  * Created by tFNiYaFF on 18.03.2018.
  */
 public class Ways {
-    private List<Node> nodes;
+
+    private int[] ids;
     private final long startTime;
     private List<Node> resultPlaces;
     private List<Location> resultLocations;
+    private List<List<Location>> allResultLocations;
     private Set<Location> alreadyUsed = new HashSet<>();
 
 
@@ -31,24 +33,52 @@ public class Ways {
     private final Location CITY_CENTER_SPB = new Location(59.93d, 30.31d);
     private final Location USER_START_LOCATION;
 
-    private static RouteChecker routeChecker = new GraphHopperRouteChecker();
+    private static List<Node> nodes;
+    private static final RouteChecker routeChecker = new GraphHopperRouteChecker();
     private static boolean routeCheckerIsRunning = false;
 
-    public Ways(long startTime, List<Node> nodes, Location startLocation) {
-        resultPlaces = new ArrayList<>();
-        resultLocations = new ArrayList<>();
-        this.startTime = startTime;
-        this.nodes = nodes;
-        USER_START_LOCATION = startLocation;
-        if (!routeCheckerIsRunning) {
+    public static boolean ghStart(){
+        if(!routeCheckerIsRunning){
             routeChecker.start();
             routeCheckerIsRunning = true;
+            return true;
         }
+        else{
+            System.out.println("GH ALREADY WORKS");
+            return false;
+        }
+    }
+
+    public static boolean initializePlaces(List<Node> places){
+        if(nodes == null){
+            nodes = places;
+            return true;
+        }
+        else{
+            System.out.println("ALREADY INITIALIZED");
+            return false;
+        }
+    }
+
+
+    public Ways(long startTime, Location startLocation, int[] ids) throws Exception {
+        if(nodes == null){
+            throw new Exception("NODES == NULL");
+        }
+        if(!routeCheckerIsRunning){
+            throw new Exception("GH NOT STARTED");
+        }
+        this.ids = ids;
+        resultPlaces = new ArrayList<>();
+        resultLocations = new ArrayList<>();
+        allResultLocations = new ArrayList<>();
+        this.startTime = startTime;
+        USER_START_LOCATION = startLocation;
     }
 
     public RouteHolder getWays() {
         execute();
-        RouteHolder rh = new RouteHolder(resultLocations, resultPlaces);
+        RouteHolder rh = new RouteHolder(allResultLocations, resultPlaces);
         return rh;
     }
 
@@ -77,6 +107,7 @@ public class Ways {
             alreadyUsed.add(tmpPoint.getPoint());
             if (checkIntersection(allLocations)) continue;
             resultLocations.addAll(allLocations);
+            allResultLocations.add(allLocations);
             currentPoint = tmpPoint;
             resultPlaces.add(currentPoint);
             if (summaryTime >= MAX_WALK_TIME || resultPlaces.size() >= MAX_POINTS_PER_ONE_ROUTE) break;

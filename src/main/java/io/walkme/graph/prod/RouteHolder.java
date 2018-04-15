@@ -9,15 +9,15 @@ import java.util.List;
  * Created by tFNiYaFF on 24.03.2018.
  */
 public class RouteHolder {
-    private List<Location> points;
+    private List<List<Location>> points;
     private List<Node> places;
 
-    public RouteHolder(List<Location> points, List<Node> places) {
+    public RouteHolder(List<List<Location>> points, List<Node> places) {
         this.points = points;
         this.places = places;
     }
 
-    public List<Location> getPoints() {
+    public List<List<Location>> getPoints() {
         return points;
     }
 
