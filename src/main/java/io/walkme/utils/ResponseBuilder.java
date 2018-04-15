@@ -30,6 +30,14 @@ public class ResponseBuilder {
             "   \"status\": 400, \n" +
             "   \"error\": \"supported only stub version\" \t\n" +
             "}";
+    public static final String JSON_START_POINT_UNAVAILABLE_RESPONSE = "{ \n" +
+            "   \"status\": 500, \n" +
+            "   \"error\": \"start point unavailable\" \t\n" +
+            "}";
+    public static final String JSON_NOT_ENOUGH_POINTS_RESPONSE = "{ \n" +
+            "   \"status\": 500, \n" +
+            "   \"error\": \"not enough points\" \t\n" +
+            "}";
 
     /**
      * @param status response status

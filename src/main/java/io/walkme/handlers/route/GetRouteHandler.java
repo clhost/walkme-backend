@@ -9,6 +9,9 @@ import io.walkme.graph.PlaceProvider;
 import io.walkme.graph.prod.Node;
 import io.walkme.graph.prod.RouteHolder;
 import io.walkme.graph.prod.Ways;
+import io.walkme.graph.prod.exceptions.NotEnoughPointsException;
+import io.walkme.graph.prod.exceptions.NotInitializedException;
+import io.walkme.graph.prod.exceptions.StartPointIsNotAvailableException;
 import io.walkme.graph.stub.RouteFinder;
 import io.walkme.handlers.BaseHttpHandler;
 import io.walkme.mappers.Mapper;
@@ -57,26 +60,38 @@ public class GetRouteHandler extends BaseHttpHandler {
 
     private void handleRoute(ChannelHandlerContext ctx, Map<String, List<String>> params) throws Exception {
         if (ServerMode.getGraph()) { // prod
-            logger.info("Start finding");
-            Ways finder = new Ways(
-                    System.currentTimeMillis(),
-                    new Location(
-                            Double.parseDouble(params.get(PARAM_LAT).get(0)),
-                            Double.parseDouble(params.get(PARAM_LNG).get(0))),
-                    new int[]{});
-            logger.info("Done!");
+            try {
+                Ways finder = new Ways(
+                        System.currentTimeMillis(),
+                        new Location(
+                                Double.parseDouble(params.get(PARAM_LAT).get(0)),
+                                Double.parseDouble(params.get(PARAM_LNG).get(0))),
+                        new int[]{});
 
-            RouteHolder holder = finder.getWays();
-            List<RouteEntity> entities = new ArrayList<>();
 
-            for (Node node : holder.getPlaces()) {
-                entities.add(mapper.map(node));
+                RouteHolder holder = finder.getWays();
+                List<RouteEntity> entities = new ArrayList<>();
+
+                for (Node node : holder.getPlaces()) {
+                    entities.add(mapper.map(node));
+                }
+
+                ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
+                        HttpResponseStatus.OK, RouteBuilder.asJson(200, entities, holder.getPoints())));
+            } catch (StartPointIsNotAvailableException e) {
+                ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
+                        HttpResponseStatus.INTERNAL_SERVER_ERROR,
+                        ResponseBuilder.JSON_START_POINT_UNAVAILABLE_RESPONSE
+                ));
+            } catch (NotEnoughPointsException e) {
+                ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
+                        HttpResponseStatus.INTERNAL_SERVER_ERROR,
+                        ResponseBuilder.JSON_NOT_ENOUGH_POINTS_RESPONSE
+                ));
+            } finally {
+                ctx.close();
+                release();
             }
-
-            ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
-                    HttpResponseStatus.OK, RouteBuilder.asJson(200, entities, holder.getPoints())));
-            ctx.close();
-            release();
         } else { // stub
             /*Place p1 = PlaceProvider.get0();
             Place p2 = PlaceProvider.get1();
