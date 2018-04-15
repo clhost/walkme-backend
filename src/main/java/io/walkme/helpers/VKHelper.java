@@ -14,6 +14,7 @@ public class VKHelper extends SocialHelper {
     private static String REDIRECT_URI;
     private static String SCOPE;
     private static String API_VERSION;
+    private static final String PHOTO = "photo_200";
     private static final String STATE = "vk";
 
     public static void init() {
@@ -55,6 +56,7 @@ public class VKHelper extends SocialHelper {
 
     public static String userProfileInfoString(String accessToken, String userId) {
         return API_URL + "users.get?user_ids=" + encodeURIComponent(userId) + "&" +
+                "fields=" + PHOTO + "&" +
                 "access_token=" + encodeURIComponent(accessToken) + "&" +
                 "v=" + encodeURIComponent(API_VERSION);
     }

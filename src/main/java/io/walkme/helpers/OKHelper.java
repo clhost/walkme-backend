@@ -17,6 +17,10 @@ public class OKHelper extends SocialHelper {
     private static String REDIRECT_URI;
     private static final String STATE = "ok";
 
+    private static final String PHOTO = "pic190x190";
+    private static final String FIRST_NAME = "first_name";
+    private static final String LAST_NAME = "last_name";
+
 
     public static void init() {
         Properties properties = new Properties();
@@ -56,6 +60,7 @@ public class OKHelper extends SocialHelper {
 
     public static String userProfileInfoString(String accessToken, String sig) {
         return "https://api.ok.ru/fb.do?application_key=" + encodeURIComponent(CLIENT_PUBLIC) +
+                "&fields=" + FIRST_NAME + "," + LAST_NAME + "," + PHOTO +
                 "&method=users.getCurrentUser&sig=" + encodeURIComponent(sig) +
                 "&access_token=" + encodeURIComponent(accessToken);
     }
