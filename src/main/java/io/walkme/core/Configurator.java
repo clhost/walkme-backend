@@ -216,5 +216,7 @@ public class Configurator {
         initHibernate();
         initAuth();
         PlaceHolder.load();
+        Ways.ghStart();
+        Ways.initializePlaces(PlaceHolder.getAll());
     }
 }
