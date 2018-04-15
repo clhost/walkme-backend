@@ -1,5 +1,6 @@
 package io.walkme.core;
 
+import io.walkme.graph.prod.Ways;
 import io.walkme.graph.stub.RouteFinder;
 import io.walkme.helpers.ConfigHelper;
 import io.walkme.helpers.OKHelper;
@@ -140,8 +141,10 @@ public class Configurator {
                 }
 
                 if (graph.equals("on")) {
-                    // TODO Prod is here
                     PlaceHolder.load();
+
+                    Ways.ghStart();
+                    Ways.initializePlaces(PlaceHolder.getAll());
 
                     ServerMode.setGraph(true);
                 } else if (graph.equals("off")) {
