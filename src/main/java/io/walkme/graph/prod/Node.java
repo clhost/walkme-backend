@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class Node {
+    private String name;
     private Location point;
     private String category;
     private int categoryId;
@@ -17,12 +18,14 @@ public class Node {
     private String addressAdditional;
     private String workingTime;
 
-    private Node(Location location,
+    private Node(String name,
+                 Location location,
                  String category,
                  int categoryId,
                  String address,
                  String addressAdditional,
                  String workingTime) {
+        this.name = name;
         this.point = location;
         this.category = category;
         this.categoryId = categoryId;
@@ -64,6 +67,7 @@ public class Node {
         }
 
         return new Node(
+                place.getName(),
                 place.getLocation(),
                 place.getGisCategory(),
                 place.getCategory().getId(),
@@ -94,5 +98,9 @@ public class Node {
 
     public String getWorkingTime() {
         return workingTime;
+    }
+
+    public String getName() {
+        return name;
     }
 }

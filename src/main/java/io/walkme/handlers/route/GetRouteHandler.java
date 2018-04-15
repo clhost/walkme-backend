@@ -57,7 +57,13 @@ public class GetRouteHandler extends BaseHttpHandler {
 
     private void handleRoute(ChannelHandlerContext ctx, Map<String, List<String>> params) throws Exception {
         if (ServerMode.getGraph()) { // prod
-            Ways finder = new Ways(DateUtil.fromHHMMToLong("12:00"), PlaceHolder.getAll(), null);
+            Ways finder = new Ways(
+                    System.currentTimeMillis(),
+                    new Location(
+                            Double.parseDouble(params.get(PARAM_LAT).get(0)),
+                            Double.parseDouble(params.get(PARAM_LNG).get(0))),
+                    new int[]{});
+
             RouteHolder holder = finder.getWays();
             List<RouteEntity> entities = new ArrayList<>();
 
@@ -70,7 +76,7 @@ public class GetRouteHandler extends BaseHttpHandler {
             ctx.close();
             release();
         } else { // stub
-            Place p1 = PlaceProvider.get0();
+            /*Place p1 = PlaceProvider.get0();
             Place p2 = PlaceProvider.get1();
 
             List<Location> points = RouteFinder.getInstance().findRandomPath(p1, p2);
@@ -82,7 +88,7 @@ public class GetRouteHandler extends BaseHttpHandler {
             ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                     HttpResponseStatus.OK, RouteBuilder.asJson(200, entities, points)));
             ctx.close();
-            release();
+            release();*/
         }
     }
 

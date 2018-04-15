@@ -1,6 +1,5 @@
 package io.walkme.graph.prod;
 
-import io.walkme.response.route.RouteEntity;
 import io.walkme.storage.entities.Location;
 
 import java.util.List;
@@ -9,15 +8,15 @@ import java.util.List;
  * Created by tFNiYaFF on 24.03.2018.
  */
 public class RouteHolder {
-    private List<Location> points;
+    private List<List<Location>> points;
     private List<Node> places;
 
-    public RouteHolder(List<Location> points, List<Node> places) {
+    public RouteHolder(List<List<Location>> points, List<Node> places) {
         this.points = points;
         this.places = places;
     }
 
-    public List<Location> getPoints() {
+    public List<List<Location>> getPoints() {
         return points;
     }
 

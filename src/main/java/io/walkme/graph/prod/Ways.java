@@ -1,8 +1,5 @@
 package io.walkme.graph.prod;
 
-import io.walkme.graph.prod.GraphHopperRouteChecker;
-import io.walkme.graph.prod.Route;
-import io.walkme.graph.prod.RouteChecker;
 import io.walkme.storage.entities.Location;
 
 import java.util.ArrayList;
@@ -14,42 +11,84 @@ import java.util.Set;
  * Created by tFNiYaFF on 18.03.2018.
  */
 public class Ways {
-    private List<Node> nodes;
+
+    private int[] ids;
     private final long startTime;
     private List<Node> resultPlaces;
     private List<Location> resultLocations;
+    private List<List<Location>> allResultLocations;
     private Set<Location> alreadyUsed = new HashSet<>();
 
 
-    private final int NEXT_STEP_POINTS_RANDOM_COUNT = 30;
+    private final int NEXT_STEP_POINTS_RANDOM_COUNT = 40;
     private final double MIN_DISTANCE_BETWEEN_TWO_POINTS = 650;//meters
-    private final double MAX_DISTANCE_BETWEEN_TWO_POINTS = 1250; //meters
+    private final double MAX_DISTANCE_BETWEEN_TWO_POINTS = 1500; //meters
     private final double MAX_WALK_TIME = 240 * 1000 * 60; //mills
     private final int MAX_POINTS_PER_ONE_ROUTE = 5;
-    private final int MAX_DISTANCE_OF_INTERSECTION = 70;
+    private boolean RESET_TIME = false;
+    private final int MAX_DISTANCE_OF_INTERSECTION = 25;
+    private final int INTERSECTION_LIMIT = NEXT_STEP_POINTS_RANDOM_COUNT;
 
     private final Location CITY_CENTER_SPB = new Location(59.93d, 30.31d);
     private final Location USER_START_LOCATION;
 
-    private static RouteChecker routeChecker = new GraphHopperRouteChecker();
+    private static List<Node> nodes;
+    private static final RouteChecker routeChecker = new GraphHopperRouteChecker();
     private static boolean routeCheckerIsRunning = false;
 
-    public Ways(long startTime, List<Node> nodes, Location startLocation) {
-        resultPlaces = new ArrayList<>();
-        resultLocations = new ArrayList<>();
-        this.startTime = startTime;
-        this.nodes = nodes;
-        USER_START_LOCATION = startLocation;
+    public static boolean ghStart() {
         if (!routeCheckerIsRunning) {
             routeChecker.start();
             routeCheckerIsRunning = true;
+            return true;
+        } else {
+            System.out.println("GH ALREADY WORKS");
+            return false;
         }
     }
 
+    public static boolean initializePlaces(List<Node> places) {
+        if (nodes == null) {
+            nodes = places;
+            return true;
+        } else {
+            System.out.println("ALREADY INITIALIZED");
+            return false;
+        }
+    }
+
+
+    public Ways(long startTime, Location startLocation, int[] ids) throws Exception {
+        if (nodes == null) {
+            throw new Exception("NODES == NULL");
+        }
+        if (!routeCheckerIsRunning) {
+            throw new Exception("GH NOT STARTED");
+        }
+        this.ids = ids;
+        resultPlaces = new ArrayList<>();
+        resultLocations = new ArrayList<>();
+        allResultLocations = new ArrayList<>();
+        this.startTime = startTime;
+        USER_START_LOCATION = startLocation;
+    }
+
     public RouteHolder getWays() {
-        execute();
-        RouteHolder rh = new RouteHolder(resultLocations, resultPlaces);
-        return rh;
+        System.out.println("**********************new way*******************");
+        do {
+            RESET_TIME = false;
+            execute();
+            if (RESET_TIME) reset();
+        } while (RESET_TIME);
+        System.out.println("*********************ready**********************");
+        return new RouteHolder(allResultLocations, resultPlaces);
+    }
+
+    private void reset() {
+        resultPlaces = new ArrayList<>();
+        resultLocations = new ArrayList<>();
+        alreadyUsed = new HashSet<>();
+        allResultLocations = new ArrayList<>();
     }
 
     private void execute() {
@@ -61,7 +100,13 @@ public class Ways {
         alreadyUsed.add(currentPoint.getPoint());
         resultPlaces.add(currentPoint);
         double summaryTime = 0;
+        int iter = 0;
         while (true) {
+            if (iter > INTERSECTION_LIMIT) {
+                System.out.println("RESET");
+                RESET_TIME = true;
+                return;
+            }
             ArrayList<Node> nextStep = new ArrayList<>(NEXT_STEP_POINTS_RANDOM_COUNT);
             for (int i = 0; i < NEXT_STEP_POINTS_RANDOM_COUNT; i++) {
                 int rnd;
@@ -72,31 +117,19 @@ public class Ways {
             }
             Node tmpPoint = getNearestPoint(currentPoint.getPoint(), nextStep);
             if (tmpPoint == null) continue;
-            summaryTime += getTime(currentPoint.getPoint(), tmpPoint.getPoint());
             List<Location> allLocations = getAllPoints(currentPoint.getPoint(), tmpPoint.getPoint());
             alreadyUsed.add(tmpPoint.getPoint());
-            if (checkIntersection(allLocations)) continue;
+            if (checkIntersection(allLocations)) {
+                ++iter;
+                continue;
+            }
+            summaryTime += getTime(currentPoint.getPoint(), tmpPoint.getPoint());
             resultLocations.addAll(allLocations);
+            allResultLocations.add(allLocations);
             currentPoint = tmpPoint;
             resultPlaces.add(currentPoint);
             if (summaryTime >= MAX_WALK_TIME || resultPlaces.size() >= MAX_POINTS_PER_ONE_ROUTE) break;
-            //System.out.println("Point: " + currentPoint.getPoint().getLng() + " " + currentPoint.getPoint().getLat()
-                    //+ " Time: " + summaryTime);
         }
-    }
-
-    private boolean compareLocations(List<Location> newList) {
-        int k = 0;
-        for (int i = 0; i < newList.size(); i++) {
-            for (int j = 0; j < resultLocations.size(); j++) {
-                if (newList.get(i).getLat() == resultLocations.get(j).getLat() && newList.get(i).getLng() == resultLocations.get(j).getLng()) {
-                    k++;
-                    if (k > 4) return false;
-                }
-            }
-        }
-        System.out.println("Comparing ok");
-        return true;
     }
 
     private Node getStartPoint() {
@@ -110,15 +143,12 @@ public class Ways {
         Node resultPoint = null;
         double minDistance = Double.MAX_VALUE;
         for (Node aSet : set) {
-            double currentDistance = 0;
-            currentDistance = Math.sqrt((from.getLat() - aSet.getPoint().getLat()) * (from.getLat() - aSet.getPoint().getLat()) + (aSet.getPoint().getLng() - from.getLng()) * (aSet.getPoint().getLng() - from.getLng())); //getDistance(from, set.get(i).getPoint());
+            double currentDistance = Math.sqrt((from.getLat() - aSet.getPoint().getLat()) * (from.getLat() - aSet.getPoint().getLat()) + (aSet.getPoint().getLng() - from.getLng()) * (aSet.getPoint().getLng() - from.getLng())); //getDistance(from, set.get(i).getPoint());
             if (currentDistance < minDistance) {
                 double realDistance = getDistance(from, aSet.getPoint());
-                //System.out.println("Point: "+from.getLng() + " " + from.getLat() + " " + aSet.getPoint().getLng() + " " +aSet.getPoint().getLat()+ " Real distance: " + realDistance);
                 if (realDistance > MIN_DISTANCE_BETWEEN_TWO_POINTS && realDistance < MAX_DISTANCE_BETWEEN_TWO_POINTS) {
                     minDistance = currentDistance;
                     resultPoint = aSet;
-                    //System.out.println("Distance is ok");
                 }
             }
         }
@@ -162,38 +192,50 @@ public class Ways {
         }
         for (int i = 0; i < resultLocations.size(); i++) {
             for (int j = 0; j < points.size(); j++) {
-                double distanceOfIntersection = 0;
-                int pStart = j;
-                int rpStart = j;
-                int pFinish = 0;
-                int rpFinish = 0;
-                int ik = 0;
-                int jk = 0;
-                while (jk + j < points.size() && ik + i < resultLocations.size() && ((points.get(j + jk).getLng() == resultLocations.get(i + ik).getLng() && points.get(j + jk).getLat() == resultLocations.get(i + ik).getLat()) || ((reversePoints.get(j + jk).getLng() == resultLocations.get(i + ik).getLng() && reversePoints.get(j + jk).getLat() == resultLocations.get(i + ik).getLat())))) {
-                    if ((points.get(j + jk).getLng() == resultLocations.get(i + ik).getLng() && points.get(j + jk).getLat() == resultLocations.get(i + ik).getLat())) {
-                        pFinish++;
+                if (compareLoc(resultLocations.get(i), points.get(j))) {
+                    int size = getSizeOfIntersection(i, j, points);
+                    double distance = getDistanceOfIntersection(j, size, points);
+                    if (distance > MAX_DISTANCE_OF_INTERSECTION) {
+                        System.out.println("interp: " + distance);
+                        return true;
                     }
-                    if (((reversePoints.get(jk).getLng() == resultLocations.get(i + ik).getLng() && reversePoints.get(j + jk).getLat() == resultLocations.get(i + ik).getLat()))) {
-                        rpFinish++;
-                    }
-                    jk++;
-                    ik++;
+                    j += size;
                 }
-                if (pFinish > rpFinish) {
-                    for (int u = pStart; u < pFinish - 1; u++) {
-                        distanceOfIntersection += getDistance(points.get(u), points.get(u + 1));
+            }
+            for (int j = 0; j < reversePoints.size(); j++) {
+                if (compareLoc(resultLocations.get(i), reversePoints.get(j))) {
+                    int size = getSizeOfIntersection(i, j, reversePoints);
+                    double distance = getDistanceOfIntersection(j, size, reversePoints);
+                    if (distance > MAX_DISTANCE_OF_INTERSECTION) {
+                        System.out.println("rev: " + distance);
+                        return true;
                     }
-                } else {
-                    for (int u = rpStart; u < rpFinish - 1; u++) {
-                        distanceOfIntersection += getDistance(reversePoints.get(u), reversePoints.get(u + 1));
-                    }
-                }
-                if (distanceOfIntersection > MAX_DISTANCE_OF_INTERSECTION) {
-                    return true;
+                    j += size;
                 }
             }
         }
-        //System.out.println("ALL OK");
         return false;
+    }
+
+    private boolean compareLoc(Location f, Location s) {
+        return f.getLat() == s.getLat() && f.getLng() == s.getLng();
+    }
+
+    private int getSizeOfIntersection(int allStart, int pointsStart, List<Location> points) {
+        int size = 0;
+        int i = allStart;
+        int j = pointsStart;
+        while (i < resultLocations.size() && j < points.size() && compareLoc(resultLocations.get(i++), points.get(j++)))
+            ++size;
+        return size;
+    }
+
+    private double getDistanceOfIntersection(int pointsStart, int size, List<Location> points) {
+        double distance = 0;
+        int i = pointsStart;
+        for (int k = 0; k < size - 1; k++) {
+            distance += getDistance(points.get(i++), points.get(i));
+        }
+        return distance;
     }
 }
