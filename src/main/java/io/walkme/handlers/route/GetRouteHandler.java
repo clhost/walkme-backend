@@ -57,12 +57,14 @@ public class GetRouteHandler extends BaseHttpHandler {
 
     private void handleRoute(ChannelHandlerContext ctx, Map<String, List<String>> params) throws Exception {
         if (ServerMode.getGraph()) { // prod
+            logger.info("Start finding");
             Ways finder = new Ways(
                     System.currentTimeMillis(),
                     new Location(
                             Double.parseDouble(params.get(PARAM_LAT).get(0)),
                             Double.parseDouble(params.get(PARAM_LNG).get(0))),
                     new int[]{});
+            logger.info("Done!");
 
             RouteHolder holder = finder.getWays();
             List<RouteEntity> entities = new ArrayList<>();
