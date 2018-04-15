@@ -109,15 +109,7 @@ public class User {
 
         User user = (User) o;
 
-        if (id != user.id) {
-            return false;
-        }
-
         if (socialId != user.socialId) {
-            return false;
-        }
-
-        if (salt != null ? !salt.equals(user.salt) : user.salt != null) {
             return false;
         }
 
@@ -134,10 +126,7 @@ public class User {
 
     @Override
     public int hashCode() {
-        int result = (int) (id ^ (id >>> 32));
-
-        result = 31 * result + (salt != null ? salt.hashCode() : 0);
-        result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
+        int result = firstName != null ? firstName.hashCode() : 0;
         result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
         result = 31 * result + (int) (socialId ^ (socialId >>> 32));
         result = 31 * result + (avatar != null ? avatar.hashCode() : 0);

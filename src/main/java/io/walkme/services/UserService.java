@@ -135,6 +135,20 @@ public class UserService implements GenericEntityService<User, String> {
 
     @Override
     public void update(User user) throws Exception {
-        throw new UnsupportedOperationException("Update operation is still unsupported.");
+        Session session = null;
+
+        try {
+            session = HibernateUtil.getSession();
+            session.beginTransaction();
+
+            session.update(user);
+
+            logger.info("Update user: " + user + ".");
+            session.getTransaction().commit();
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
     }
 }
