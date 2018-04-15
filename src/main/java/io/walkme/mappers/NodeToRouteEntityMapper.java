@@ -8,7 +8,7 @@ public class NodeToRouteEntityMapper implements Mapper<RouteEntity, Node> {
     public RouteEntity map(Node node) {
         return new RouteEntity(
                 node.getPoint(),
-                "Никита добавь имена",
+                node.getName(),
                 node.getCategory(),
                 node.getCategoryId(),
                 node.getAddress(),
