@@ -26,6 +26,7 @@ public class Ways {
     private final double MAX_WALK_TIME = 240 * 1000 * 60; //mills
     private final int MAX_POINTS_PER_ONE_ROUTE = 5;
     private boolean RESET_TIME = false;
+
     private final int MAX_DISTANCE_OF_INTERSECTION = 25;
     private final int INTERSECTION_LIMIT = NEXT_STEP_POINTS_RANDOM_COUNT;
 
@@ -35,6 +36,7 @@ public class Ways {
     private static List<Node> nodes;
     private static final RouteChecker routeChecker = new GraphHopperRouteChecker();
     private static boolean routeCheckerIsRunning = false;
+
 
     public static boolean ghStart() {
         if (!routeCheckerIsRunning) {
@@ -146,7 +148,7 @@ public class Ways {
             double currentDistance = Math.sqrt((from.getLat() - aSet.getPoint().getLat()) * (from.getLat() - aSet.getPoint().getLat()) + (aSet.getPoint().getLng() - from.getLng()) * (aSet.getPoint().getLng() - from.getLng())); //getDistance(from, set.get(i).getPoint());
             if (currentDistance < minDistance) {
                 double realDistance = getDistance(from, aSet.getPoint());
-                if (realDistance > MIN_DISTANCE_BETWEEN_TWO_POINTS && realDistance < MAX_DISTANCE_BETWEEN_TWO_POINTS) {
+            if (realDistance > MIN_DISTANCE_BETWEEN_TWO_POINTS && realDistance < MAX_DISTANCE_BETWEEN_TWO_POINTS) {
                     minDistance = currentDistance;
                     resultPoint = aSet;
                 }
@@ -182,7 +184,7 @@ public class Ways {
         return route.getPointList();
     }
 
-    private boolean checkIntersection(List<Location> points) {
+     private boolean checkIntersection(List<Location> points) {
         List<Location> reversePoints = new ArrayList<>();
         reversePoints.addAll(points);
         for (int i = 0; i < reversePoints.size() / 2; i++) {
