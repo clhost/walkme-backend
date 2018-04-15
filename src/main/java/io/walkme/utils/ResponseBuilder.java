@@ -3,10 +3,18 @@ package io.walkme.utils;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.*;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 public class ResponseBuilder {
     public static final String JSON_BAD_RESPONSE = "{ \n" +
             "   \"status\": 400, \n" +
             "   \"error\": \"bad request\" \t\n" +
+            "}";
+    public static final String JSON_NOT_FOUND_RESPONSE = "{ \n" +
+            "   \"status\": 404, \n" +
+            "   \"error\": \"not found\" \t\n" +
             "}";
     public static final String JSON_UNAUTHORIZED_RESPONSE = "{ \n" +
             "   \"status\": 403, \n" +
@@ -36,6 +44,20 @@ public class ResponseBuilder {
 
         response.headers().set(HttpHeaderNames.CONTENT_LENGTH, bytes.length);
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.APPLICATION_JSON);
+
+        return response;
+    }
+
+    public static FullHttpResponse buildStaticResponse(HttpResponseStatus status, String path, String contentType)
+            throws IOException {
+        byte[] bytes = Files.readAllBytes(Paths.get(path));
+
+        FullHttpResponse response = new DefaultFullHttpResponse(
+                HttpVersion.HTTP_1_1, status,
+                Unpooled.copiedBuffer(bytes));
+
+        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, bytes.length);
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE, contentType);
 
         return response;
     }
