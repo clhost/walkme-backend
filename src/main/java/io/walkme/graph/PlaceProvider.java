@@ -24,13 +24,6 @@ public class PlaceProvider {
         }
     }
 
-    public static Place randomPlace() {
-        Random random = new Random();
-        int p = random.nextInt(places.size());
-
-        return places.get(p);
-    }
-
     public static Place get0() {
         return places.get(0);
     }

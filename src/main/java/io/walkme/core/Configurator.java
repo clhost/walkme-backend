@@ -69,11 +69,7 @@ public class Configurator {
                 throw new NullPointerException("db.username is missing");
             }
 
-            if (password != null && !password.equals("")) {
-                hibProps.setProperty("hibernate.connection.password", password);
-            } else {
-                throw new NullPointerException("db.password is missing");
-            }
+            hibProps.setProperty("hibernate.connection.password", password);
 
             hibBuilder.save();
             checkServerMode();

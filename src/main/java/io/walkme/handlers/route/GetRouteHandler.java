@@ -70,8 +70,8 @@ public class GetRouteHandler extends BaseHttpHandler {
             ctx.close();
             release();
         } else { // stub
-            Place p1 = PlaceProvider.get0();//.randomPlace();
-            Place p2 = PlaceProvider.get1();//.randomPlace();
+            Place p1 = PlaceProvider.get0();
+            Place p2 = PlaceProvider.get1();
 
             List<Location> points = RouteFinder.getInstance().findRandomPath(p1, p2);
 
