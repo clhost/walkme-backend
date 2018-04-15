@@ -1,5 +1,8 @@
 package io.walkme.graph.prod;
 
+import io.walkme.graph.prod.exceptions.NotEnoughPointsException;
+import io.walkme.graph.prod.exceptions.NotInitializedException;
+import io.walkme.graph.prod.exceptions.StartPointIsNotAvailableException;
 import io.walkme.storage.entities.Location;
 
 import java.util.ArrayList;
@@ -25,6 +28,8 @@ public class Ways {
     private double MAX_DISTANCE_BETWEEN_TWO_POINTS = 1300; //meters
     private final double MAX_WALK_TIME = 240 * 1000 * 60; //mills
     private final int MAX_POINTS_PER_ONE_ROUTE = 5;
+    private final int MIN_POINTS_PER_ONE_ROUTE = 3;
+    private final int RADIUS_INCREMENT = 100;
     private boolean RESET_TIME = false;
 
     private final int MAX_DISTANCE_OF_INTERSECTION = 25;
@@ -38,34 +43,27 @@ public class Ways {
     private static boolean routeCheckerIsRunning = false;
 
 
-    public static boolean ghStart() {
+    public static void ghStart() {
         if (!routeCheckerIsRunning) {
             routeChecker.start();
             routeCheckerIsRunning = true;
-            return true;
         } else {
             System.out.println("GH ALREADY WORKS");
-            return false;
         }
     }
 
-    public static boolean initializePlaces(List<Node> places) {
+    public static void initializePlaces(List<Node> places) {
         if (nodes == null) {
             nodes = places;
-            return true;
         } else {
             System.out.println("ALREADY INITIALIZED");
-            return false;
         }
     }
 
 
-    public Ways(long startTime, Location startLocation, int[] ids) throws Exception {
-        if (nodes == null) {
-            throw new Exception("NODES == NULL");
-        }
-        if (!routeCheckerIsRunning) {
-            throw new Exception("GH NOT STARTED");
+    public Ways(long startTime, Location startLocation, int[] ids) throws NotInitializedException {
+        if (nodes == null || !routeCheckerIsRunning) {
+            throw new NotInitializedException();
         }
         this.ids = ids;
         resultPlaces = new ArrayList<>();
@@ -75,7 +73,7 @@ public class Ways {
         USER_START_LOCATION = startLocation;
     }
 
-    public RouteHolder getWays() {
+    public RouteHolder getWays() throws StartPointIsNotAvailableException, NotEnoughPointsException {
         System.out.println("**********************new way*******************");
         do {
             RESET_TIME = false;
@@ -83,6 +81,7 @@ public class Ways {
             if (RESET_TIME) reset();
         } while (RESET_TIME);
         System.out.println("*********************ready**********************");
+        if(resultPlaces.size()<MIN_POINTS_PER_ONE_ROUTE) throw new NotEnoughPointsException();
         return new RouteHolder(allResultLocations, resultPlaces);
     }
 
@@ -93,11 +92,10 @@ public class Ways {
         allResultLocations = new ArrayList<>();
     }
 
-    private void execute() {
+    private void execute() throws StartPointIsNotAvailableException {
         Node currentPoint = getStartPoint();
         if (currentPoint == null) {
-            System.out.println("Start point is not available");
-            return;
+            throw new StartPointIsNotAvailableException();
         }
         alreadyUsed.add(currentPoint.getPoint());
         resultPlaces.add(currentPoint);
@@ -118,7 +116,7 @@ public class Ways {
                 nextStep.add(nodes.get(rnd));
             }
             Node tmpPoint = getNearestPoint(currentPoint.getPoint(), nextStep);
-            if (tmpPoint == null){ MAX_DISTANCE_BETWEEN_TWO_POINTS += 100; continue;}
+            if (tmpPoint == null){ MAX_DISTANCE_BETWEEN_TWO_POINTS += RADIUS_INCREMENT; continue;}
             List<Location> allLocations = getAllPoints(currentPoint.getPoint(), tmpPoint.getPoint());
             alreadyUsed.add(tmpPoint.getPoint());
             if (checkIntersection(allLocations)) {
@@ -198,7 +196,6 @@ public class Ways {
                     int size = getSizeOfIntersection(i, j, points);
                     double distance = getDistanceOfIntersection(j, size, points);
                     if (distance > MAX_DISTANCE_OF_INTERSECTION) {
-                        System.out.println("interp: " + distance);
                         return true;
                     }
                     j += size;
@@ -209,7 +206,6 @@ public class Ways {
                     int size = getSizeOfIntersection(i, j, reversePoints);
                     double distance = getDistanceOfIntersection(j, size, reversePoints);
                     if (distance > MAX_DISTANCE_OF_INTERSECTION) {
-                        System.out.println("rev: " + distance);
                         return true;
                     }
                     j += size;
