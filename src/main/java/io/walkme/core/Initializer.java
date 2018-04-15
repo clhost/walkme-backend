@@ -15,6 +15,7 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import io.netty.util.concurrent.EventExecutorGroup;
+import io.walkme.handlers.statics.StaticHandler;
 
 
 public class Initializer extends ChannelInitializer<SocketChannel> {
@@ -44,11 +45,16 @@ public class Initializer extends ChannelInitializer<SocketChannel> {
 
         // AUTH handlers
         pipeline.addLast("info", new InfoHandler(true));
+        pipeline.addLast("static", new StaticHandler());
+
         pipeline.addLast("token", new TokenHandler());
+
         pipeline.addLast(auth, "auth", new AuthHandler());
         pipeline.addLast(logout, "logout", new LogoutHandler());
+
         pipeline.addLast("categories", new GetCategoriesHandler());
         pipeline.addLast(route, "route", new GetRouteHandler());
+
         pipeline.addLast("invalid", new InvalidRequestHandler());
     }
 }
