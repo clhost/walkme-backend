@@ -34,7 +34,7 @@ public class InfoHandler extends BaseHttpHandler {
         request.content().readBytes(content);
 
         if (isFaviconIgnore && !request.uri().contains("favicon.ico")) {
-            logger.info("Incoming connection: " + ctx.channel().remoteAddress());
+            logger.info("Incoming connection: " + ctx.channel().remoteAddress() + ", uri: " + request.uri());
             System.out.println("Incoming request: ");
             System.out.println("* Uri: " + request.uri());
             System.out.println("* Protocol: " + request.protocolVersion());
