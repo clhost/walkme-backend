@@ -83,8 +83,8 @@ public class Ways {
             execute();
             if (RESET_TIME) reset();
         } while (RESET_TIME);
-        System.out.println("*********************ready**********************");
-        if(resultPlaces.size()<MIN_POINTS_PER_ONE_ROUTE) throw new NotEnoughPointsException();
+        System.out.println("***********************ready*********************");
+        if (resultPlaces.size() < MIN_POINTS_PER_ONE_ROUTE) throw new NotEnoughPointsException();
         return new RouteHolder(allResultLocations, resultPlaces);
     }
 
@@ -119,7 +119,10 @@ public class Ways {
                 nextStep.add(nodes.get(rnd));
             }
             Node tmpPoint = getNearestPoint(currentPoint.getPoint(), nextStep);
-            if (tmpPoint == null){ MAX_DISTANCE_BETWEEN_TWO_POINTS += RADIUS_INCREMENT; continue;}
+            if (tmpPoint == null) {
+                MAX_DISTANCE_BETWEEN_TWO_POINTS += RADIUS_INCREMENT;
+                continue;
+            }
             List<Location> allLocations = getAllPoints(currentPoint.getPoint(), tmpPoint.getPoint());
             alreadyUsed.add(tmpPoint.getPoint());
             if (checkIntersection(allLocations)) {
@@ -149,7 +152,7 @@ public class Ways {
             double currentDistance = getDistance(from, aSet.getPoint());
             if (currentDistance < minDistance) {
                 double realDistance = getDistance(from, aSet.getPoint());
-            if (realDistance > MIN_DISTANCE_BETWEEN_TWO_POINTS && realDistance < MAX_DISTANCE_BETWEEN_TWO_POINTS) {
+                if (realDistance > MIN_DISTANCE_BETWEEN_TWO_POINTS && realDistance < MAX_DISTANCE_BETWEEN_TWO_POINTS) {
                     minDistance = currentDistance;
                     resultPoint = aSet;
                 }
@@ -166,7 +169,8 @@ public class Ways {
         int r = 6371;
         double dLat = deg2rad(lat2 - lat1);
         double dLon = deg2rad(lon2 - lon1);
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return r * c * 1000;
     }
@@ -185,7 +189,7 @@ public class Ways {
         return route.getPointList();
     }
 
-     private boolean checkIntersection(List<Location> points) {
+    private boolean checkIntersection(List<Location> points) {
         List<Location> reversePoints = new ArrayList<>();
         reversePoints.addAll(points);
         for (int i = 0; i < reversePoints.size() / 2; i++) {
@@ -240,14 +244,14 @@ public class Ways {
         return distance;
     }
 
-    private void filterNodes(){
-        if(ids == null || ids.length == 0) {
+    private void filterNodes() {
+        if (ids == null || ids.length == 0) {
             nodes = inputNodes;
             return;
         }
-        for(int i=0; i<inputNodes.size(); i++){
-            for(int j=0; j<ids.length; j++){
-                if(inputNodes.get(i).getCategoryId() == ids[j]){
+        for (int i = 0; i < inputNodes.size(); i++) {
+            for (int j = 0; j < ids.length; j++) {
+                if (inputNodes.get(i).getCategoryId() == ids[j]) {
                     nodes.add(inputNodes.get(i));
                     break;
                 }
