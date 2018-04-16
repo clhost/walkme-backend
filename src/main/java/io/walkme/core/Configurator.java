@@ -90,7 +90,6 @@ public class Configurator {
                     initProd();
                     ServerMode.setProdMode();
                     ServerMode.setAuth(true);
-                    ServerMode.setGraph(true);
 
                     Runtime.getRuntime().addShutdownHook(new Thread(HibernateUtil::shutdown));
                     logger.info("Configured in prod mode.");
