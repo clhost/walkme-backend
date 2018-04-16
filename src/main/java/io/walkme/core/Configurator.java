@@ -1,7 +1,6 @@
 package io.walkme.core;
 
 import io.walkme.graph.prod.Ways;
-import io.walkme.graph.stub.RouteFinder;
 import io.walkme.helpers.ConfigHelper;
 import io.walkme.helpers.OKHelper;
 import io.walkme.helpers.VKHelper;
@@ -39,7 +38,6 @@ public class Configurator {
 
     public static Server configure() {
         Server server = null;
-
         try {
             PropertiesConfiguration locProps = locBuilder.getConfiguration();
             PropertiesConfiguration hibProps = hibBuilder.getConfiguration();
@@ -77,84 +75,75 @@ public class Configurator {
 
             server = new Server(host, Integer.parseInt(port));
         } catch (ConfigurationException e) {
-            e.printStackTrace();
+            logger.error(e.getCause().getMessage());
         }
 
         return server;
     }
 
-
     private static void checkServerMode() {
         try {
             PropertiesConfiguration locProps = locBuilder.getConfiguration();
             String stub = locProps.getString("server.stub.enable");
-
-            if (stub.equals("off")) { // prod mode
-                initProd();
-                ServerMode.setProdMode();
-                ServerMode.setAuth(true);
-                ServerMode.setGraph(true);
-            } else if (stub.equals("on")) { // stub mode
-                initHibernate();
-
-                String dbReload = locProps.getString("server.stub.db_reload");
-                String auth = locProps.getString("server.stub.auth");
-                String graph = locProps.getString("server.stub.graph");
-
-                if (dbReload == null || dbReload.equals("")) {
-                    throw new NullPointerException("server.stub.db_reload is missing.");
-                }
-
-                if (auth == null || auth.equals("")) {
-                    throw new NullPointerException("server.stub.auth is missing.");
-                }
-
-                if (graph == null || graph.equals("")) {
-                    throw new NullPointerException("server.stub.graph is missing.");
-                }
-
-
-                if (dbReload.equals("on")) {
-                    long a = ifExists();
-
-                    if (a != 0) {
-                        Dropper.drop();
-                    }
-
-                    Runtime.getRuntime().addShutdownHook(new Thread(Dropper::drop));
-                    load();
-                } else if (dbReload.equals("off")) {
-                    long a = ifExists();
-
-                    if (a == 0) {
-                        load();
-                    }
-                } else {
-                    throw new IllegalStateException("server.stub.db_reload must be \"on\" or \"off\"");
-                }
-
-                if (auth.equals("on")) {
-                    initAuth();
+            switch (stub) {
+                case "off":  // prod mode
+                    initProd();
+                    ServerMode.setProdMode();
                     ServerMode.setAuth(true);
-                } else if (!auth.equals("off")) {
-                    throw new IllegalStateException("server.stub.auth must be \"on\" or \"off\"");
-                }
-
-                if (graph.equals("on")) {
-                    PlaceHolder.load();
-
-                    Ways.ghStart();
-                    Ways.initializePlaces(PlaceHolder.getAll());
-
                     ServerMode.setGraph(true);
-                } else if (graph.equals("off")) {
-                    initStubGraph();
-                } else {
-                    throw new IllegalStateException("server.stub.graph must be \"on\" or \"off\"");
-                }
 
-            } else {
-                throw new IllegalStateException("server.stub.enable must be \"on\" or \"off\".");
+                    Runtime.getRuntime().addShutdownHook(new Thread(HibernateUtil::shutdown));
+                    logger.info("Configured in prod mode.");
+                    break;
+                case "on":  // stub mode
+                    initHibernate();
+
+                    String dbReload = locProps.getString("server.stub.db_reload");
+                    String auth = locProps.getString("server.stub.auth");
+
+                    if (dbReload == null || dbReload.equals("")) {
+                        throw new NullPointerException("server.stub.db_reload is missing.");
+                    }
+
+                    if (auth == null || auth.equals("")) {
+                        throw new NullPointerException("server.stub.auth is missing.");
+                    }
+
+                    switch (dbReload) {
+                        case "on": {
+                            long a = ifExists();
+
+                            if (a != 0) {
+                                Dropper.drop();
+                            }
+
+                            Runtime.getRuntime().addShutdownHook(new Thread(Dropper::drop));
+                            load();
+                            break;
+                        }
+                        case "off": {
+                            long a = ifExists();
+
+                            if (a == 0) {
+                                load();
+                            }
+                            break;
+                        }
+                        default:
+                            throw new IllegalStateException("server.stub.db_reload must be \"on\" or \"off\"");
+                    }
+
+                    if (auth.equals("on")) {
+                        initAuth();
+                        ServerMode.setAuth(true);
+                    } else if (!auth.equals("off")) {
+                        throw new IllegalStateException("server.stub.auth must be \"on\" or \"off\"");
+                    }
+
+                    logger.info("Configured in stub mode.");
+                    break;
+                default:
+                    throw new IllegalStateException("server.stub.enable must be \"on\" or \"off\".");
             }
 
         } catch (ConfigurationException e) {
@@ -175,18 +164,17 @@ public class Configurator {
             session.getTransaction().commit();
 
             return i.longValue();
-        }
-        finally {
+        } finally {
             if (session != null) {
                 session.close();
             }
         }
     }
 
-    static void load() {
+    private static void load() {
         CategoryService.upload();
 
-        Loader<File> loader = new JsonLoader();
+        Loader<File, WalkMeCategory> loader = new JsonLoader();
         loader.load(new File("nodejs-dataset/spb-1.json"), WalkMeCategory.BAR);
         loader.load(new File("nodejs-dataset/spb-2.json"), WalkMeCategory.EAT);
         loader.load(new File("nodejs-dataset/spb-3.json"), WalkMeCategory.FUN);
@@ -194,13 +182,13 @@ public class Configurator {
         loader.load(new File("nodejs-dataset/spb-5.json"), WalkMeCategory.WALK);
     }
 
-    static void initHibernate() {
+    private static void initHibernate() {
         // start hibernate
         HibernateUtil.start();
         HibernateUtil.setNamesUTF8();
     }
 
-    static void initAuth() {
+    private static void initAuth() {
         // initialize all existing sessions
         SessionService.getInstance().loadFromDatabase();
         // initHibernate vk and ok helpers application info
@@ -208,15 +196,17 @@ public class Configurator {
         OKHelper.init();
     }
 
-    static void initStubGraph() {
-        RouteFinder.init();
-    }
-
-    static void initProd() {
-        initHibernate();
-        initAuth();
+    private static void initGraph() {
+        // load all places in RAM
         PlaceHolder.load();
+        // start algorithm
         Ways.ghStart();
         Ways.initializePlaces(PlaceHolder.getAll());
+    }
+
+    private static void initProd() {
+        initHibernate();
+        initAuth();
+        initGraph();
     }
 }
