@@ -31,22 +31,8 @@ public class User {
     @Expose
     private String avatar;
 
-    public User(long id,
-                String salt,
-                String firstName,
-                String lastName,
-                long socialId,
-                String avatar) {
-        this.id = id;
-        this.salt = salt;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.socialId = socialId;
-        this.avatar = avatar;
-    }
-
     public User() {
-
+        // The explicit constructor for ORM
     }
 
     public long getId() {

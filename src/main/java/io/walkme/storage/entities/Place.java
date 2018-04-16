@@ -45,7 +45,7 @@ public class Place {
     private String scheduleAsJsonString;
 
     public Place() {
-
+        // The explicit constructor for ORM
     }
 
     public String getId() {

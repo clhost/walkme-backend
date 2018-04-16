@@ -22,7 +22,7 @@ public class SessionService {
     private final ConcurrentHashMap<Long, String> sessions = new ConcurrentHashMap<>();
 
     private SessionService() {
-
+        // for singleton
     }
 
     public static SessionService getInstance() {
@@ -36,13 +36,11 @@ public class SessionService {
                 }
             }
         }
-
         return result;
     }
 
     public void loadFromDatabase() {
         org.hibernate.Session session = null;
-
         try {
             session = HibernateUtil.getSession();
             session.beginTransaction();
@@ -58,6 +56,7 @@ public class SessionService {
             }
 
             session.getTransaction().commit();
+            logger.info("All sessions has been loaded in RAM.");
         } finally {
             if (session != null) {
                 session.close();
@@ -79,7 +78,6 @@ public class SessionService {
             hibSession.getTransaction().commit();
 
             sessions.put(session.getUser().getId(), session.getSessionToken());
-
         } finally {
             if (hibSession != null) {
                 hibSession.close();
@@ -100,7 +98,6 @@ public class SessionService {
         }
 
         org.hibernate.Session session = null;
-
         try {
             session = HibernateUtil.getSession();
             session.beginTransaction();
@@ -121,7 +118,6 @@ public class SessionService {
 
     public void clear() {
         org.hibernate.Session session = null;
-
         try {
             session = HibernateUtil.getSession();
             session.beginTransaction();

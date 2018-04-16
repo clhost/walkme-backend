@@ -8,7 +8,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.walkme.response.ResultBuilder;
 import org.apache.http.client.fluent.Request;
-import io.walkme.services.GenericEntityService;
+import io.walkme.services.EntityService;
 import io.walkme.services.SessionService;
 import io.walkme.services.UserService;
 import io.walkme.services.fields.UserFields;
@@ -35,7 +35,7 @@ class OAuthVk {
 
     private static final SHA256HEXEncoder tokenEncoder = new SHA256HEXEncoder();
     private static final SessionService sessionService = SessionService.getInstance();
-    private static final GenericEntityService<User, String> userService = new UserService();
+    private static final EntityService<User, String> userService = new UserService();
 
     private String code;
     private String salt;

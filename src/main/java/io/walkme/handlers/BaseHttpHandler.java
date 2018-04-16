@@ -14,19 +14,14 @@ public abstract class BaseHttpHandler extends ChannelInboundHandlerAdapter {
     private FullHttpRequest request;
     private String[] tokens;
     private Map<String, List<String>> params;
-
     protected static final String API_PREFIX = "api";
-
     protected static final String API_AUTH = "auth";
     protected static final String API_FAKE = "fake";
-
     protected static final String API_LOGOUT = "logout";
-
     protected static final String API_CATEGORIES = "getCategories";
-
     protected static final String API_GET_ROUTE = "getRoute";
-
     private static Set<String> set = new HashSet<>();
+
     static {
         set.add(API_PREFIX);
         set.add(API_AUTH);

@@ -17,7 +17,6 @@ abstract class SocialHelper {
         } catch (UnsupportedEncodingException e){
             result = s;
         }
-
         return result;
     }
 }

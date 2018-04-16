@@ -13,7 +13,7 @@ import io.walkme.utils.MD5Encoder;
 import io.walkme.utils.ResponseBuilder;
 import io.walkme.utils.SHA256HEXEncoder;
 import org.apache.http.client.fluent.Request;
-import io.walkme.services.GenericEntityService;
+import io.walkme.services.EntityService;
 import io.walkme.services.SessionService;
 import io.walkme.services.UserService;
 import io.walkme.storage.entities.User;
@@ -36,7 +36,7 @@ class OAuthOk {
     private final SHA256HEXEncoder tokenEncoder = new SHA256HEXEncoder();
     private final MD5Encoder md5Encoder = new MD5Encoder();
     private static final SessionService sessionService = SessionService.getInstance();
-    private static final GenericEntityService<User, String> userService = new UserService();
+    private static final EntityService<User, String> userService = new UserService();
 
     private String sessionSecretKey;
     private String sig;

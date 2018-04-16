@@ -18,7 +18,6 @@ public class JsonToPlaceMapper implements Mapper<Place, JsonObject> {
     private static final String POINT = "point";
     private static final String SCHEDULE = "schedule";
 
-    // fixme: может ли иметь 1 общий инстанс?
     private final Mapper<Schedule, JsonObject> mapper = new JsonToScheduleMapper();
 
     @Override

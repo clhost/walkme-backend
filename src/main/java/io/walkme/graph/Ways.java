@@ -76,7 +76,7 @@ public class Ways {
     }
 
     public RouteHolder getWays() throws StartPointIsNotAvailableException, NotEnoughPointsException {
-        System.out.println("**********************new way*******************");
+        System.out.println("**********************new way********************");
         filterNodes();
         do {
             RESET_TIME = false;

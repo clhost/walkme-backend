@@ -56,6 +56,7 @@ public class InfoHandler extends BaseHttpHandler {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         logger.error(cause.getMessage());
-        cause.printStackTrace();
+        ctx.close();
+        release();
     }
 }

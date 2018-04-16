@@ -33,7 +33,9 @@ public class Session {
         this.state = state;
     }
 
-    public Session() {}
+    public Session() {
+        // The explicit constructor for ORM
+    }
 
     public User getUser() {
         return user;

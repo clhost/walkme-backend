@@ -17,7 +17,9 @@ public class Category {
         this.name = categoryName;
     }
 
-    public Category() {}
+    public Category() {
+        // The explicit constructor for ORM
+    }
 
     public int getId() {
         return id;

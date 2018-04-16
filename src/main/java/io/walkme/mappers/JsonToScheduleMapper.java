@@ -28,12 +28,10 @@ public class JsonToScheduleMapper implements Mapper<Schedule, JsonObject> {
     @Override
     public Schedule map(JsonObject jsonObject) {
         Schedule schedule = new Schedule();
-
         for (Map.Entry<String, JsonElement> e : jsonObject.entrySet()) {
             if (!e.getKey().matches("(^fri$)|(^mon$)|(^sat$)|(^sun$)|(^thu$)|(^tue$)|(^wed$)")) {
                 continue;
             }
-
 
             if (!e.getValue().isJsonObject()) {
                 List<ScheduleTime> scheduleTimes = new ArrayList<>();
@@ -55,7 +53,6 @@ public class JsonToScheduleMapper implements Mapper<Schedule, JsonObject> {
 
             schedule.put(days.get(e.getKey()), list);
         }
-
         return schedule;
     }
 }

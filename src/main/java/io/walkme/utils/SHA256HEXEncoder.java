@@ -7,7 +7,6 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
-import java.util.Base64;
 
 public class SHA256HEXEncoder {
     private MessageDigest digest;

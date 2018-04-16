@@ -20,7 +20,9 @@ public class Location {
         this.lng = lng;
     }
 
-    public Location() { }
+    public Location() {
+        // The explicit constructor for ORM
+    }
 
     public double getLat(){
         return lat;

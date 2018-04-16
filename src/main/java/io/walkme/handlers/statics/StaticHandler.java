@@ -4,6 +4,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import io.walkme.handlers.BaseHttpHandler;
 import io.walkme.utils.ResponseBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,8 +18,9 @@ import java.io.IOException;
 public class StaticHandler extends BaseHttpHandler {
     private static final String STATIC_PREFIX = "static";
     private static final String PIC = "pic";
-
     private static final String PIC_PATH = STATIC_PREFIX + File.separator + PIC + File.separator;
+
+    private final Logger logger = LogManager.getLogger(StaticHandler.class);
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -26,7 +29,6 @@ public class StaticHandler extends BaseHttpHandler {
         String[] tokens = getTokens();
 
         if (tokens.length == 3 && tokens[0].equals(STATIC_PREFIX)) {
-
             try {
                 switch (tokens[1]) {
                     case PIC:
@@ -58,6 +60,8 @@ public class StaticHandler extends BaseHttpHandler {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        super.exceptionCaught(ctx, cause);
+        logger.error(cause.getMessage());
+        ctx.close();
+        release();
     }
 }

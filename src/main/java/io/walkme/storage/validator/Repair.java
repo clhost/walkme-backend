@@ -1,8 +1,13 @@
 package io.walkme.storage.validator;
 
-import io.walkme.storage.entities.WalkMeCategory;
-
+/**
+ * Данные, которые парсятся и внедряются в проект по какому-либо заданному шаблону, могут быть битыми.
+ * В конкретном случае, это места. Интерфейс предназначен для исправлений объектов класса T с использованием
+ * возможного вспомогательного объекта E.
+ * @param <T> объект, который требуется исправить
+ * @param <E> вспомогательный объект
+ */
 @FunctionalInterface
-public interface Repair<T> {
-    T repair(T t, WalkMeCategory c);
+public interface Repair<T, E> {
+    T repair(T t, E e);
 }

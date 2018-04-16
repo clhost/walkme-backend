@@ -12,14 +12,16 @@ import io.walkme.storage.entities.User;
 
 import java.io.FileInputStream;
 import java.util.Properties;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 public class HibernateUtil {
     private static SessionFactory factory;
+    private static final ReentrantLock lock = new ReentrantLock();
     private static final Logger logger = LogManager.getLogger(HibernateUtil.class);
 
-
     public static void start() {
+        lock.lock();
         try {
             Properties properties = new Properties();
             properties.load(new FileInputStream("hibernate.properties"));
@@ -32,9 +34,10 @@ public class HibernateUtil {
                     .addAnnotatedClass(io.walkme.storage.entities.Session.class)
                     .addAnnotatedClass(Category.class)
                     .buildSessionFactory();
-
         } catch (Exception e) {
             logger.error(e.getMessage());
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -47,12 +50,20 @@ public class HibernateUtil {
     }
 
     public static void setNamesUTF8() {
-        Session session = factory.openSession();
-        session.beginTransaction();
+        Session session = null;
+        try {
+            session = factory.openSession();
+            session.beginTransaction();
 
-        session.createNativeQuery("SET NAMES UTF8").executeUpdate();
+            session.createNativeQuery("SET NAMES UTF8").executeUpdate();
 
-        session.getTransaction().commit();
-        session.close();
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
     }
 }

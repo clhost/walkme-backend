@@ -1,6 +1,6 @@
 package io.walkme.mappers;
 
-import io.walkme.graph.prod.Node;
+import io.walkme.graph.Node;
 import io.walkme.response.route.RouteEntity;
 
 public class NodeToRouteEntityMapper implements Mapper<RouteEntity, Node> {

@@ -4,7 +4,7 @@ import io.walkme.storage.entities.Category;
 import io.walkme.storage.entities.Place;
 import io.walkme.storage.entities.WalkMeCategory;
 
-public class PlaceRepair implements Repair<Place> {
+public class PlaceRepair implements Repair<Place, WalkMeCategory> {
     private static final String DEFAULT_SCHEDULE =
                     "{\"fri\":{\"" +
                         "workingHours\":[" +

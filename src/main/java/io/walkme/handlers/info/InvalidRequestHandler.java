@@ -20,6 +20,7 @@ public class InvalidRequestHandler extends BaseHttpHandler {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         cause.printStackTrace();
+        ctx.close();
         release();
     }
 }

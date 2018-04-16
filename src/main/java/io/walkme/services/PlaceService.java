@@ -9,34 +9,32 @@ import io.walkme.storage.entities.Place;
 import io.walkme.storage.entities.Schedule;
 import io.walkme.mappers.JsonToScheduleMapper;
 import io.walkme.mappers.Mapper;
-import io.walkme.storage.entities.WalkMeCategory;
 import io.walkme.utils.HibernateUtil;
 
-import java.util.ArrayList;
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * Native sql is used for better performance
+ * Используется нативный SQL для большей производительности
  */
-public class PlaceService implements GenericEntityService<Place, String> {
+public class PlaceService implements EntityService<Place, String> {
     private static final Mapper<Schedule, JsonObject> mapper = new JsonToScheduleMapper();
     private static final String PLACE_TABLE_NAME = "wm_place";
 
+    @Nullable
     @Override
     public Place get(String val, String column) throws Exception {
         Session session = null;
         Place place = null;
         NativeQuery<Place> nativeQuery;
-
         try {
             session = HibernateUtil.getSession();
             session.beginTransaction();
-
             switch (column) {
                 case PlaceFields.ID:
                     nativeQuery = session.createNativeQuery(
-                            "select * from " +
-                                    PLACE_TABLE_NAME + " where " + PlaceFields.ID + " = :pid", Place.class);
+                            "select * from " + PLACE_TABLE_NAME + " " +
+                                    "where " + PlaceFields.ID + " = :pid", Place.class);
                     nativeQuery.setParameter("pid", val);
                     place = nativeQuery.getSingleResult();
                     break;
@@ -44,7 +42,6 @@ public class PlaceService implements GenericEntityService<Place, String> {
                     throw new UnsupportedOperationException("Get for column category_id is unsupported. Instead of " +
                             "this use the getAll method.");
             }
-
             session.getTransaction().commit();
         } finally {
             if (session != null) {
@@ -56,20 +53,18 @@ public class PlaceService implements GenericEntityService<Place, String> {
             JsonObject object = new JsonParser().parse(place.getScheduleAsJsonString()).getAsJsonObject();
             place.setSchedule(mapper.map(object));
         }
-
         return place;
     }
 
+    @Nullable
     @Override
     public List<Place> getAll(List<String> criteria, String column) throws Exception {
         Session session = null;
         List<Place> places = null;
         NativeQuery<Place> nativeQuery;
-
         try {
             session = HibernateUtil.getSession();
             session.beginTransaction();
-
             switch (column) {
                 case PlaceFields.ID:
                     throw new UnsupportedOperationException("Get all for column id is unsupported. Instead of " +
@@ -90,12 +85,11 @@ public class PlaceService implements GenericEntityService<Place, String> {
                     String set = b.trim().substring(0, b.length() - 2) + ")";
 
                     nativeQuery = session.createNativeQuery(
-                            "select * from " +
-                                    PLACE_TABLE_NAME + " where " + column + " in " + set, Place.class);
+                            "select * from " + PLACE_TABLE_NAME + " " +
+                                    "where " + column + " in " + set, Place.class);
                     places = nativeQuery.getResultList();
                     break;
             }
-
             session.getTransaction().commit();
         } finally {
             if (session != null) {
@@ -111,7 +105,6 @@ public class PlaceService implements GenericEntityService<Place, String> {
                 }
             }
         }
-
         return places;
     }
 

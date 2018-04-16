@@ -16,7 +16,6 @@ public class CategoryService {
         prepare();
 
         Session session = null;
-
         try {
             session = HibernateUtil.getSession();
             session.beginTransaction();

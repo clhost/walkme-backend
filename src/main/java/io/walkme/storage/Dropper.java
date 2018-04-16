@@ -6,7 +6,6 @@ import org.hibernate.Session;
 public class Dropper {
     public static void drop() {
         Session session = null;
-
         try {
             session = HibernateUtil.getSession();
             session.beginTransaction();
@@ -23,4 +22,6 @@ public class Dropper {
             }
         }
     }
+
+
 }

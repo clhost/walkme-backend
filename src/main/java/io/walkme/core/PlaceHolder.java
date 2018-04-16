@@ -1,7 +1,7 @@
 package io.walkme.core;
 
-import io.walkme.graph.prod.Node;
-import io.walkme.services.GenericEntityService;
+import io.walkme.graph.Node;
+import io.walkme.services.EntityService;
 import io.walkme.services.PlaceService;
 import io.walkme.services.fields.PlaceFields;
 import io.walkme.storage.entities.Place;
@@ -15,7 +15,7 @@ import java.util.List;
 // FIXME КОСТЫЛЬНЫЙ PLACE HOLDER - видит node класс - зависит от него
 public class PlaceHolder {
     private static final List<Node> nodeList = new ArrayList<>();
-    private static final GenericEntityService<Place, String> service = new PlaceService();
+    private static final EntityService<Place, String> service = new PlaceService();
     private static volatile boolean isLoaded = false;
 
     private static final Logger logger = LogManager.getLogger(PlaceHolder.class);
