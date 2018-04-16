@@ -1,4 +1,4 @@
-package io.walkme.graph.prod;
+package io.walkme.graph;
 
 import io.walkme.storage.entities.Day;
 import io.walkme.storage.entities.Location;

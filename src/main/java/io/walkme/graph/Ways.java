@@ -1,8 +1,8 @@
-package io.walkme.graph.prod;
+package io.walkme.graph;
 
-import io.walkme.graph.prod.exceptions.NotEnoughPointsException;
-import io.walkme.graph.prod.exceptions.NotInitializedException;
-import io.walkme.graph.prod.exceptions.StartPointIsNotAvailableException;
+import io.walkme.graph.exceptions.NotEnoughPointsException;
+import io.walkme.graph.exceptions.StartPointIsNotAvailableException;
+import io.walkme.graph.exceptions.NotInitializedException;
 import io.walkme.storage.entities.Location;
 
 import java.util.ArrayList;

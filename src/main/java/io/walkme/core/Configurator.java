@@ -1,6 +1,6 @@
 package io.walkme.core;
 
-import io.walkme.graph.prod.Ways;
+import io.walkme.graph.Ways;
 import io.walkme.helpers.ConfigHelper;
 import io.walkme.helpers.OKHelper;
 import io.walkme.helpers.VKHelper;
@@ -138,6 +138,8 @@ public class Configurator {
                     } else if (!auth.equals("off")) {
                         throw new IllegalStateException("server.stub.auth must be \"on\" or \"off\"");
                     }
+
+                    initGraph();
 
                     logger.info("Configured in stub mode.");
                     break;

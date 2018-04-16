@@ -1,4 +1,4 @@
-package io.walkme.graph.prod;
+package io.walkme.graph;
 
 import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;

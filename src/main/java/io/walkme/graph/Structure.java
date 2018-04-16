@@ -1,6 +1,4 @@
-package io.walkme.graph.prod;
-
-import io.walkme.response.route.RouteEntity;
+package io.walkme.graph;
 
 import java.util.ArrayList;
 

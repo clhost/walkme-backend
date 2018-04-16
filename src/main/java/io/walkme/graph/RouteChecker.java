@@ -1,4 +1,4 @@
-package io.walkme.graph.prod;
+package io.walkme.graph;
 
 public interface RouteChecker {
     void start();
