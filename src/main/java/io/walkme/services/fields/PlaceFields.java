@@ -62,8 +62,6 @@ public class PlaceFields {
             }
         }
 
-        System.out.println(placeFieldsList);
-        System.out.println(thisFieldsList);
         if (!placeFieldsList.equals(thisFieldsList)) {
             throw new IllegalStateException("PlaceFields.class fields are not equal to fields which exists in " +
                     "database.");
