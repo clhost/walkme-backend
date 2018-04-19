@@ -1,54 +1,26 @@
 package io.walkme.services.fields;
 
-import io.walkme.storage.entities.User;
 
-import javax.persistence.Column;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
+public enum UserFields {
+    ID("id"),
+    SALT("salt"),
+    FIRST_NAME("f_name"),
+    LAST_NAME("l_name"),
+    SOCIAL_ID("social_id"),
+    AVATAR("avatar");
 
-/**
- * Depends on {@link User}
- */
-public class UserFields {
-    public static final String TABLE_NAME = "wm_users";
-    public static final String ID = "id";
-    public static final String SALT = "salt";
-    public static final String FIRST_NAME = "f_name";
-    public static final String LAST_NAME = "l_name";
-    public static final String SOCIAL_ID = "social_id";
-    public static final String AVATAR = "avatar";
+    private final String name;
 
-    static {
-        Class c = User.class;
+    UserFields(String name) {
+        this.name = name;
+    }
 
-        Field[] userFields = c.getDeclaredFields();
-        Field[] thisFields= UserFields.class.getDeclaredFields();
+    public String getName() {
+        return name;
+    }
 
-        List<String> userFieldsList = new ArrayList<>();
-        List<String> thisFieldsList = new ArrayList<>();
-
-        for (Field field : thisFields) {
-            field.setAccessible(true);
-            try {
-                if (!field.get(UserFields.class).equals(UserFields.TABLE_NAME)) {
-                    thisFieldsList.add((String) field.get(UserFields.class));
-                }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-
-        for (Field field : userFields) {
-            if (field.isAnnotationPresent(Column.class)) {
-                Column column = field.getAnnotation(Column.class);
-                userFieldsList.add(column.name());
-            }
-        }
-
-        if (!userFieldsList.equals(thisFieldsList)) {
-            throw new IllegalStateException("UserFields.class fields are not equal to fields which exists in database" +
-                    ".");
-        }
+    @Override
+    public String toString() {
+        return name;
     }
 }

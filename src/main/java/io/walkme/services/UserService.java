@@ -15,25 +15,25 @@ import java.util.List;
 /**
  * Используется нативный SQL для большей производительности
  */
-public class UserService implements EntityService<User, String> {
-    private static final String USER_TABLE_NAME = "wm_user";
+public class UserService implements EntityService<User, String, UserFields> {
+    public static final String TABLE_NAME = "wm_user";
     private static final Logger logger = LogManager.getLogger(UserService.class);
 
     @Nullable
     @Override
-    public User get(String val, String column) throws Exception {
+    public User get(String byParameter, UserFields columnType) throws Exception {
         User user;
         Session session = null;
         NativeQuery<User> nativeQuery;
         try {
             session = HibernateUtil.getSession();
             session.beginTransaction();
-            switch (column) {
-                case UserFields.ID:
+            switch (columnType) {
+                case ID:
                     nativeQuery = session.createNativeQuery(
-                            "select * from " + USER_TABLE_NAME + " " +
-                                    "where " + column + " = :uid", User.class);
-                    nativeQuery.setParameter("uid", Long.parseLong(val));
+                            "select * from " + TABLE_NAME + " " +
+                                    "where " + columnType.getName() + " = :uid", User.class);
+                    nativeQuery.setParameter("uid", Long.parseLong(byParameter));
 
                     try {
                         user = nativeQuery.getSingleResult();
@@ -41,11 +41,11 @@ public class UserService implements EntityService<User, String> {
                         user = null;
                     }
                     break;
-                case UserFields.SOCIAL_ID:
+                case SOCIAL_ID:
                     nativeQuery = session.createNativeQuery(
-                            "select * from " + USER_TABLE_NAME + " " +
-                                    "where " + column + " = :sid", User.class);
-                    nativeQuery.setParameter("sid", Long.parseLong(val));
+                            "select * from " + TABLE_NAME + " " +
+                                    "where " + columnType.getName() + " = :sid", User.class);
+                    nativeQuery.setParameter("sid", Long.parseLong(byParameter));
 
                     try {
                         user = nativeQuery.getSingleResult();
@@ -54,7 +54,7 @@ public class UserService implements EntityService<User, String> {
                     }
                     break;
                 default:
-                    throw new UnsupportedOperationException("Get by " + column + " is still unsupported.");
+                    throw new UnsupportedOperationException("Get by " + columnType + " is still unsupported.");
             }
             session.getTransaction().commit();
         } finally {
@@ -66,7 +66,7 @@ public class UserService implements EntityService<User, String> {
     }
 
     @Override
-    public List<User> getAll(List<String> e, String column) throws Exception {
+    public List<User> getAll(List<String> byParametersList, UserFields columnType) throws Exception {
         throw new UnsupportedOperationException("Get all method is still unsupported.");
     }
 
@@ -89,29 +89,29 @@ public class UserService implements EntityService<User, String> {
     }
 
     @Override
-    public void delete(String val, String column) throws Exception {
+    public void delete(String byParameter, UserFields columnType) throws Exception {
         Session session = null;
         NativeQuery nativeQuery;
         try {
             session = HibernateUtil.getSession();
             session.beginTransaction();
-            switch (column) {
-                case UserFields.ID:
+            switch (columnType) {
+                case ID:
                     nativeQuery = session.createNativeQuery(
-                            "delete from " + USER_TABLE_NAME +
-                                    " where " + column + " = :uid");
-                    nativeQuery.setParameter("uid", Long.parseLong(val));
+                            "delete from " + TABLE_NAME +
+                                    " where " + columnType.getName() + " = :uid");
+                    nativeQuery.setParameter("uid", Long.parseLong(byParameter));
                     nativeQuery.executeUpdate();
                     break;
-                case UserFields.SOCIAL_ID:
+                case SOCIAL_ID:
                     nativeQuery = session.createNativeQuery(
-                            "delete from " + USER_TABLE_NAME +
-                                    " where " + column + " = :sid");
-                    nativeQuery.setParameter("sid", Long.parseLong(val));
+                            "delete from " + TABLE_NAME +
+                                    " where " + columnType.getName() + " = :sid");
+                    nativeQuery.setParameter("sid", Long.parseLong(byParameter));
                     nativeQuery.executeUpdate();
                     break;
                 default:
-                    throw new UnsupportedOperationException("Delete by " + column + " is still unsupported.");
+                    throw new UnsupportedOperationException("Delete by " + columnType + " is still unsupported.");
             }
             session.getTransaction().commit();
         } finally {
