@@ -5,16 +5,17 @@ import java.util.List;
 /**
  *
  * @param <T> Entity объект
- * @param <E> By параметр (delete by, get by)
+ * @param <U> By параметр (delete by, get by)
+ * @param <R> Type параметр (get by id or social id) -> depends on appropriate enum
  */
-public interface EntityService<T, E> {
-    T get(E e, String column) throws Exception;
+public interface EntityService<T, U, R extends Enum<R>> {
+    T get(U byParameter, R columnType) throws Exception;
 
-    List<T> getAll(List<E> e, String column) throws Exception;
+    List<T> getAll(List<U> byParametersList, R columnType) throws Exception;
 
-    void save(T t) throws Exception;
+    void save(T entity) throws Exception;
 
-    void delete(E e, String column) throws Exception;
+    void delete(U byParameter, R columnType) throws Exception;
 
-    void update(T t) throws Exception;
+    void update(T entity) throws Exception;
 }
