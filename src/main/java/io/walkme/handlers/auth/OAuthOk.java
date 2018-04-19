@@ -36,7 +36,7 @@ class OAuthOk {
     private final SHA256HEXEncoder tokenEncoder = new SHA256HEXEncoder();
     private final MD5Encoder md5Encoder = new MD5Encoder();
     private static final SessionService sessionService = SessionService.getInstance();
-    private static final EntityService<User, String> userService = new UserService();
+    private static final EntityService<User, String, UserFields> userService = new UserService();
 
     private String sessionSecretKey;
     private String sig;

@@ -15,7 +15,7 @@ import java.util.List;
 // FIXME КОСТЫЛЬНЫЙ PLACE HOLDER - видит node класс - зависит от него
 public class PlaceHolder {
     private static final List<Node> nodeList = new ArrayList<>();
-    private static final EntityService<Place, String> service = new PlaceService();
+    private static final EntityService<Place, String, PlaceFields> service = new PlaceService();
     private static volatile boolean isLoaded = false;
 
     private static final Logger logger = LogManager.getLogger(PlaceHolder.class);

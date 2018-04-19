@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.walkme.services.EntityService;
 import io.walkme.services.PlaceService;
+import io.walkme.services.fields.PlaceFields;
 import io.walkme.storage.entities.Place;
 import io.walkme.mappers.JsonToPlaceMapper;
 import io.walkme.mappers.Mapper;
@@ -22,7 +23,7 @@ import java.io.FileReader;
 
 
 public class JsonLoader implements Loader<File, WalkMeCategory> {
-    private static final EntityService<Place, String> placeService = new PlaceService();
+    private static final EntityService<Place, String, PlaceFields> placeService = new PlaceService();
     private static final Mapper<Place, JsonObject> mapper = new JsonToPlaceMapper();
     private static final Repair<Place, WalkMeCategory> repair = new PlaceRepair();
     private static final Logger logger = LogManager.getLogger(JsonLoader.class);

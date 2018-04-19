@@ -5,6 +5,7 @@ import io.walkme.helpers.ConfigHelper;
 import io.walkme.helpers.OKHelper;
 import io.walkme.helpers.VKHelper;
 import io.walkme.services.CategoryService;
+import io.walkme.services.PlaceService;
 import io.walkme.services.SessionService;
 import io.walkme.services.fields.PlaceFields;
 import io.walkme.storage.Dropper;
@@ -160,7 +161,7 @@ public class Configurator {
             session = HibernateUtil.getSession();
             session.beginTransaction();
 
-            NativeQuery query = session.createNativeQuery("select count(*) from " + PlaceFields.TABLE_NAME);
+            NativeQuery query = session.createNativeQuery("select count(*) from " + PlaceService.TABLE_NAME);
             BigInteger i = (BigInteger) query.getSingleResult();
             session.getTransaction().commit();
 

@@ -35,7 +35,7 @@ class OAuthVk {
 
     private static final SHA256HEXEncoder tokenEncoder = new SHA256HEXEncoder();
     private static final SessionService sessionService = SessionService.getInstance();
-    private static final EntityService<User, String> userService = new UserService();
+    private static final EntityService<User, String, UserFields> userService = new UserService();
 
     private String code;
     private String salt;
