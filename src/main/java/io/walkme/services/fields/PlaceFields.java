@@ -1,70 +1,26 @@
 package io.walkme.services.fields;
 
-import io.walkme.storage.entities.Place;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.JoinColumn;
-import java.beans.Transient;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
+public enum PlaceFields {
+    ID("id"),
+    NAME("place_name"),
+    CATEGORY_ID("category_id"),
+    GIS_CATEGORY("gis_category"),
+    ADDRESS_NAME("address_name"),
+    ADDRESS_COMMENT("address_comment");
 
-/**
- * Depends on {@link Place}
- * Ignore: location, scheduleAsJsonString, schedule
- */
-public class PlaceFields {
-    public static final String TABLE_NAME = "wm_place";
-    public static final String ID = "id";
-    public static final String NAME = "place_name";
-    public static final String CATEGORY_ID = "category_id";
-    public static final String GIS_CATEGORY = "gis_category";
-    public static final String ADDRESS_NAME = "address_name";
-    public static final String ADDRESS_COMMENT = "address_comment";
+    private final String name;
 
-    static {
-        Class c = Place.class;
+    PlaceFields(String name) {
+        this.name = name;
+    }
 
-        Field[] placeFields = c.getDeclaredFields();
-        Field[] thisFields = PlaceFields.class.getDeclaredFields();
+    public String getName() {
+        return name;
+    }
 
-        List<String> placeFieldsList = new ArrayList<>();
-        List<String> thisFieldsList = new ArrayList<>();
-
-        for (Field field : thisFields) {
-            field.setAccessible(true);
-            try {
-                if (!field.get(Place.class).equals(PlaceFields.TABLE_NAME)) {
-                    thisFieldsList.add((String) field.get(PlaceFields.class));
-                }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-
-        for (Field field : placeFields) {
-            if (field.isAnnotationPresent(Transient.class) || field.isAnnotationPresent(Embedded.class)) {
-                continue;
-            }
-
-            if (field.isAnnotationPresent(Column.class)) {
-                Column column = field.getAnnotation(Column.class);
-
-                if (!column.name().equals("json_schedule")) {
-                    placeFieldsList.add(column.name());
-                }
-            }
-
-            if (field.isAnnotationPresent(JoinColumn.class)) {
-                JoinColumn column = field.getAnnotation(JoinColumn.class);
-                placeFieldsList.add(column.name());
-            }
-        }
-
-        if (!placeFieldsList.equals(thisFieldsList)) {
-            throw new IllegalStateException("PlaceFields.class fields are not equal to fields which exists in " +
-                    "database.");
-        }
+    @Override
+    public String toString() {
+        return name;
     }
 }

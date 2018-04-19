@@ -17,28 +17,28 @@ import java.util.List;
 /**
  * Используется нативный SQL для большей производительности
  */
-public class PlaceService implements EntityService<Place, String> {
+public class PlaceService implements EntityService<Place, String, PlaceFields> {
+    public static final String TABLE_NAME = "wm_place";
     private static final Mapper<Schedule, JsonObject> mapper = new JsonToScheduleMapper();
-    private static final String PLACE_TABLE_NAME = "wm_place";
 
     @Nullable
     @Override
-    public Place get(String val, String column) throws Exception {
+    public Place get(String byParameter, PlaceFields columnType) throws Exception {
         Session session = null;
         Place place = null;
         NativeQuery<Place> nativeQuery;
         try {
             session = HibernateUtil.getSession();
             session.beginTransaction();
-            switch (column) {
-                case PlaceFields.ID:
+            switch (columnType) {
+                case ID:
                     nativeQuery = session.createNativeQuery(
-                            "select * from " + PLACE_TABLE_NAME + " " +
-                                    "where " + PlaceFields.ID + " = :pid", Place.class);
-                    nativeQuery.setParameter("pid", val);
+                            "select * from " + TABLE_NAME + " " +
+                                    "where " + columnType.getName() + " = :pid", Place.class);
+                    nativeQuery.setParameter("pid", byParameter);
                     place = nativeQuery.getSingleResult();
                     break;
-                case PlaceFields.CATEGORY_ID:
+                case CATEGORY_ID:
                     throw new UnsupportedOperationException("Get for column category_id is unsupported. Instead of " +
                             "this use the getAll method.");
             }
@@ -58,26 +58,26 @@ public class PlaceService implements EntityService<Place, String> {
 
     @Nullable
     @Override
-    public List<Place> getAll(List<String> criteria, String column) throws Exception {
+    public List<Place> getAll(List<String> byParametersList, PlaceFields columnType) throws Exception {
         Session session = null;
         List<Place> places = null;
         NativeQuery<Place> nativeQuery;
         try {
             session = HibernateUtil.getSession();
             session.beginTransaction();
-            switch (column) {
-                case PlaceFields.ID:
+            switch (columnType) {
+                case ID:
                     throw new UnsupportedOperationException("Get all for column id is unsupported. Instead of " +
                             "this use the get method.");
-                case PlaceFields.CATEGORY_ID:
-                    if (criteria.size() == 0) {
-                        throw new IllegalStateException("The criteria list parameter is empty");
+                case CATEGORY_ID:
+                    if (byParametersList.size() == 0) {
+                        throw new IllegalStateException("The criteria list parameter is empty.");
                     }
 
                     StringBuilder builder = new StringBuilder();
                     builder.append("(");
 
-                    for (String s : criteria) {
+                    for (String s : byParametersList) {
                         builder.append(Long.parseLong(s)).append(", ");
                     }
 
@@ -85,8 +85,8 @@ public class PlaceService implements EntityService<Place, String> {
                     String set = b.trim().substring(0, b.length() - 2) + ")";
 
                     nativeQuery = session.createNativeQuery(
-                            "select * from " + PLACE_TABLE_NAME + " " +
-                                    "where " + column + " in " + set, Place.class);
+                            "select * from " + TABLE_NAME + " " +
+                                    "where " + columnType.getName() + " in " + set, Place.class);
                     places = nativeQuery.getResultList();
                     break;
             }
@@ -125,7 +125,7 @@ public class PlaceService implements EntityService<Place, String> {
     }
 
     @Override
-    public void delete(String val, String key) throws Exception {
+    public void delete(String byParameter, PlaceFields columnType) throws Exception {
         throw new UnsupportedOperationException("Delete is still unsupported.");
     }
 
