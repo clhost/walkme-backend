@@ -10,9 +10,9 @@ import io.walkme.graph.exceptions.NotEnoughPointsException;
 import io.walkme.graph.exceptions.StartPointIsNotAvailableException;
 import io.walkme.handlers.BaseHttpHandler;
 import io.walkme.mappers.Mapper;
-import io.walkme.mappers.NodeToRouteEntityMapper;
+import io.walkme.mappers.NodeToResponseRouteEntityMapper;
+import io.walkme.response.route.ResponseRouteEntity;
 import io.walkme.response.route.RouteBuilder;
-import io.walkme.response.route.RouteEntity;
 import io.walkme.storage.entities.*;
 import io.walkme.utils.ResponseBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -32,7 +32,7 @@ public class GetRouteHandler extends BaseHttpHandler {
     private static final String PARAM_CATEGORIES = "categories";
 
     private final Logger logger = LogManager.getLogger(GetRouteHandler.class);
-    private final Mapper<RouteEntity, Node> mapper = new NodeToRouteEntityMapper();
+    private final Mapper<ResponseRouteEntity, Node> mapper = new NodeToResponseRouteEntityMapper();
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -69,7 +69,7 @@ public class GetRouteHandler extends BaseHttpHandler {
 
 
             RouteHolder holder = finder.getWays();
-            List<RouteEntity> entities = new ArrayList<>();
+            List<ResponseRouteEntity> entities = new ArrayList<>();
 
             for (Node node : holder.getPlaces()) {
                 entities.add(mapper.map(node));

@@ -3,7 +3,7 @@ package io.walkme.mappers;
 import io.walkme.graph.Node;
 import io.walkme.response.route.ResponseRouteEntity;
 
-public class NodeToRouteEntityMapper implements Mapper<ResponseRouteEntity, Node> {
+public class NodeToResponseRouteEntityMapper implements Mapper<ResponseRouteEntity, Node> {
     @Override
     public ResponseRouteEntity map(Node node) {
         return new ResponseRouteEntity(

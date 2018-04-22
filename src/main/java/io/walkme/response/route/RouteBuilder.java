@@ -8,7 +8,7 @@ import java.util.List;
 public class RouteBuilder {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();//new Gson();
 
-    public static String asJson(int status, List<RouteEntity> entities, List<List<Location>> points) {
+    public static String asJson(int status, List<ResponseRouteEntity> entities, List<List<Location>> points) {
         JsonObject jsonObject = new JsonObject();
 
         Way[] ways = new Way[points.size()];

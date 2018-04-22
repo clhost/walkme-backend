@@ -18,7 +18,7 @@ public abstract class BaseHttpHandler extends ChannelInboundHandlerAdapter {
     protected static final String API_AUTH = "auth";
     protected static final String API_FAKE = "fake";
     protected static final String API_LOGOUT = "logout";
-    protected static final String API_CATEGORIES = "getCategories";
+    protected static final String API_START = "start";
     protected static final String API_GET_ROUTE = "getRoute";
     private static Set<String> set = new HashSet<>();
 
@@ -27,7 +27,7 @@ public abstract class BaseHttpHandler extends ChannelInboundHandlerAdapter {
         set.add(API_AUTH);
         set.add(API_FAKE);
         set.add(API_LOGOUT);
-        set.add(API_CATEGORIES);
+        set.add(API_START);
         set.add(API_GET_ROUTE);
     }
 

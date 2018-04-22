@@ -3,7 +3,6 @@ package io.walkme.handlers.auth;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
-import io.walkme.core.ServerMode;
 import io.walkme.handlers.BaseHttpHandler;
 import io.walkme.services.SessionService;
 import io.walkme.utils.ResponseBuilder;
