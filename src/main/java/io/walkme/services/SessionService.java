@@ -6,9 +6,9 @@ import org.hibernate.query.Query;
 import io.walkme.storage.entities.Session;
 import io.walkme.utils.HibernateUtil;
 
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class SessionService {
     private static final String SESSION_TABLE_NAME = "wm_session";
@@ -19,7 +19,7 @@ public class SessionService {
      * key - user id
      * value - session token
      */
-    private final ConcurrentHashMap<Long, String> sessions = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Long, Set<String>> sessions = new ConcurrentHashMap<>();
 
     private SessionService() {
         // for singleton
@@ -50,7 +50,11 @@ public class SessionService {
                     Session.class);
 
             if (sessions.size() == 0) {
-                query.getResultStream().forEach(s -> sessions.put(s.getUser().getId(), s.getSessionToken()));
+                Map<Long, List<Session>> map =
+                        query.getResultStream().collect(Collectors.groupingBy(s -> s.getUser().getId()));
+                map.forEach((i, t) ->
+                        sessions.put(i, t.stream().map(Session::getSessionToken).collect(Collectors.toSet()))
+                );
             } else {
                 throw new IllegalStateException("The sessions map must be empty for performing this operation.");
             }
@@ -65,7 +69,12 @@ public class SessionService {
     }
 
     public boolean isSessionExist(String token) {
-        return sessions.containsValue(token);
+        for (Map.Entry<Long, Set<String>> entry : sessions.entrySet()) {
+            if (entry.getValue().contains(token)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void saveSession(Session session) {
@@ -77,7 +86,15 @@ public class SessionService {
             hibSession.saveOrUpdate(session);
             hibSession.getTransaction().commit();
 
-            sessions.put(session.getUser().getId(), session.getSessionToken());
+            Set<String> e = sessions.get(session.getUser().getId());
+            if (e != null) {
+                e.add(session.getSessionToken());
+            } else {
+                e = new HashSet<>();
+                e.add(session.getSessionToken());
+                sessions.put(session.getUser().getId(), e);
+            }
+
         } finally {
             if (hibSession != null) {
                 hibSession.close();
@@ -86,13 +103,13 @@ public class SessionService {
     }
 
     public void deleteSession(String token) {
-        Map.Entry<Long, String> entry;
-        Iterator<Map.Entry<Long, String>> iterator = sessions.entrySet().iterator();
+        Iterator<Map.Entry<Long, Set<String>>> iterator = sessions.entrySet().iterator();
 
         while (iterator.hasNext()) {
-            entry = iterator.next();
-            if (entry.getValue().equals(token)) {
-                iterator.remove();
+            Set<String> e = iterator.next().getValue();
+            if (e.contains(token)) {
+                //iterator.remove();
+                e.remove(token);
                 break;
             }
         }
