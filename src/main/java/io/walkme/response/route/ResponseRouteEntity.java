@@ -75,28 +75,4 @@ public class RouteEntity {
                 place.getAddressComment(),
                 builder.toString());
     }
-
-    public Location getPoint() {
-        return point;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public int getCategoryId() {
-        return categoryId;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public String getAddressAdditional() {
-        return addressAdditional;
-    }
-
-    public String getWorkingTime() {
-        return workingTime;
-    }
 }

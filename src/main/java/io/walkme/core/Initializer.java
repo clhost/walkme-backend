@@ -4,7 +4,7 @@ import io.netty.handler.ssl.SslContext;
 import io.walkme.handlers.auth.AuthHandler;
 import io.walkme.handlers.auth.LogoutHandler;
 import io.walkme.handlers.auth.TokenHandler;
-import io.walkme.handlers.categories.GetCategoriesHandler;
+import io.walkme.handlers.categories.StartHandler;
 import io.walkme.handlers.info.InvalidRequestHandler;
 import io.walkme.handlers.route.GetRouteHandler;
 import io.walkme.handlers.info.InfoHandler;
@@ -21,6 +21,7 @@ import io.walkme.handlers.statics.StaticHandler;
 public class Initializer extends ChannelInitializer<SocketChannel> {
     private final EventExecutorGroup route = new DefaultEventExecutorGroup(8);
     private final EventExecutorGroup auth = new DefaultEventExecutorGroup(4);
+    private final EventExecutorGroup start = new DefaultEventExecutorGroup(4);
     private final EventExecutorGroup logout = new DefaultEventExecutorGroup(4);
 
     private final SslContext sslContext;
@@ -52,7 +53,7 @@ public class Initializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast(auth, "auth", new AuthHandler());
         pipeline.addLast(logout, "logout", new LogoutHandler());
 
-        pipeline.addLast("categories", new GetCategoriesHandler());
+        pipeline.addLast(start, "start", new StartHandler());
         pipeline.addLast(route, "route", new GetRouteHandler());
 
         pipeline.addLast("invalid", new InvalidRequestHandler());
