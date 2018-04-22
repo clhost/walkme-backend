@@ -53,6 +53,19 @@ public class UserService implements EntityService<User, String, UserFields> {
                         user = null;
                     }
                     break;
+                case TOKEN:
+                    nativeQuery = session.createNativeQuery(
+                            "select * from " + TABLE_NAME + " " +
+                                    "where " + UserFields.ID.getName() + " = (" +
+                                    "select user_id from wm_session where session_token = :tok)", User.class);
+                    nativeQuery.setParameter("tok", byParameter);
+
+                    try {
+                        user = nativeQuery.getSingleResult();
+                    } catch (NoResultException e) {
+                        user = null;
+                    }
+                    break;
                 default:
                     throw new UnsupportedOperationException("Get by " + columnType + " is still unsupported.");
             }

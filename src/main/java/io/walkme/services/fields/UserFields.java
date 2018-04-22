@@ -7,7 +7,8 @@ public enum UserFields {
     FIRST_NAME("f_name"),
     LAST_NAME("l_name"),
     SOCIAL_ID("social_id"),
-    AVATAR("avatar");
+    AVATAR("avatar"),
+    TOKEN("token");
 
     private final String name;
 
