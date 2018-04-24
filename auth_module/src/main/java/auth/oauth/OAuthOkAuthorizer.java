@@ -22,8 +22,6 @@ public class OAuthOkAuthorizer extends AbstractOAuthAuthorizer {
     private static final String PHOTO = "pic190x190";
     private static final Logger logger = LogManager.getLogger(OAuthOkAuthorizer.class);
 
-    private String sessionSecretKey;
-    private String sig;
     private String salt;
     private String sessionToken;
     private String accessToken;
@@ -61,11 +59,11 @@ public class OAuthOkAuthorizer extends AbstractOAuthAuthorizer {
     }
 
     private String profileInfo() {
-        sessionSecretKey = md5Encoder.encode(accessToken + OKHelper.clientSecret());
-        sig = md5Encoder.encode(
+        String sessionSecretKey = md5Encoder.encode(accessToken + OKHelper.clientSecret());
+        String sig = md5Encoder.encode(
                 "application_key=" + OKHelper.clientPublic() +
-                "fields=" + FIRST_NAME + "," + LAST_NAME + "," + PHOTO +
-                "method=users.getCurrentUser" + sessionSecretKey)
+                        "fields=" + FIRST_NAME + "," + LAST_NAME + "," + PHOTO +
+                        "method=users.getCurrentUser" + sessionSecretKey)
                 .toLowerCase();
 
         JsonObject jsonObject = oAuthRequest(OKHelper.userProfileInfoString(accessToken, sig), RequestType.POST);
