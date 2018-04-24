@@ -1,5 +1,7 @@
 package io.walkme.handlers.auth;
 
+import auth.core.AuthService;
+import com.google.gson.JsonObject;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 
@@ -10,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.Map;
-
 /**
  * handle: /api/auth
  * params: code, state
@@ -28,6 +29,11 @@ public class AuthHandler extends BaseHttpHandler {
     private static final String STATE = "state";
 
     private final Logger logger = LogManager.getLogger(AuthHandler.class);
+    private final AuthService authService;
+
+    public AuthHandler(AuthService authService) {
+        this.authService = authService;
+    }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -67,10 +73,18 @@ public class AuthHandler extends BaseHttpHandler {
     private void handleAuth(ChannelHandlerContext ctx, Map<String, List<String>> params) throws Exception {
         switch (params.get(STATE).get(0)) {
             case VK:
-                new OAuthVk().handle(ctx, params);
-                return;
             case OK:
-                new OAuthOk().handle(ctx, params);
+                String token = authService.authorize(params.get("code").get(0), params.get(STATE).get(0));
+                if (token != null) {
+                    JsonObject object = new JsonObject();
+                    object.addProperty("status", 200);
+                    object.addProperty("token", token);
+                    ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
+                            HttpResponseStatus.OK,
+                            object.toString()
+                    ));
+                    ctx.close();
+                }
                 return;
             default:
                 ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
