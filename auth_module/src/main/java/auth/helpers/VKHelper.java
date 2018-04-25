@@ -59,15 +59,4 @@ public class VKHelper extends SocialHelper {
                 "access_token=" + encodeURIComponent(accessToken) + "&" +
                 "v=" + encodeURIComponent(API_VERSION);
     }
-
-    public static String friendListString(String accessToken, String userId) {
-        return API_URL + "friends.get?user_id=" + encodeURIComponent(userId) + "&" +
-                "order=random" + "&" +
-                "v=" + encodeURIComponent(API_VERSION);
-    }
-
-    public static void main(String[] args) {
-        VKHelper.init();
-        System.out.println(VKHelper.authString());
-    }
 }

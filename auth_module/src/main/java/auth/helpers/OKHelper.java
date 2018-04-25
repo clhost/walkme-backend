@@ -70,9 +70,4 @@ public class OKHelper extends SocialHelper {
     public static String clientPublic() {
         return CLIENT_PUBLIC;
     }
-
-    public static void main(String[] args) {
-        OKHelper.init();
-        System.out.println(OKHelper.authString());
-    }
 }
