@@ -72,6 +72,13 @@ public class AuthService extends AbstractBaseAuthService {
         }
     }
 
+    @Override
+    public void logout(String token) {
+        if (isUserAuthorized(token)) {
+            sessionService.deleteSession(token);
+        }
+    }
+
     public synchronized void start() {
         if (!isStarted) {
             HibernateUtil.start();

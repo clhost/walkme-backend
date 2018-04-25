@@ -22,8 +22,14 @@ interface BaseAuthService {
      *
      * @param code код авторизации
      * @param state vk авторизация или ok авторизация
-     * @return token авторизации
+     * @return token сессии
      */
     @Nullable
     String authorize(String code, String state);
+
+    /**
+     *
+     * @param token token сессии
+     */
+    void logout(String token);
 }
