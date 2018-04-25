@@ -15,6 +15,7 @@ interface BaseAuthService {
      * @param token token сессии
      * @return данные о юзере в строковом виде (сериализованный User из базы данных)
      */
+    @Nullable
     String getUserInfo(String token);
 
     /**

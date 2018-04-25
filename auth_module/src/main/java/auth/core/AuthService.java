@@ -51,7 +51,7 @@ public class AuthService extends AbstractBaseAuthService {
         try {
             user = userService.get(token, UserFields.TOKEN);
         } catch (Exception e) {
-            return gson.toJson(error("user not found"));
+            return null;
         }
         return gson.toJson(user);
     }
@@ -68,7 +68,7 @@ public class AuthService extends AbstractBaseAuthService {
             case "fb":
                 return new OAuthFbAuthorizer(okHttpClient).authorize(code);
             default:
-                return gson.toJson(error("invalid state"));
+                return null;
         }
     }
 
@@ -86,11 +86,5 @@ public class AuthService extends AbstractBaseAuthService {
         System.out.println("\tVK: " + VKHelper.authString());
         System.out.println("\tOK: " + OKHelper.authString());
         System.out.println("\tFB: " + FBHelper.authString());
-    }
-
-    private String error(String error) {
-        JsonObject object = new JsonObject();
-        object.addProperty("error", error);
-        return object.getAsString();
     }
 }
