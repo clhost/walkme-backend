@@ -1,16 +1,17 @@
 package auth.entities;
 
 import com.google.gson.annotations.Expose;
+import org.hibernate.annotations.Check;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "wm_user")
+@Check(constraints = "social_network in ('vk', 'ok', 'fb')")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, nullable = false)
-    @Expose
     private long id;
 
     @Column(name = "salt", unique = true, nullable = false, length = 20)
@@ -27,6 +28,9 @@ public class User {
     @Column(name = "social_id", nullable = false, unique = true)
     @Expose
     private long socialId;
+
+    @Column(name = "social_network", nullable = false)
+    private String socialNetwork;
 
     @Column(name = "avatar", nullable = false)
     @Expose
@@ -60,6 +64,10 @@ public class User {
         return avatar;
     }
 
+    public String getSocialNetwork() {
+        return socialNetwork;
+    }
+
     public void setId(long id) {
         this.id = id;
     }
@@ -82,6 +90,10 @@ public class User {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public void setSocialNetwork(String socialNetwork) {
+        this.socialNetwork = socialNetwork;
     }
 
     @Override

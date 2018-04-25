@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 @Entity(name = "Session")
 @Table(name = "wm_session")
-@Check(constraints = "state in ('vk', 'ok')")
+@Check(constraints = "state in ('vk', 'ok', 'fb')")
 public class Session {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
