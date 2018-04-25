@@ -38,10 +38,10 @@ Configuration:
       AppenderRef:
         ref: Console_Appender
     Logger:
-      name: io.walkme.auth
+      name: auth
       AppenderRef:
         ref: File_Appender
     Logger:
-      name: io.walkme.auth
+      name: auth
       AppenderRef:
         ref: File_INFO_Appender
