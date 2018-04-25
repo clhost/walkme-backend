@@ -82,7 +82,7 @@ public class AuthService extends AbstractBaseAuthService {
             sessionService.loadFromDatabase();
             isStarted = true;
         }
-        System.out.println("Auth strings:\n");
+        System.out.println("Auth strings:");
         System.out.println("\tVK: " + VKHelper.authString());
         System.out.println("\tOK: " + OKHelper.authString());
         System.out.println("\tFB: " + FBHelper.authString());
