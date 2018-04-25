@@ -1,7 +1,9 @@
 package auth.core;
 
+import auth.helpers.FBHelper;
 import auth.helpers.OKHelper;
 import auth.helpers.VKHelper;
+import auth.oauth.OAuthFbAuthorizer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -63,6 +65,8 @@ public class AuthService extends AbstractBaseAuthService {
                 return new OAuthVkAuthorizer(okHttpClient).authorize(code);
             case "ok":
                 return new OAuthOkAuthorizer(okHttpClient).authorize(code);
+            case "fb":
+                return new OAuthFbAuthorizer(okHttpClient).authorize(code);
             default:
                 return gson.toJson(error("invalid state"));
         }
@@ -74,9 +78,14 @@ public class AuthService extends AbstractBaseAuthService {
             HibernateUtil.setNamesUTF8();
             VKHelper.init();
             OKHelper.init();
+            FBHelper.init();
             sessionService.loadFromDatabase();
             isStarted = true;
         }
+        System.out.println("Auth strings:\n");
+        System.out.println("\tVK: " + VKHelper.authString());
+        System.out.println("\tOK: " + OKHelper.authString());
+        System.out.println("\tFB: " + FBHelper.authString());
     }
 
     private String error(String error) {
