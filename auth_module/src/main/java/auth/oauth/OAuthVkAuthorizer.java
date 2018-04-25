@@ -82,17 +82,6 @@ public class OAuthVkAuthorizer extends AbstractOAuthAuthorizer {
             logger.error(e.getMessage());
             return null;
         }
-
-        /*// --------------------------- тест
-        okhttp3.Request request = new okhttp3.Request
-                .Builder()
-                .get()
-                .url(VKHelper.friendListString(accessToken, userId))
-                .build();
-        okhttp3.Response response = HttpClientHolder.instance().OkHttpClient().newCall(request).execute();
-        System.out.println(response.body().string());
-        // --------------------------- тест*/
-
         return saveUserAndReturnToken();
     }
 
