@@ -100,13 +100,14 @@ public class OAuthFbAuthorizer extends AbstractOAuthAuthorizer {
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setSocialId(Long.parseLong(userId));
+        user.setSocialNetwork("fb");
         user.setAvatar(photo);
 
         try {
             User exUser = userService.get(String.valueOf(user.getSocialId()), UserFields.SOCIAL_ID);
             if (exUser == null) {
                 userService.save(user);
-                sessionService.saveSession(new Session(user, sessionToken, accessToken, "vk"));
+                sessionService.saveSession(new Session(user, sessionToken, accessToken, "fb"));
             } else {
                 // обновить, если имя, фамилия или аватар изменены
                 if (!user.equals(exUser)) {
@@ -116,7 +117,7 @@ public class OAuthFbAuthorizer extends AbstractOAuthAuthorizer {
                     userService.update(exUser);
                 }
                 sessionToken = tokenEncoder.encode(exUser.getSalt() + System.currentTimeMillis());
-                sessionService.saveSession(new Session(exUser, sessionToken, accessToken, "vk"));
+                sessionService.saveSession(new Session(exUser, sessionToken, accessToken, "fb"));
             }
             return sessionToken;
         } catch (Exception e) {

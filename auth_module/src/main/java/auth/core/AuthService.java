@@ -6,7 +6,6 @@ import auth.helpers.VKHelper;
 import auth.oauth.OAuthFbAuthorizer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import auth.entities.User;
 import auth.entities.UserFields;
 import auth.oauth.OAuthOkAuthorizer;

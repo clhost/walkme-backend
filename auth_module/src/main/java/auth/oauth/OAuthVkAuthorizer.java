@@ -91,6 +91,7 @@ public class OAuthVkAuthorizer extends AbstractOAuthAuthorizer {
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setSocialId(Long.parseLong(userId));
+        user.setSocialNetwork("vk");
         user.setAvatar(photo);
 
         try {

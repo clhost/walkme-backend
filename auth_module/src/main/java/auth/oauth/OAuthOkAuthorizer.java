@@ -99,6 +99,7 @@ public class OAuthOkAuthorizer extends AbstractOAuthAuthorizer {
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setSocialId(Long.parseLong(userId));
+        user.setSocialNetwork("ok");
         user.setAvatar(photo);
 
         try {
