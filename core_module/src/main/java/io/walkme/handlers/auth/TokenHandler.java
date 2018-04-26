@@ -1,11 +1,11 @@
 package io.walkme.handlers.auth;
 
+import auth.core.AuthService;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.walkme.handlers.BaseHttpHandler;
-import io.walkme.services.SessionService;
-import io.walkme.utils.ResponseBuilder;
+import io.walkme.response.ResponseBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,6 +14,11 @@ import java.util.Map;
 
 public class TokenHandler extends BaseHttpHandler {
     private final Logger logger = LogManager.getLogger(TokenHandler.class);
+    private final AuthService authService;
+
+    public TokenHandler(AuthService authService) {
+        this.authService = authService;
+    }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -67,9 +72,8 @@ public class TokenHandler extends BaseHttpHandler {
             }
         }
 
-        if (params.get("token") != null &&
-                params.get("token").size() > 0 &&
-                SessionService.getInstance().isSessionExist(params.get("token").get(0))) {
+        if (params.get("token") != null && params.get("token").size() > 0 &&
+                authService.isUserAuthorized(params.get("token").get(0))) {
             ctx.fireChannelRead(msg);
         } else {
             ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(

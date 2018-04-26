@@ -12,11 +12,17 @@ package io.walkme.core;
  * В stub режиме отключена SSL.
  */
 public class ServerMode {
-    private static boolean mode = false;
+    private static boolean mode;
     private static Boolean auth = null;
 
     static void setProdMode() {
         mode = true;
+        setAuth(true);
+    }
+
+    static void setStubMode() {
+        mode = false;
+        setAuth(true);
     }
 
     static void setAuth(boolean a) {

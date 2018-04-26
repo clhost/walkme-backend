@@ -1,5 +1,6 @@
 package io.walkme.core;
 
+import auth.core.AuthService;
 import io.netty.handler.ssl.SslContext;
 import io.walkme.handlers.auth.AuthHandler;
 import io.walkme.handlers.auth.LogoutHandler;
@@ -16,6 +17,7 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import io.netty.util.concurrent.EventExecutorGroup;
 import io.walkme.handlers.statics.StaticHandler;
+import route.core.RouteService;
 
 
 public class Initializer extends ChannelInitializer<SocketChannel> {
@@ -25,9 +27,13 @@ public class Initializer extends ChannelInitializer<SocketChannel> {
     private final EventExecutorGroup logout = new DefaultEventExecutorGroup(4);
 
     private final SslContext sslContext;
+    private final AuthService authService;
+    private final RouteService routeService;
 
-    public Initializer(SslContext sslContext) {
+    public Initializer(SslContext sslContext, AuthService authService, RouteService routeService) {
         this.sslContext = sslContext;
+        this.authService = authService;
+        this.routeService = routeService;
     }
 
 
@@ -48,13 +54,13 @@ public class Initializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast("info", new InfoHandler(true));
         pipeline.addLast("static", new StaticHandler());
 
-        pipeline.addLast("token", new TokenHandler());
+        pipeline.addLast("token", new TokenHandler(authService));
 
-        pipeline.addLast(auth, "auth", new AuthHandler());
-        pipeline.addLast(logout, "logout", new LogoutHandler());
+        pipeline.addLast(auth, "auth", new AuthHandler(authService));
+        pipeline.addLast(logout, "logout", new LogoutHandler(authService));
 
-        pipeline.addLast(start, "start", new StartHandler());
-        pipeline.addLast(route, "route", new GetRouteHandler());
+        pipeline.addLast(start, "start", new StartHandler(authService, routeService));
+        pipeline.addLast(route, "route", new GetRouteHandler(routeService));
 
         pipeline.addLast("invalid", new InvalidRequestHandler());
     }

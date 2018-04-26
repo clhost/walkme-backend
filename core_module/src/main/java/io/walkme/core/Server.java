@@ -1,5 +1,6 @@
 package io.walkme.core;
 
+import auth.core.AuthService;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -12,6 +13,7 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import route.core.RouteService;
 
 import javax.net.ssl.SSLException;
 
@@ -25,8 +27,10 @@ public class Server {
     private ChannelFuture cf;
     private final Logger logger = LogManager.getLogger(Server.class);
     private SslContext sslContext;
+    private AuthService authService;
+    private RouteService routeService;
 
-    Server(final String host, final int port) {
+    Server(final String host, final int port, AuthService authService, RouteService routeService) {
         if (System.getProperty("os.name").equalsIgnoreCase("linux")) {
             bossGroup = new EpollEventLoopGroup(1);
             workerGroup = new EpollEventLoopGroup();
@@ -39,6 +43,8 @@ public class Server {
 
         this.host = host;
         this.port = port;
+        this.authService = authService;
+        this.routeService = routeService;
 
         try {
             if (ServerMode.getMode()) {
@@ -58,7 +64,7 @@ public class Server {
             bootstrap
                     .group(bossGroup, workerGroup)
                     .channel(socketChannelClass)
-                    .childHandler(new Initializer(sslContext))
+                    .childHandler(new Initializer(sslContext, authService, routeService))
             .option(ChannelOption.SO_BACKLOG, 128);
 
             cf = bootstrap.bind(host, port).syncUninterruptibly();
@@ -96,9 +102,13 @@ public class Server {
         close();
     }
 
-    public static void main(String[] args) {
+    public static Server configuredServer() {
         Server server = Configurator.configure();
         Runtime.getRuntime().addShutdownHook(new Thread(server::shutdown));
-        server.start();
+        return server;
+    }
+
+    public static void main(String[] args) {
+        Server.configuredServer().start();
     }
 }

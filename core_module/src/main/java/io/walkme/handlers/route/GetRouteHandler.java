@@ -1,24 +1,17 @@
 package io.walkme.handlers.route;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
-import io.walkme.graph.Node;
-import io.walkme.graph.RouteHolder;
-import io.walkme.graph.Ways;
-import io.walkme.graph.exceptions.NotEnoughPointsException;
-import io.walkme.graph.exceptions.StartPointIsNotAvailableException;
 import io.walkme.handlers.BaseHttpHandler;
-import io.walkme.mappers.Mapper;
-import io.walkme.mappers.NodeToResponseRouteEntityMapper;
-import io.walkme.response.route.ResponseRouteEntity;
-import io.walkme.response.route.RouteBuilder;
-import io.walkme.storage.entities.*;
-import io.walkme.utils.ResponseBuilder;
+import io.walkme.response.ResponseBuilder;
+import io.walkme.response.ResultBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import route.core.RouteService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,12 +20,17 @@ import java.util.Map;
  * params (json): token, lat, lng, categories
  */
 public class GetRouteHandler extends BaseHttpHandler {
+    private static final JsonParser jsonParser = new JsonParser();
     private static final String PARAM_LAT = "lat";
     private static final String PARAM_LNG = "lng";
     private static final String PARAM_CATEGORIES = "categories";
 
     private final Logger logger = LogManager.getLogger(GetRouteHandler.class);
-    private final Mapper<ResponseRouteEntity, Node> mapper = new NodeToResponseRouteEntityMapper();
+    private final RouteService routeService;
+
+    public GetRouteHandler(RouteService routeService) {
+        this.routeService = routeService;
+    }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -60,33 +58,31 @@ public class GetRouteHandler extends BaseHttpHandler {
 
     private void handleRoute(ChannelHandlerContext ctx, Map<String, List<String>> params) throws Exception {
         try {
-            Ways finder = new Ways(
-                    System.currentTimeMillis(),
-                    new Location(
-                            Double.parseDouble(params.get(PARAM_LAT).get(0)),
-                            Double.parseDouble(params.get(PARAM_LNG).get(0))),
+            String route = routeService.getRoute(
+                    Double.parseDouble(params.get(PARAM_LAT).get(0)),
+                    Double.parseDouble(params.get(PARAM_LNG).get(0)),
                     new int[]{});
 
+            JsonObject jsonObject = jsonParser.parse(route).getAsJsonObject();
+            if (jsonObject.get("error") != null) {
+                ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
+                        HttpResponseStatus.OK,
+                        ResultBuilder.asJson(500, jsonObject.get("error"), ResultBuilder.ResultType.ERROR)));
+                return;
+            }
 
-            RouteHolder holder = finder.getWays();
-            List<ResponseRouteEntity> entities = new ArrayList<>();
-
-            for (Node node : holder.getPlaces()) {
-                entities.add(mapper.map(node));
+            JsonObject resultJsonObject;
+            if (jsonObject.get("route") != null && jsonObject.get("route").isJsonObject()) {
+                resultJsonObject = jsonObject.get("route").getAsJsonObject();
+                ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
+                        HttpResponseStatus.OK,
+                        ResultBuilder.asJson(200, resultJsonObject, ResultBuilder.ResultType.RESULT)));
+                return;
             }
 
             ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
-                    HttpResponseStatus.OK, RouteBuilder.asJson(200, entities, holder.getPoints())));
-        } catch (StartPointIsNotAvailableException e) {
-            ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
-                    HttpResponseStatus.INTERNAL_SERVER_ERROR,
-                    ResponseBuilder.JSON_START_POINT_UNAVAILABLE_RESPONSE
-            ));
-        } catch (NotEnoughPointsException e) {
-            ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
-                    HttpResponseStatus.INTERNAL_SERVER_ERROR,
-                    ResponseBuilder.JSON_NOT_ENOUGH_POINTS_RESPONSE
-            ));
+                    HttpResponseStatus.OK,
+                    ResponseBuilder.JSON_BAD_GATEWAY_RESPONSE));
         } finally {
             ctx.close();
             release();
@@ -103,6 +99,7 @@ public class GetRouteHandler extends BaseHttpHandler {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         logger.error(cause.getMessage());
+        cause.printStackTrace();
         ctx.close();
         release();
     }

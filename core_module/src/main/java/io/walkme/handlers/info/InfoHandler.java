@@ -1,10 +1,8 @@
 package io.walkme.handlers.info;
 
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import io.walkme.handlers.BaseHttpHandler;
-import io.walkme.utils.ResponseBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

@@ -3,7 +3,7 @@ package io.walkme.handlers.statics;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import io.walkme.handlers.BaseHttpHandler;
-import io.walkme.utils.ResponseBuilder;
+import io.walkme.response.ResponseBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

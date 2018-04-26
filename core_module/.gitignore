@@ -1,0 +1,15 @@
+# Ignore everything
+*
+
+# But not Java files...
+!.gitignore
+!build.gradle
+!*.java
+!*.md
+!*.yaml
+
+# Some needed files
+!*.properties
+
+# ...even if they are in subdirectories
+!*/

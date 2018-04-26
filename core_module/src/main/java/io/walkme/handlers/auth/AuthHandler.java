@@ -6,7 +6,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 
 import io.walkme.handlers.BaseHttpHandler;
-import io.walkme.utils.ResponseBuilder;
+import io.walkme.response.ResponseBuilder;
+import io.walkme.response.ResultBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,8 +18,9 @@ import java.util.Map;
  * params: code, state
  *
  * Вызывается по нажатию кнопки на фронте "зайти под соц.сетью"
- * ВК: /api/auth&state=vk
- * OK: /api/auth&state=ok
+ * ВК: /api/auth&...state=vk
+ * OK: /api/auth&...state=ok
+ * ФБ: /api/auth&...state=fb
  *
  * return: "token": "token_string";
  * example: /api/auth&code=km32DEd&state=vk
@@ -26,6 +28,7 @@ import java.util.Map;
 public class AuthHandler extends BaseHttpHandler {
     private static final String VK = "vk";
     private static final String OK = "ok";
+    private static final String FB = "fb";
     private static final String STATE = "state";
 
     private final Logger logger = LogManager.getLogger(AuthHandler.class);
@@ -47,8 +50,7 @@ public class AuthHandler extends BaseHttpHandler {
         } else if (tokens[0].equals(API_PREFIX) && tokens[1].equals(API_FAKE)) {
             ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                     HttpResponseStatus.OK,
-                    ResponseBuilder.JSON_FAKE_RESPONSE
-            ));
+                    ResponseBuilder.JSON_FAKE_RESPONSE));
             ctx.close();
             release();
         } else if (tokens[0].equals(API_PREFIX) && tokens[1].equals(API_AUTH)) {
@@ -61,7 +63,8 @@ public class AuthHandler extends BaseHttpHandler {
                 handleAuth(ctx, params);
             } else {
                 ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
-                        HttpResponseStatus.BAD_REQUEST, ResponseBuilder.JSON_BAD_RESPONSE));
+                        HttpResponseStatus.BAD_REQUEST,
+                        ResponseBuilder.JSON_BAD_RESPONSE));
                 ctx.close();
                 release();
             }
@@ -74,15 +77,19 @@ public class AuthHandler extends BaseHttpHandler {
         switch (params.get(STATE).get(0)) {
             case VK:
             case OK:
-                String token = authService.authorize(params.get("code").get(0), params.get(STATE).get(0));
+            case FB:
+                String code = params.get("code").get(0);
+                String state = params.get(STATE).get(0).substring(0, 2);
+                String token = authorizeAndGetToken(code, state);
                 if (token != null) {
-                    JsonObject object = new JsonObject();
-                    object.addProperty("status", 200);
-                    object.addProperty("token", token);
                     ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                             HttpResponseStatus.OK,
-                            object.toString()
-                    ));
+                            ResultBuilder.asJson(200, wrapToken(token), ResultBuilder.ResultType.RESULT)));
+                    ctx.close();
+                } else {
+                    ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
+                            HttpResponseStatus.BAD_GATEWAY,
+                            ResponseBuilder.JSON_BAD_GATEWAY_RESPONSE));
                     ctx.close();
                 }
                 return;
@@ -94,9 +101,20 @@ public class AuthHandler extends BaseHttpHandler {
         }
     }
 
+    private String authorizeAndGetToken(String code, String state) {
+        return authService.authorize(code, state);
+    }
+
+    private JsonObject wrapToken(String token) {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("token", token);
+        return jsonObject;
+    }
+
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         logger.error(cause.getMessage());
+        cause.printStackTrace();
         ctx.close();
         release();
     }
