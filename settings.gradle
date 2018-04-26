@@ -1,2 +1,6 @@
 rootProject.name = 'core_node'
+include 'auth_module'
+include 'core_module'
+include 'graph_module'
+include 'route_module'
 
