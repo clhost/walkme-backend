@@ -1,8 +1,7 @@
 package auth.helpers;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Properties;
 
 public class FBHelper extends SocialHelper {
@@ -20,7 +19,8 @@ public class FBHelper extends SocialHelper {
         Properties properties = new Properties();
 
         try {
-            properties.load(new FileInputStream(new File(ConfigHelper.LOCAL_PROPERTIES)));
+            properties.load(new InputStreamReader(
+                    FBHelper.class.getResourceAsStream("/" + ConfigHelper.LOCAL_PROPERTIES)));
         } catch (IOException e) {
             e.printStackTrace();
         }

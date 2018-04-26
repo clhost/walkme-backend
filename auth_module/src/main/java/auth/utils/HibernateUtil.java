@@ -8,7 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
-import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.Properties;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -16,13 +16,12 @@ public class HibernateUtil {
     private static SessionFactory factory;
     private static final ReentrantLock lock = new ReentrantLock();
     private static final Logger logger = LogManager.getLogger(HibernateUtil.class);
-
     public static void start() {
         lock.lock();
         try {
             Properties properties = new Properties();
-            properties.load(new FileInputStream(ConfigHelper.HIBERNATE_PROPERTIES));
-            properties.remove("hibernate.dialect");
+            properties.load(new InputStreamReader(
+                    HibernateUtil.class.getResourceAsStream("/" + ConfigHelper.HIBERNATE_PROPERTIES)));
             properties.setProperty("hibernate.dialect", "auth.utils.UTFMySQLSupportDialect");
 
             factory = new Configuration()
@@ -31,6 +30,7 @@ public class HibernateUtil {
                     .addAnnotatedClass(auth.entities.Session.class)
                     .buildSessionFactory();
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error(e.getMessage());
             e.printStackTrace();
         } finally {
