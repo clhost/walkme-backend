@@ -70,9 +70,7 @@ public class JsonToPlaceMapper implements Mapper<Place, JsonObject> {
                         place.setSchedule(schedule);
                     }
                 } catch (IllegalStateException e) {
-                    System.err.println(jsonObject.entrySet());
                     e.printStackTrace();
-                    System.exit(0);
                 }
             }
         }
