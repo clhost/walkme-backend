@@ -88,6 +88,7 @@ public class AuthService extends AbstractBaseAuthService {
         }
     }
 
+    @Override
     public synchronized void start() {
         if (!checkIsStarted()) {
             HibernateUtil.start();

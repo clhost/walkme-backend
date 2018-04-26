@@ -32,4 +32,9 @@ interface BaseAuthService {
      * @param token token сессии
      */
     void logout(String token);
+
+    /**
+     * Стартуер службу
+     */
+    void start();
 }
