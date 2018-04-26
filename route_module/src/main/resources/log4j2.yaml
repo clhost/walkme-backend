@@ -1,0 +1,47 @@
+Configuration:
+  status: info
+
+  Appenders:
+    Console:
+      name: Console_Appender
+      target: SYSTEM_OUT
+      PatternLayout:
+        Pattern: "%highlight{%d{dd.mm.yyyy HH:mm:ss} [%t][%M][%L] %-5level %logger{36} - %msg%n}{WARN=yellow,
+        INFO=Bright
+        green,
+         ERROR=red}"
+      Filters:
+        ThresholdFilter:
+          level: all
+
+    File:
+      name: File_Appender
+      fileName: logs/errors.log
+      PatternLayout:
+        Pattern: "%d{HH:mm:ss} [%t][%M][%L] %-5level %logger{36} - %msg%n"
+      Filters:
+        ThresholdFilter:
+          level: error
+
+    File:
+      name: File_INFO_Appender
+      fileName: logs/info.log
+      PatternLayout:
+        Pattern: "%d{HH:mm:ss} [%t][%M][%L] %-5level %logger{36} - %msg%n"
+      Filters:
+        ThresholdFilter:
+          level: info
+
+  Loggers:
+    Root:
+      level: info
+      AppenderRef:
+        ref: Console_Appender
+    Logger:
+      name: route
+      AppenderRef:
+        ref: File_Appender
+    Logger:
+      name: route
+      AppenderRef:
+        ref: File_INFO_Appender

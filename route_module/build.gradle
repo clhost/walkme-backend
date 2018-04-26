@@ -1,0 +1,42 @@
+group 'io.walkme'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+
+    // json
+    compile group: 'com.google.code.gson', name: 'gson', version: '1.7.2'
+
+    // database
+    compile 'org.hibernate:hibernate-graph:5.2.15.Final'
+    compile 'org.hibernate:hibernate-c3p0:5.2.15.Final'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.13'
+    compile 'com.mchange:c3p0:0.9.5.2'
+
+    // logging
+    compile group: 'org.apache.logging.log4j', name: 'log4j-graph', version: '2.11.0'
+    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.5.0'
+    compile('com.example:example-project:1.0') {
+        exclude group: 'log4j', module: 'log4j'
+        exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+    }
+    compile('org.apache.logging.log4j:log4j-core:2.11.0')
+    compile('org.apache.logging.log4j:log4j-slf4j-impl:2.11.0')
+    compile('org.apache.logging.log4j:log4j-1.2-api:2.11.0')
+
+    // route
+    compile 'com.graphhopper:graphhopper-graph:0.10.0'
+    compile 'com.graphhopper:graphhopper-reader-osm:0.10.0'
+    compile 'commons-io:commons-io:2.5'
+    compile 'org.openstreetmap.osmosis:osmosis-osm-binary:0.46'
+    compile group: 'com.google.guava', name: 'guava', version: '11.0.2'
+}
