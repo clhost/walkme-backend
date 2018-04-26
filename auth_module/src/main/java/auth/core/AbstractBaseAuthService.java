@@ -1,11 +1,13 @@
 package auth.core;
 
 abstract class AbstractBaseAuthService implements BaseAuthService {
-    volatile boolean isStarted = false;
+    private volatile boolean isStarted = false;
 
-    void checkIsStarted() {
-        if (!isStarted) {
-            throw new IllegalStateException("Service must be started");
-        }
+    boolean checkIsStarted() {
+        return isStarted;
+    }
+
+    void setIsStartedTrue() {
+        this.isStarted = true;
     }
 }

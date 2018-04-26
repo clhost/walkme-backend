@@ -38,14 +38,19 @@ public class AuthService extends AbstractBaseAuthService {
     }
 
     @Override
-    public boolean isUserAuthorized(String token) {
-        checkIsStarted();
+    public boolean isUserAuthorized(String token) throws IllegalStateException {
+        if (!checkIsStarted()) {
+            throw new IllegalStateException("Service must be started");
+        }
         return sessionService.isSessionExist(token);
     }
 
+    @Nullable
     @Override
-    public String getUserInfo(String token) {
-        checkIsStarted();
+    public String getUserInfo(String token) throws IllegalStateException {
+        if (!checkIsStarted()) {
+            throw new IllegalStateException("Service must be started");
+        }
         User user;
         try {
             user = userService.get(token, UserFields.TOKEN);
@@ -57,8 +62,10 @@ public class AuthService extends AbstractBaseAuthService {
 
     @Nullable
     @Override
-    public String authorize(String code, String state) {
-        checkIsStarted();
+    public String authorize(String code, String state) throws IllegalStateException {
+        if (!checkIsStarted()) {
+            throw new IllegalStateException("Service must be started");
+        }
         switch (state) {
             case "vk" :
                 return new OAuthVkAuthorizer(okHttpClient).authorize(code);
@@ -72,21 +79,24 @@ public class AuthService extends AbstractBaseAuthService {
     }
 
     @Override
-    public void logout(String token) {
+    public void logout(String token) throws IllegalStateException {
+        if (!checkIsStarted()) {
+            throw new IllegalStateException("Service must be started");
+        }
         if (isUserAuthorized(token)) {
             sessionService.deleteSession(token);
         }
     }
 
     public synchronized void start() {
-        if (!isStarted) {
+        if (!checkIsStarted()) {
             HibernateUtil.start();
             HibernateUtil.setNamesUTF8();
             VKHelper.init();
             OKHelper.init();
             FBHelper.init();
             sessionService.loadFromDatabase();
-            isStarted = true;
+            setIsStartedTrue();
         }
         System.out.println("Auth strings:");
         System.out.println("\tVK: " + VKHelper.authString());
