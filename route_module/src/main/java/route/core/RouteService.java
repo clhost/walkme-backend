@@ -22,7 +22,7 @@ import route.storage.loaders.Loader;
 import route.utils.HibernateUtil;
 
 import javax.annotation.Nullable;
-import java.io.File;
+import java.io.*;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,22 +81,9 @@ public class RouteService extends AbstractRouteService {
     public void start() {
         if (!checkIsStarted()) {
             startHibernate();
-            if (!isExists()) {
-                loadPlaces();
-            }
             initGraph();
             setIsStartedTrue();
         }
-    }
-
-    private void loadPlaces() {
-        Loader<File, WalkMeCategory> loader = new JsonLoader();
-        categoryService.upload();
-        loader.load(new File("nodejs-dataset/spb-1.json"), WalkMeCategory.BAR);
-        loader.load(new File("nodejs-dataset/spb-2.json"), WalkMeCategory.EAT);
-        loader.load(new File("nodejs-dataset/spb-3.json"), WalkMeCategory.FUN);
-        loader.load(new File("nodejs-dataset/spb-4.json"), WalkMeCategory.PARKS);
-        loader.load(new File("nodejs-dataset/spb-5.json"), WalkMeCategory.WALK);
     }
 
     private void initGraph() {
@@ -110,24 +97,5 @@ public class RouteService extends AbstractRouteService {
     private void startHibernate() {
         HibernateUtil.start();
         HibernateUtil.setNamesUTF8();
-    }
-
-    private boolean isExists() {
-        Session session = null;
-        try {
-            session = HibernateUtil.getSession();
-            session.beginTransaction();
-
-            NativeQuery query = session.createNativeQuery("select count(*) from " + PlaceService.TABLE_NAME);
-            BigInteger i = (BigInteger) query.getSingleResult();
-
-            session.getTransaction().commit();
-
-            return i.longValue() != 0;
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-        }
     }
 }
