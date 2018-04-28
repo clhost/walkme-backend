@@ -10,15 +10,8 @@
 !*.java
 !*.md
 !*.yaml
-
-# Some needed files
-!local.properties
-!hibernate.properties
 !*.json
 !gradle/wrapper/*
-
-# And map
-!maps/*
 
 # ...even if they are in subdirectories
 !*/
