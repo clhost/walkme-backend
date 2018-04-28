@@ -7,7 +7,7 @@ apply plugin: 'application'
 sourceCompatibility = 1.8
 
 repositories {
-    mavenCentral()
+    jcenter()
 }
 
 dependencies {
@@ -30,17 +30,13 @@ dependencies {
     compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
 
     // logging
-    compile group: 'org.apache.logging.log4j', name: 'log4j-graph', version: '2.11.0'
     compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.5.0'
-    compile('com.example:example-project:1.0') {
-        exclude group: 'log4j', module: 'log4j'
-        exclude group: 'org.slf4j', module: 'slf4j-log4j12'
-    }
     compile('org.apache.logging.log4j:log4j-core:2.11.0')
     compile('org.apache.logging.log4j:log4j-slf4j-impl:2.11.0')
     compile('org.apache.logging.log4j:log4j-1.2-api:2.11.0')
 }
 
-run {
-    mainClassName = "core_module.io.walkme.graph.Server"
+task run_core(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    main = "io.walkme.core.Server"
 }
