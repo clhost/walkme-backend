@@ -4,6 +4,7 @@ import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.GraphHopper;
 import com.graphhopper.reader.osm.GraphHopperOSM;
+import com.graphhopper.routing.util.DefaultEdgeFilter;
 import com.graphhopper.routing.util.EdgeFilter;
 import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.storage.index.LocationIndex;
@@ -18,6 +19,8 @@ public class GraphHopperRouteChecker implements RouteChecker {
     private GraphHopper instance;
 
     GraphHopperRouteChecker() {
+        EncodingManager encodingManager = new EncodingManager("foot");
+        footDefaultEdgeFilter = new DefaultEdgeFilter(encodingManager.getEncoder("foot"));
         instance = new GraphHopperOSM()
                 .setStoreOnFlush(false)
                 .forServer() // decrease startup latency
@@ -30,6 +33,8 @@ public class GraphHopperRouteChecker implements RouteChecker {
     @Override
     public void start() {
         instance.importOrLoad();
+        locationIndex = instance.getLocationIndex();
+        mapBbox = instance.getGraphHopperStorage().getBounds();
     }
 
     @Override
