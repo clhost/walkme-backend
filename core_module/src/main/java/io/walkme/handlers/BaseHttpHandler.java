@@ -1,7 +1,9 @@
 package io.walkme.handlers;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.walkme.core.ServerMode;
 
@@ -20,6 +22,8 @@ public abstract class BaseHttpHandler extends ChannelInboundHandlerAdapter {
     protected static final String API_LOGOUT = "logout";
     protected static final String API_START = "start";
     protected static final String API_GET_ROUTE = "getRoute";
+    protected static final String API_SAVE_ROUTE = "saveRoute";
+    protected static final String API_GET_SAVED_ROUTES = "getSavedRoutes";
     private static Set<String> set = new HashSet<>();
 
     static {
@@ -29,9 +33,11 @@ public abstract class BaseHttpHandler extends ChannelInboundHandlerAdapter {
         set.add(API_LOGOUT);
         set.add(API_START);
         set.add(API_GET_ROUTE);
+        set.add(API_SAVE_ROUTE);
+        set.add(API_GET_SAVED_ROUTES);
     }
 
-    public static Set<String> set() {
+    protected static Set<String> set() {
         return set;
     }
 
@@ -52,24 +58,41 @@ public abstract class BaseHttpHandler extends ChannelInboundHandlerAdapter {
     }
 
     protected String[] getTokens() throws IllegalStateException {
-        if (request == null) {
-            throw new IllegalStateException("Held object must not be null.");
-        }
-
+        check();
         return tokens;
     }
 
     protected Map<String, List<String>> getParams() {
-        if (request == null) {
-            throw new IllegalStateException("Held object must not be null.");
-        }
-
+        check();
         return params;
+    }
+
+    protected HttpMethod method() {
+        return request.method();
+    }
+
+    protected byte[] readBody() throws IllegalStateException {
+        if (request.method().equals(HttpMethod.POST)) {
+            ByteBuf buf = request.content();
+            byte[] content = new byte[buf.readableBytes()];
+            while (buf.isReadable()) {
+                content[buf.readerIndex()] = buf.readByte();
+            }
+            return content;
+        } else {
+            throw new IllegalStateException("Only POST request has a body");
+        }
     }
 
     protected void release() {
         while (request.refCnt() != 0) {
             request.release(request.refCnt());
+        }
+    }
+
+    private void check() throws IllegalStateException {
+        if (request == null) {
+            throw new IllegalStateException("Held object must not be null.");
         }
     }
 }

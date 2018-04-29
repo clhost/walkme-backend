@@ -39,7 +39,6 @@ public class GetRouteHandler extends BaseHttpHandler {
         String[] tokens = getTokens();
         Map<String, List<String>> params = getParams();
 
-
         if (tokens.length < 2) {
             ctx.fireChannelRead(msg);
         } else if (tokens[0].equals(API_PREFIX) && tokens[1].equals(API_GET_ROUTE)) {
