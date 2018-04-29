@@ -6,6 +6,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import route.graph.GraphHopperRouteChecker;
+import route.graph.RouteChecker;
 import route.mappers.JsonToPlaceMapper;
 import route.mappers.Mapper;
 import route.services.EntityService;
@@ -26,9 +28,11 @@ public class JsonLoader implements Loader<File, WalkMeCategory> {
     private static final Mapper<Place, JsonObject> mapper = new JsonToPlaceMapper();
     private static final Repair<Place, WalkMeCategory> repair = new PlaceRepair();
     private static final Logger logger = LogManager.getLogger(JsonLoader.class);
+    private static final RouteChecker checker = new GraphHopperRouteChecker();
 
     @Override
     public void load(File file, WalkMeCategory c) {
+        checker.start();
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
             StringBuilder builder = new StringBuilder();
@@ -47,8 +51,10 @@ public class JsonLoader implements Loader<File, WalkMeCategory> {
                 }
                 place = repair.repair(place, c);
 
-                placeService.save(place);
-                System.out.println("Saved place: " + place);
+                if (checker.isPointValid(place.getLocation().getLat(), place.getLocation().getLng())) {
+                    placeService.save(place);
+                    System.out.println("Saved place: " + place);
+                }
             }
         } catch (Exception e) {
             logger.error(e.getCause().getMessage());
