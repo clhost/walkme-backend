@@ -12,7 +12,7 @@ public class SavedRouteService implements EntityService<SavedRoute, String, Save
     private static final String TABLE_NAME = "wm_fav_route";
 
     @Override
-    public SavedRoute get(String byParameter, SavedRouteFields columnType) throws Exception {
+    public SavedRoute get(String byParameter, SavedRouteFields columnType) {
         Session session = null;
         SavedRoute favoriteRoute = null;
         NativeQuery<SavedRoute> nativeQuery;
@@ -21,6 +21,7 @@ public class SavedRouteService implements EntityService<SavedRoute, String, Save
             session.beginTransaction();
             switch (columnType) {
                 case ID:
+                case USER_ID:
                     nativeQuery = session.createNativeQuery(
                             "select * from " + TABLE_NAME + " " +
                                     "where " + columnType.getName() + " = :pid", SavedRoute.class);
@@ -37,22 +38,33 @@ public class SavedRouteService implements EntityService<SavedRoute, String, Save
     }
 
     @Override
-    public List<SavedRoute> getAll(List<String> e, SavedRouteFields savedRouteFields) throws Exception {
+    public List<SavedRoute> getAll(List<String> e, SavedRouteFields savedRouteFields) {
         return null;
     }
 
     @Override
-    public void save(SavedRoute savedRoute) throws Exception {
+    public void save(SavedRoute savedRoute) {
+        Session session = null;
+        try {
+            session = HibernateUtil.getSession();
+            session.beginTransaction();
+
+            session.save(savedRoute);
+            session.getTransaction().commit();
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+    }
+
+    @Override
+    public void delete(String e, SavedRouteFields savedRouteFields) {
 
     }
 
     @Override
-    public void delete(String e, SavedRouteFields savedRouteFields) throws Exception {
-
-    }
-
-    @Override
-    public void update(SavedRoute savedRoute) throws Exception {
-
+    public void update(SavedRoute savedRoute) {
+        throw new UnsupportedOperationException("Update is still unsupported.");
     }
 }

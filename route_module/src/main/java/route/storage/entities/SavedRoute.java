@@ -11,8 +11,12 @@ import javax.persistence.*;
 @Entity
 @Table(name = "wm_fav_route")
 public class SavedRoute {
+    @Id
+    @Column(name = "id", unique = true, nullable = false)
+    private long id;
+
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "social_id")
     @Expose
     private User user;
 
@@ -22,6 +26,14 @@ public class SavedRoute {
 
     public SavedRoute() {
         // The explicit constructor for ORM
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public User getUser() {

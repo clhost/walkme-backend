@@ -21,6 +21,13 @@ public interface BaseRouteService {
 
     /**
      *
+     * @param userId идентификатор юзера, для которого сохраняется маршрут
+     * @param route маршрут
+     */
+    void saveRoute(String userId, String route);
+
+    /**
+     *
      * @param userId идентификатор юзера, чью сохраненные маршруты требуется вернуть
      * @return список маршрутов в формате json в виде строки
      */

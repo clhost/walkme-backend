@@ -6,10 +6,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import route.helpers.ConfigHelper;
-import route.storage.entities.Category;
-import route.storage.entities.Location;
-import route.storage.entities.Place;
-import route.storage.entities.User;
+import route.storage.entities.*;
 
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
@@ -36,6 +33,7 @@ public class HibernateUtil {
                     .addAnnotatedClass(Location.class)
                     .addAnnotatedClass(User.class)
                     .addAnnotatedClass(Category.class)
+                    .addAnnotatedClass(SavedRoute.class)
                     .buildSessionFactory();
         } catch (Exception e) {
             logger.error(e.getMessage());
