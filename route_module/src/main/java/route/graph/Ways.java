@@ -125,13 +125,7 @@ public class Ways {
                 MAX_DISTANCE_BETWEEN_TWO_POINTS += RADIUS_INCREMENT;
                 continue;
             }
-            List<Location> allLocations = new ArrayList<>();
-            try {
-                allLocations = getAllPoints(currentPoint.getPoint(), tmpPoint.getPoint());
-            }catch(Exception e){
-                System.out.println("INVALID POINT");
-                continue;
-            }
+            List<Location> allLocations = getAllPoints(currentPoint.getPoint(), tmpPoint.getPoint());
             alreadyUsed.add(tmpPoint.getPoint());
             if (checkIntersection(allLocations)) {
                 ++iteration;
