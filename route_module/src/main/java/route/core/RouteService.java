@@ -16,6 +16,7 @@ import route.services.*;
 import route.services.fields.SavedRouteFields;
 import route.storage.entities.Location;
 import route.storage.entities.SavedRoute;
+import route.storage.entities.User;
 import route.storage.entities.WalkMeCategory;
 import route.storage.loaders.JsonLoader;
 import route.storage.loaders.Loader;
@@ -65,10 +66,22 @@ public class RouteService extends AbstractRouteService {
         } catch (NotInitializedException e) {
             throw new IllegalStateException("Service must be started");
         } catch (StartPointIsNotAvailableException e) {
-            return "{\"error:\" \"start point is not available\"}";
+            return "{\"error\": \"start point is not available\"}";
         } catch (NotEnoughPointsException e) {
-            return "{\"error:\" \"not enough points\"}";
+            return "{\"error\": \"not enough points\"}";
         }
+    }
+
+    @Override
+    public void saveRoute(String userId, String route) {
+        User user = new User();
+        user.setId(Long.parseLong(userId));
+
+        SavedRoute savedRoute = new SavedRoute();
+        savedRoute.setUser(user);
+        savedRoute.setJsonRoute(route);
+
+        savedRouteService.save(savedRoute);
     }
 
     @Nullable

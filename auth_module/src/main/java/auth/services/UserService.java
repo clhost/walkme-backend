@@ -19,7 +19,7 @@ public class UserService implements EntityService<User, String, UserFields> {
     private static final Logger logger = LogManager.getLogger(UserService.class);
 
     @Override
-    public User get(String byParameter, UserFields columnType) throws Exception {
+    public User get(String byParameter, UserFields columnType) {
         User user;
         Session session = null;
         NativeQuery<User> nativeQuery;
@@ -77,12 +77,12 @@ public class UserService implements EntityService<User, String, UserFields> {
     }
 
     @Override
-    public List<User> getAll(List<String> byParametersList, UserFields columnType) throws Exception {
+    public List<User> getAll(List<String> byParametersList, UserFields columnType) {
         throw new UnsupportedOperationException("Get all method is still unsupported.");
     }
 
     @Override
-    public void save(User user) throws Exception {
+    public void save(User user) {
         Session session = null;
         try {
             session = HibernateUtil.getSession();
@@ -100,7 +100,7 @@ public class UserService implements EntityService<User, String, UserFields> {
     }
 
     @Override
-    public void delete(String byParameter, UserFields columnType) throws Exception {
+    public void delete(String byParameter, UserFields columnType) {
         Session session = null;
         NativeQuery nativeQuery;
         try {
@@ -133,7 +133,7 @@ public class UserService implements EntityService<User, String, UserFields> {
     }
 
     @Override
-    public void update(User user) throws Exception {
+    public void update(User user) {
         Session session = null;
         try {
             session = HibernateUtil.getSession();
