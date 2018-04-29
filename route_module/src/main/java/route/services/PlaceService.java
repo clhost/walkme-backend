@@ -23,7 +23,7 @@ public class PlaceService implements EntityService<Place, String, PlaceFields> {
 
     @Nullable
     @Override
-    public Place get(String byParameter, PlaceFields columnType) throws Exception {
+    public Place get(String byParameter, PlaceFields columnType) {
         Session session = null;
         Place place = null;
         NativeQuery<Place> nativeQuery;
@@ -58,7 +58,7 @@ public class PlaceService implements EntityService<Place, String, PlaceFields> {
 
     @Nullable
     @Override
-    public List<Place> getAll(List<String> byParametersList, PlaceFields columnType) throws Exception {
+    public List<Place> getAll(List<String> byParametersList, PlaceFields columnType) {
         Session session = null;
         List<Place> places = null;
         NativeQuery<Place> nativeQuery;
@@ -109,7 +109,7 @@ public class PlaceService implements EntityService<Place, String, PlaceFields> {
     }
 
     @Override
-    public void save(Place place) throws Exception {
+    public void save(Place place) {
         Session session = null;
         try {
             session = HibernateUtil.getSession();
@@ -125,12 +125,12 @@ public class PlaceService implements EntityService<Place, String, PlaceFields> {
     }
 
     @Override
-    public void delete(String byParameter, PlaceFields columnType) throws Exception {
+    public void delete(String byParameter, PlaceFields columnType) {
         throw new UnsupportedOperationException("Delete is still unsupported.");
     }
 
     @Override
-    public void update(Place place) throws Exception {
+    public void update(Place place) {
         throw new UnsupportedOperationException("Update is still unsupported.");
     }
 }
