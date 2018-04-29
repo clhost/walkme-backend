@@ -18,7 +18,7 @@ public class GraphHopperRouteChecker implements RouteChecker {
     private BBox mapBbox;
     private GraphHopper instance;
 
-    GraphHopperRouteChecker() {
+    public GraphHopperRouteChecker() {
         EncodingManager encodingManager = new EncodingManager("foot");
         footDefaultEdgeFilter = new DefaultEdgeFilter(encodingManager.getEncoder("foot"));
         instance = new GraphHopperOSM()
@@ -45,10 +45,9 @@ public class GraphHopperRouteChecker implements RouteChecker {
 
     @Override
     public boolean isPointValid(double lat, double lon) {
-        if (!mapBbox.contains(lat, lon)){
+        if (!mapBbox.contains(lat, lon)) {
             return false;
         }
-
         QueryResult queryResult = locationIndex.findClosest(lat, lon, footDefaultEdgeFilter);
         return queryResult.isValid();
     }
