@@ -3,12 +3,12 @@ package route.graph;
 import route.graph.exceptions.NotEnoughPointsException;
 import route.graph.exceptions.NotInitializedException;
 import route.graph.exceptions.StartPointIsNotAvailableException;
+import route.storage.entities.Day;
 import route.storage.entities.Location;
+import route.storage.entities.Schedule;
+import route.storage.entities.ScheduleTime;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by tFNiYaFF on 18.03.2018.
@@ -22,7 +22,7 @@ public class Ways {
     private List<List<Location>> allResultLocations;
     private Set<Location> alreadyUsed = new HashSet<>();
 
-
+    private final int NUMBER_OF_CULTURE_POINTS = 3;
     private final int NEXT_STEP_POINTS_RANDOM_COUNT = 40;
     private final double MIN_DISTANCE_BETWEEN_TWO_POINTS = 500;//meters
     private double MAX_DISTANCE_BETWEEN_TWO_POINTS = 1300; //meters
@@ -31,7 +31,6 @@ public class Ways {
     private final int MIN_POINTS_PER_ONE_ROUTE = 3;
     private final int RADIUS_INCREMENT = 100;
     private boolean RESET_TIME = false;
-
     private final int MAX_DISTANCE_OF_INTERSECTION = 25;
     private final int INTERSECTION_LIMIT = 20;
 
@@ -40,8 +39,10 @@ public class Ways {
 
     private static List<Node> inputNodes;
     private List<Node> nodes;
+    private static List<Node> cultureNodes = new ArrayList<>();
     private static final RouteChecker routeChecker = new GraphHopperRouteChecker();
     private static boolean routeCheckerIsRunning = false;
+    private long currentTime;
 
 
     public static void ghStart() {
@@ -72,6 +73,7 @@ public class Ways {
         allResultLocations = new ArrayList<>();
         nodes = new ArrayList<>();
         this.startTime = startTime;
+        currentTime = startTime;
         USER_START_LOCATION = startLocation;
     }
 
@@ -103,9 +105,9 @@ public class Ways {
         alreadyUsed.add(currentPoint.getPoint());
         resultPlaces.add(currentPoint);
         double summaryTime = 0;
-        int iter = 0;
+        int iteration = 0;
         while (true) {
-            if (iter > INTERSECTION_LIMIT) {
+            if (iteration > INTERSECTION_LIMIT) {
                 System.out.println("RESET");
                 RESET_TIME = true;
                 return;
@@ -123,13 +125,21 @@ public class Ways {
                 MAX_DISTANCE_BETWEEN_TWO_POINTS += RADIUS_INCREMENT;
                 continue;
             }
-            List<Location> allLocations = getAllPoints(currentPoint.getPoint(), tmpPoint.getPoint());
-            alreadyUsed.add(tmpPoint.getPoint());
-            if (checkIntersection(allLocations)) {
-                ++iter;
+            List<Location> allLocations = new ArrayList<>();
+            try {
+                allLocations = getAllPoints(currentPoint.getPoint(), tmpPoint.getPoint());
+            }catch(Exception e){
+                System.out.println("INVALID POINT");
                 continue;
             }
-            summaryTime += getTime(currentPoint.getPoint(), tmpPoint.getPoint());
+            alreadyUsed.add(tmpPoint.getPoint());
+            if (checkIntersection(allLocations)) {
+                ++iteration;
+                continue;
+            }
+            double time = getTime(currentPoint.getPoint(), tmpPoint.getPoint());
+            summaryTime += time;
+            currentTime += time/1000; //в секунды
             resultLocations.addAll(allLocations);
             allResultLocations.add(allLocations);
             currentPoint = tmpPoint;
@@ -145,17 +155,33 @@ public class Ways {
             return getNearestPoint(USER_START_LOCATION, nodes);
     }
 
+    private boolean isTimeOk(Schedule schedule){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(currentTime);
+        int dayNow = calendar.get(Calendar.DAY_OF_WEEK);
+        if(dayNow == 1) dayNow = 7; else dayNow = (dayNow+6)%7;
+        ArrayList<ScheduleTime> st = (ArrayList<ScheduleTime>)schedule.getScheduleInfo().get(Day.getByDayOfWeek(dayNow));
+        boolean isOk = false;
+        for (ScheduleTime aSt : st) {
+            if (aSt.getStart() == -1 || aSt.getFinish() == -1){
+                return false;
+            }
+            if(aSt.getStart() < calendar.get(Calendar.HOUR_OF_DAY)*3600 && aSt.getFinish() > calendar.get(Calendar.HOUR_OF_DAY)*3600) isOk = true;
+        }
+        return isOk;
+    }
+
     private Node getNearestPoint(Location from, List<Node> set) {
         Node resultPoint = null;
         double minDistance = Double.MAX_VALUE;
         for (Node aSet : set) {
+            if(!isTimeOk(aSet.getSchedule())) continue;
             double currentDistance = getDistance(from, aSet.getPoint());
-            if (currentDistance < minDistance) {
-                double realDistance = getDistance(from, aSet.getPoint());
-                if (realDistance > MIN_DISTANCE_BETWEEN_TWO_POINTS && realDistance < MAX_DISTANCE_BETWEEN_TWO_POINTS) {
-                    minDistance = currentDistance;
-                    resultPoint = aSet;
-                }
+            if (currentDistance < minDistance && currentDistance > MIN_DISTANCE_BETWEEN_TWO_POINTS && currentDistance < MAX_DISTANCE_BETWEEN_TWO_POINTS) {
+                System.out.println("Point: "+aSet.getPoint().getLat() + " "+ aSet.getPoint().getLng());
+                //System.out.println("Schedule: " + Arrays.toString(aSet.getSchedule().getScheduleInfo().get(Day.getByDayOfWeek(7)).toArray()));
+                minDistance = currentDistance;
+                resultPoint = aSet;
             }
         }
         return resultPoint;
@@ -245,14 +271,19 @@ public class Ways {
     }
 
     private void filterNodes() {
+        for (Node inputNode : inputNodes) {
+            if (inputNode.getCategoryId() == 4 || inputNode.getCategoryId() == 5) {
+                cultureNodes.add(inputNode);
+            }
+        }
         if (ids == null || ids.length == 0) {
             nodes = inputNodes;
             return;
         }
-        for (int i = 0; i < inputNodes.size(); i++) {
-            for (int j = 0; j < ids.length; j++) {
-                if (inputNodes.get(i).getCategoryId() == ids[j]) {
-                    nodes.add(inputNodes.get(i));
+        for (Node inputNode : inputNodes) {
+            for (int id : ids) {
+                if (inputNode.getCategoryId() == id) {
+                    nodes.add(inputNode);
                     break;
                 }
             }

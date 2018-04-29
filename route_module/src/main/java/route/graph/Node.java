@@ -1,10 +1,7 @@
 package route.graph;
 
 
-import route.storage.entities.Day;
-import route.storage.entities.Location;
-import route.storage.entities.Place;
-import route.storage.entities.ScheduleTime;
+import route.storage.entities.*;
 import route.utils.DateUtil;
 
 import java.time.LocalDateTime;
@@ -18,6 +15,7 @@ public class Node {
     private String address;
     private String addressAdditional;
     private String workingTime;
+    private Schedule schedule;
 
     private Node(String name,
                  Location location,
@@ -25,7 +23,8 @@ public class Node {
                  int categoryId,
                  String address,
                  String addressAdditional,
-                 String workingTime) {
+                 String workingTime,
+                 Schedule schedule) {
         this.name = name;
         this.point = location;
         this.category = category;
@@ -33,6 +32,7 @@ public class Node {
         this.address = address;
         this.addressAdditional = addressAdditional;
         this.workingTime = workingTime;
+        this.schedule = schedule;
     }
 
     public static Node of(Place place) {
@@ -74,7 +74,8 @@ public class Node {
                 place.getCategory().getId(),
                 place.getAddressName(),
                 place.getAddressComment(),
-                builder.toString());
+                builder.toString(),
+                place.getSchedule());
     }
 
     public Location getPoint() {
@@ -88,6 +89,8 @@ public class Node {
     public int getCategoryId() {
         return categoryId;
     }
+
+    public Schedule getSchedule() { return schedule;}
 
     public String getAddress() {
         return address;
