@@ -16,6 +16,9 @@ public class Node {
     private String addressAdditional;
     private String workingTime;
     private Schedule schedule;
+    private double avgCheck;
+    private double raiting;
+    private String city;
 
     private Node(String name,
                  Location location,
@@ -24,7 +27,10 @@ public class Node {
                  String address,
                  String addressAdditional,
                  String workingTime,
-                 Schedule schedule) {
+                 Schedule schedule,
+                 double avgCheck,
+                 double rank,
+                 String city) {
         this.name = name;
         this.point = location;
         this.category = category;
@@ -33,6 +39,9 @@ public class Node {
         this.addressAdditional = addressAdditional;
         this.workingTime = workingTime;
         this.schedule = schedule;
+        this.avgCheck = avgCheck;
+        this.raiting = rank;
+        this.city = city;
     }
 
     public static Node of(Place place) {
@@ -75,7 +84,10 @@ public class Node {
                 place.getAddressName(),
                 place.getAddressComment(),
                 builder.toString(),
-                place.getSchedule());
+                place.getSchedule(),
+                place.getAvgCheck(),
+                place.getRank(),
+                place.getCity());
     }
 
     public Location getPoint() {
@@ -106,5 +118,17 @@ public class Node {
 
     public String getName() {
         return name;
+    }
+
+    public double getAvgCheck() {
+        return avgCheck;
+    }
+
+    public double getRaiting() {
+        return raiting;
+    }
+
+    public String getCity() {
+        return city;
     }
 }

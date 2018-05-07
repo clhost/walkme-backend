@@ -10,10 +10,8 @@ import route.storage.entities.ScheduleTime;
 
 import java.util.*;
 
-/**
- * Created by tFNiYaFF on 18.03.2018.
- */
-public class Ways {
+
+public class SPBWays {
 
     private int[] ids;
     private final long startTime;
@@ -40,7 +38,7 @@ public class Ways {
     private static List<Node> inputNodes;
     private List<Node> nodes;
     private static List<Node> cultureNodes = new ArrayList<>();
-    private static final RouteChecker routeChecker = new GraphHopperRouteChecker();
+    private static final RouteChecker routeChecker = new GraphHopperRouteChecker("route_module/maps/RU-SPE.osm.pbf");
     private static boolean routeCheckerIsRunning = false;
     private long currentTime;
 
@@ -63,7 +61,7 @@ public class Ways {
     }
 
 
-    public Ways(long startTime, Location startLocation, int[] ids) throws NotInitializedException {
+    public SPBWays(long startTime, Location startLocation, int[] ids) throws NotInitializedException {
         if (inputNodes == null || !routeCheckerIsRunning) {
             throw new NotInitializedException();
         }
