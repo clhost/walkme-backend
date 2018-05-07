@@ -35,11 +35,11 @@ public class CategoryService {
 
     private void prepare() {
         EnumSet<WalkMeCategory> enumSet = EnumSet.of(
-                WalkMeCategory.BAR,
+                WalkMeCategory.ALCOHOL,
                 WalkMeCategory.PARKS,
                 WalkMeCategory.EAT,
-                WalkMeCategory.FUN,
-                WalkMeCategory.WALK);
+                WalkMeCategory.AMUSEMENT,
+                WalkMeCategory.CULTURE);
         for (WalkMeCategory w : enumSet) {
             categories.add(new Category(w.id(), w.description()));
         }
