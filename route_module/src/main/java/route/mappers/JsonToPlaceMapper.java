@@ -7,6 +7,7 @@ import route.storage.entities.Place;
 import route.storage.entities.Schedule;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Возвращает Place без category
@@ -19,13 +20,16 @@ public class JsonToPlaceMapper implements Mapper<Place, JsonObject> {
     private static final String ADDRESS_COMMENT = "addressComment";
     private static final String POINT = "point";
     private static final String SCHEDULE = "schedule";
+    private static final String REVIEWS = "reviews";
+    private static final String REVIEW_COUNT = "review_count";
+    private static final String RATING = "rating";
+    private static final String AVERAGE_CHECK = "averageCheck";
 
     private final Mapper<Schedule, JsonObject> mapper = new JsonToScheduleMapper();
 
     @Override
     public Place map(JsonObject jsonObject) {
         Place place = new Place();
-
         for (Map.Entry<String, JsonElement> element : jsonObject.entrySet()) {
             if (element.getKey().equals(ID)) {
                 place.setId(element.getValue().getAsString());
@@ -73,6 +77,21 @@ public class JsonToPlaceMapper implements Mapper<Place, JsonObject> {
                     e.printStackTrace();
                 }
             }
+
+            if (element.getKey().equals(REVIEWS)) {
+                if (element.getValue().isJsonObject()) {
+                    JsonObject internal = element.getValue().getAsJsonObject();
+                    if (internal.get(REVIEW_COUNT) != null && internal.get(RATING) != null) {
+                        place.setRank(internal.get(RATING).getAsDouble());
+                    } // else rank is 0
+                }
+            }
+
+            if (element.getKey().equals(AVERAGE_CHECK)) {
+                if (!element.getValue().isJsonNull()) {
+                    place.setAvgCheck(element.getValue().getAsDouble());
+                }
+            } // else average check is 0
         }
 
         return place;
