@@ -28,23 +28,40 @@ public class MainLoader {
     }
 
     private void loadPlaces() {
-        Loader<File, WalkMeCategory> loader = new JsonLoader();
+        Loader<File, WalkMeCategory> spbLoader = new JsonLoader("spb");
+        Loader<File, WalkMeCategory> mskLoader = new JsonLoader("msk");
         categoryService.upload();
-        loader.load(new File(
+
+        // load spb
+        spbLoader.load(new File(
                         new File("nodejs-dataset/spb-1.json").getAbsolutePath()),
-                WalkMeCategory.BAR);
-        loader.load(new File(
+                WalkMeCategory.ALCOHOL);
+        spbLoader.load(new File(
                         new File("nodejs-dataset/spb-2.json").getAbsolutePath()),
                 WalkMeCategory.EAT);
-        loader.load(new File(
+        spbLoader.load(new File(
                         new File("nodejs-dataset/spb-3.json").getAbsolutePath()),
-                WalkMeCategory.FUN);
-        loader.load(new File(
+                WalkMeCategory.AMUSEMENT);
+        spbLoader.load(new File(
                         new File("nodejs-dataset/spb-4.json").getAbsolutePath()),
                 WalkMeCategory.PARKS);
-        loader.load(new File(
+        spbLoader.load(new File(
                         new File("nodejs-dataset/spb-5.json").getAbsolutePath()),
-                WalkMeCategory.WALK);
+                WalkMeCategory.CULTURE);
+
+        // load msk
+        mskLoader.load(new File(
+                        new File("nodejs-dataset/msk-1.json").getAbsolutePath()),
+                WalkMeCategory.ALCOHOL);
+        mskLoader.load(new File(
+                        new File("nodejs-dataset/msk-2.json").getAbsolutePath()),
+                WalkMeCategory.EAT);
+        mskLoader.load(new File(
+                        new File("nodejs-dataset/msk-3.json").getAbsolutePath()),
+                WalkMeCategory.AMUSEMENT);
+        mskLoader.load(new File(
+                        new File("nodejs-dataset/msk-5.json").getAbsolutePath()),
+                WalkMeCategory.CULTURE);
     }
 
     private boolean isExists() {
