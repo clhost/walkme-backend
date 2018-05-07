@@ -2,11 +2,12 @@ package route.core;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.hibernate.Session;
-import org.hibernate.query.NativeQuery;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import route.graph.Node;
 import route.graph.RouteHolder;
-import route.graph.Ways;
+import route.graph.ways.MSKWays;
+import route.graph.ways.SPBWays;
 import route.graph.exceptions.NotEnoughPointsException;
 import route.graph.exceptions.NotInitializedException;
 import route.graph.exceptions.StartPointIsNotAvailableException;
@@ -17,22 +18,19 @@ import route.services.fields.SavedRouteFields;
 import route.storage.entities.Location;
 import route.storage.entities.SavedRoute;
 import route.storage.entities.User;
-import route.storage.entities.WalkMeCategory;
-import route.storage.loaders.JsonLoader;
-import route.storage.loaders.Loader;
 import route.utils.HibernateUtil;
 
 import javax.annotation.Nullable;
-import java.io.*;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RouteService extends AbstractRouteService {
     private final EntityService<SavedRoute, String, SavedRouteFields> savedRouteService;
     private final CategoryService categoryService;
     private final Gson gson;
     private final Mapper<ResponseRouteEntity, Node> mapper = new NodeToResponseRouteEntityMapper();
+    private static final Logger logger = LogManager.getLogger(RouteService.class);
 
     public RouteService() {
         this.categoryService = new CategoryService();
@@ -55,8 +53,18 @@ public class RouteService extends AbstractRouteService {
             throw new IllegalStateException("Service must be started");
         }
         try {
-            Ways route = new Ways(System.currentTimeMillis(), new Location(lat, lng), categories);
-            RouteHolder routeHolder = route.getWays();
+            RouteHolder routeHolder = null;
+            if (SPBWays.isPointValid(lat, lng)) {
+                routeHolder = getSpbRoute(lat, lng, categories);
+            }
+
+            if (MSKWays.isPointValid(lat, lng)) {
+                routeHolder = getMskRoute(lat, lng, categories);
+            }
+
+            if (routeHolder == null) {
+                return "{\"error\": \"unreachable point\"}";
+            }
 
             List<ResponseRouteEntity> entities = new ArrayList<>();
             for (Node node : routeHolder.getPlaces()) {
@@ -96,19 +104,35 @@ public class RouteService extends AbstractRouteService {
             startHibernate();
             initGraph();
             setIsStartedTrue();
+            logger.info("Route service has been started.");
         }
     }
 
     private void initGraph() {
         // load all places in RAM
         PlaceHolder.load();
-        // start algorithm
-        Ways.ghStart();
-        Ways.initializePlaces(PlaceHolder.getAll());
+        // start algorithm for SPB
+        SPBWays.ghStart();
+        SPBWays.initializePlaces(
+                PlaceHolder.getAll().stream().filter(x -> x.getCity().equals("spb")).collect(Collectors.toList()));
+        // start algorithm for MSK
+        MSKWays.ghStart();
+        MSKWays.initializePlaces(
+                PlaceHolder.getAll().stream().filter(x -> x.getCity().equals("msk")).collect(Collectors.toList()));
     }
 
     private void startHibernate() {
         HibernateUtil.start();
         HibernateUtil.setNamesUTF8();
+    }
+
+    private RouteHolder getSpbRoute(double lat, double lng, int[] categories)
+            throws NotInitializedException, StartPointIsNotAvailableException, NotEnoughPointsException {
+        return new SPBWays(System.currentTimeMillis(), new Location(lat, lng), categories).getWays();
+    }
+
+    private RouteHolder getMskRoute(double lat, double lng, int[] categories)
+            throws NotInitializedException, StartPointIsNotAvailableException, NotEnoughPointsException {
+        return new MSKWays(System.currentTimeMillis(), new Location(lat, lng), categories).getWays();
     }
 }
