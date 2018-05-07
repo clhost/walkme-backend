@@ -12,22 +12,22 @@ import com.graphhopper.storage.index.QueryResult;
 import com.graphhopper.util.shapes.BBox;
 
 public class GraphHopperRouteChecker implements RouteChecker {
-    private static final String GRAPH_LOC = "target/GraphHopper";
     private LocationIndex locationIndex;
     private EdgeFilter footDefaultEdgeFilter;
     private BBox mapBbox;
     private GraphHopper instance;
 
-    public GraphHopperRouteChecker() {
+    public GraphHopperRouteChecker(String mapPath) {
         EncodingManager encodingManager = new EncodingManager("foot");
         footDefaultEdgeFilter = new DefaultEdgeFilter(encodingManager.getEncoder("foot"));
+        String graphLoc = "gh_target/GraphHopper-" + mapPath.substring(mapPath.lastIndexOf("/") + 1);
         instance = new GraphHopperOSM()
                 .setStoreOnFlush(false)
                 .forServer() // decrease startup latency
                 .setEncodingManager(new EncodingManager("foot"))
                 .setCHEnabled(false)
-                .setGraphHopperLocation(GRAPH_LOC)
-                .setDataReaderFile("maps/RU-SPE.osm.pbf");
+                .setGraphHopperLocation(graphLoc)
+                .setDataReaderFile(mapPath);
     }
 
     @Override

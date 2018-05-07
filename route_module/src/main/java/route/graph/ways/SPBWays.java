@@ -1,5 +1,6 @@
-package route.graph;
+package route.graph.ways;
 
+import route.graph.*;
 import route.graph.exceptions.NotEnoughPointsException;
 import route.graph.exceptions.NotInitializedException;
 import route.graph.exceptions.StartPointIsNotAvailableException;
@@ -12,7 +13,6 @@ import java.util.*;
 
 
 public class SPBWays {
-
     private int[] ids;
     private final long startTime;
     private List<Node> resultPlaces;
@@ -38,7 +38,8 @@ public class SPBWays {
     private static List<Node> inputNodes;
     private List<Node> nodes;
     private static List<Node> cultureNodes = new ArrayList<>();
-    private static final RouteChecker routeChecker = new GraphHopperRouteChecker("route_module/maps/RU-SPE.osm.pbf");
+    private static final RouteChecker routeChecker =
+            new GraphHopperRouteChecker("route_module/maps/RU-SPE.osm.pbf");
     private static boolean routeCheckerIsRunning = false;
     private long currentTime;
 
@@ -60,6 +61,12 @@ public class SPBWays {
         }
     }
 
+    public static boolean isPointValid(double lat, double lon) {
+        if (!routeCheckerIsRunning) {
+            throw new IllegalStateException("Service must be started.");
+        }
+        return routeChecker.isPointValid(lat, lon);
+    }
 
     public SPBWays(long startTime, Location startLocation, int[] ids) throws NotInitializedException {
         if (inputNodes == null || !routeCheckerIsRunning) {
