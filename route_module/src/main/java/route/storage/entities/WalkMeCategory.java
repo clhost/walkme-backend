@@ -3,11 +3,11 @@ package route.storage.entities;
 import java.util.EnumSet;
 
 public enum WalkMeCategory {
-    BAR(1, "Бар"),
+    ALCOHOL(1, "Выпить"),
     EAT(2, "Покушать"),
-    FUN(3, "Развлечься"),
-    PARKS(4, "Парки"),
-    WALK(5, "Погулять");
+    AMUSEMENT(3, "Развлечься"),
+    PARKS(4, "Прогуляться"),
+    CULTURE(5, "Окультуриться");
 
     private final String description;
     private final int id;
@@ -34,6 +34,6 @@ public enum WalkMeCategory {
     }
 
     public static EnumSet<WalkMeCategory> getAll() {
-        return EnumSet.of(BAR, EAT, FUN, PARKS, WALK);
+        return EnumSet.of(ALCOHOL, EAT, AMUSEMENT, PARKS, CULTURE);
     }
 }
