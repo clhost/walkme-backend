@@ -1,11 +1,13 @@
 package route.storage.entities;
 
 import com.google.gson.annotations.Expose;
+import org.hibernate.annotations.Check;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "wm_place")
+@Check(constraints = "city in ('spb', 'msk')")
 public class Place {
     @Id
     @Column(name = "id", unique = true, nullable = false)
@@ -44,8 +46,19 @@ public class Place {
     @Column(name = "json_schedule", length = 1000)
     private String scheduleAsJsonString;
 
+    @Column(name = "average_check")
+    private double avgCheck;
+
+    @Column(name = "rank")
+    private double rank;
+
+    @Column(name = "city")
+    private String city;
+
     public Place() {
         // The explicit constructor for ORM
+        rank = 0;
+        avgCheck = 0;
     }
 
     public String getId() {
@@ -120,17 +133,45 @@ public class Place {
         this.scheduleAsJsonString = scheduleAsJsonString;
     }
 
+    public double getAvgCheck() {
+        return avgCheck;
+    }
+
+    public void setAvgCheck(double avgCheck) {
+        this.avgCheck = avgCheck;
+    }
+
+    public double getRank() {
+        return rank;
+    }
+
+    public void setRank(double rank) {
+        this.rank = rank;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
     @Override
     public String toString() {
         return "Place{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
-                ", categoryId=" + category.getId() +
+                ", category=" + category +
                 ", gisCategory='" + gisCategory + '\'' +
                 ", addressName='" + addressName + '\'' +
                 ", addressComment='" + addressComment + '\'' +
                 ", location=" + location +
                 ", schedule=" + schedule +
+                ", scheduleAsJsonString='" + scheduleAsJsonString + '\'' +
+                ", avgCheck=" + avgCheck +
+                ", rank=" + rank +
+                ", city='" + city + '\'' +
                 '}';
     }
 }
