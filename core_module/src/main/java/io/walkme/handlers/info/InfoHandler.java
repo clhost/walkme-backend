@@ -28,9 +28,6 @@ public class InfoHandler extends BaseHttpHandler {
 
         FullHttpRequest request = (FullHttpRequest) msg;
 
-        byte[] content = new byte[request.content().readableBytes()];
-        request.content().readBytes(content);
-
         if (isFaviconIgnore && !request.uri().contains("favicon.ico")) {
             logger.info("Incoming connection: " + ctx.channel().remoteAddress() + ", uri: " + request.uri());
             System.out.println("Incoming request: ");
