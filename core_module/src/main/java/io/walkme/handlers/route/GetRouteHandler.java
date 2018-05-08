@@ -11,7 +11,10 @@ import io.walkme.response.ResultBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import route.core.RouteService;
+import route.services.CategoryService;
+import route.storage.entities.WalkMeCategory;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +27,8 @@ public class GetRouteHandler extends BaseHttpHandler {
     private static final String PARAM_LAT = "lat";
     private static final String PARAM_LNG = "lng";
     private static final String PARAM_CATEGORIES = "categories";
+    private static final String NEAR = "near";
+    private static final String AVG_CHECK = "avgCheck";
 
     private final Logger logger = LogManager.getLogger(GetRouteHandler.class);
     private final RouteService routeService;
@@ -57,10 +62,16 @@ public class GetRouteHandler extends BaseHttpHandler {
 
     private void handleRoute(ChannelHandlerContext ctx, Map<String, List<String>> params) throws Exception {
         try {
+            String[] strCategories = params.get(PARAM_CATEGORIES).get(0).split(",");
+            int[] categories = new int[strCategories.length];
+            for (int i = 0; i < categories.length; i++) {
+                categories[i] = Integer.parseInt(strCategories[i]);
+            }
+
             String route = routeService.getRoute(
                     Double.parseDouble(params.get(PARAM_LAT).get(0)),
                     Double.parseDouble(params.get(PARAM_LNG).get(0)),
-                    new int[]{});
+                    categories);
 
             JsonObject jsonObject = jsonParser.parse(route).getAsJsonObject();
             if (jsonObject.get("error") != null) {
@@ -89,10 +100,40 @@ public class GetRouteHandler extends BaseHttpHandler {
     }
 
     private boolean checkParams(Map<String, List<String>> params) {
-        return params.get("lat") != null &&
-                params.get("lat").get(0) != null &&
-                params.get("lng") != null &&
-                params.get("lng").get(0) != null;
+        boolean notNull = params.get(PARAM_LAT) != null &&
+                params.get(PARAM_LAT).get(0) != null &&
+                params.get(PARAM_LNG) != null &&
+                params.get(PARAM_LNG).get(0) != null &&
+                params.get(PARAM_CATEGORIES) != null &&
+                params.get(PARAM_CATEGORIES).get(0) != null &&
+                params.get(NEAR) != null &&
+                params.get(NEAR).get(0) != null &&
+                params.get(AVG_CHECK) != null &&
+                params.get(AVG_CHECK).get(0) != null;
+        if (!notNull) {
+            return false;
+        }
+
+        boolean isCategoriesValid = true;
+        for (String num : params.get(PARAM_CATEGORIES).get(0).split(",")) {
+            if (!(isNumeric(num) && categoryContains(Integer.parseInt(num)))) {
+                isCategoriesValid = false;
+            }
+        }
+        return isCategoriesValid &&
+                isNumeric(params.get(PARAM_LAT).get(0)) &&
+                isNumeric(params.get(PARAM_LNG).get(0)) &&
+                isNumeric(params.get(AVG_CHECK).get(0)) &&
+                params.get(NEAR).get(0).matches("[0]|[1]");
+    }
+
+    private boolean categoryContains(int c) {
+        for (WalkMeCategory category : WalkMeCategory.getAll()) {
+            if (c == category.id()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

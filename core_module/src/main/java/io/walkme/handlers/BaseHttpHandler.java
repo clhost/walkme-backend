@@ -95,4 +95,8 @@ public abstract class BaseHttpHandler extends ChannelInboundHandlerAdapter {
             throw new IllegalStateException("Held object must not be null.");
         }
     }
+
+    public static boolean isNumeric(String str) {
+        return str.matches("-?\\d+(\\.\\d+)?");
+    }
 }
