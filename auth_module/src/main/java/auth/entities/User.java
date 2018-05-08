@@ -10,6 +10,7 @@ import javax.persistence.*;
 @Check(constraints = "social_network in ('vk', 'ok', 'fb')")
 public class User {
     @Id
+    @Expose
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, nullable = false)
     private long id;
