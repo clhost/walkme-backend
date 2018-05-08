@@ -7,10 +7,7 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.walkme.core.ServerMode;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public abstract class BaseHttpHandler extends ChannelInboundHandlerAdapter {
     private FullHttpRequest request;
@@ -73,7 +70,7 @@ public abstract class BaseHttpHandler extends ChannelInboundHandlerAdapter {
 
     protected byte[] readBody() throws IllegalStateException {
         if (request.method().equals(HttpMethod.POST)) {
-            ByteBuf buf = request.content();
+            ByteBuf buf = request.content().retain();
             byte[] content = new byte[buf.readableBytes()];
             while (buf.isReadable()) {
                 content[buf.readerIndex()] = buf.readByte();
@@ -96,7 +93,7 @@ public abstract class BaseHttpHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-    public static boolean isNumeric(String str) {
+    protected static boolean isNumeric(String str) {
         return str.matches("-?\\d+(\\.\\d+)?");
     }
 }
