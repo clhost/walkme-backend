@@ -2,8 +2,9 @@ package route.services.fields;
 
 
 public enum SavedRouteFields {
+    ROUTE_ID("route_id"),
     ID("id"),
-    USER_ID("user_id");
+    JSON_ROUTE("json_route");
 
     private final String name;
 

@@ -1,4 +1,4 @@
-package route.services;
+package route.services  ;
 
 import org.hibernate.Session;
 import org.hibernate.query.NativeQuery;
@@ -20,8 +20,8 @@ public class SavedRouteService implements EntityService<SavedRoute, String, Save
             session = HibernateUtil.getSession();
             session.beginTransaction();
             switch (columnType) {
+                case ROUTE_ID:
                 case ID:
-                case USER_ID:
                     nativeQuery = session.createNativeQuery(
                             "select * from " + TABLE_NAME + " " +
                                     "where " + columnType.getName() + " = :pid", SavedRoute.class);
@@ -38,8 +38,32 @@ public class SavedRouteService implements EntityService<SavedRoute, String, Save
     }
 
     @Override
-    public List<SavedRoute> getAll(List<String> e, SavedRouteFields savedRouteFields) {
-        return null;
+    public List<SavedRoute> getAll(List<String> criteria, SavedRouteFields columnType) {
+        Session session = null;
+        List<SavedRoute> routes = null;
+        NativeQuery<SavedRoute> nativeQuery;
+        try {
+            session = HibernateUtil.getSession();
+            session.beginTransaction();
+            switch (columnType) {
+                case ID:
+                    if (criteria.size() != 1) {
+                        throw new IllegalStateException("The criteria list parameter size must be 1 for ID.");
+                    }
+
+                    long id = Long.parseLong(criteria.get(0));
+                    nativeQuery = session.createNativeQuery(
+                            "select * from " + TABLE_NAME + " " +
+                            "where " + columnType.getName() + " = (:uid)", SavedRoute.class);
+                    nativeQuery.setParameter("uid", id);
+                    routes = nativeQuery.getResultList();
+            }
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+        return routes;
     }
 
     @Override

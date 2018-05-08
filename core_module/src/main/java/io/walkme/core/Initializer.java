@@ -16,6 +16,8 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import io.netty.util.concurrent.EventExecutorGroup;
+import io.walkme.handlers.route.GetSavedRoutesHandler;
+import io.walkme.handlers.route.SaveRouteHandler;
 import io.walkme.handlers.statics.StaticHandler;
 import route.core.RouteService;
 
@@ -60,6 +62,8 @@ public class Initializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast(logout, "logout", new LogoutHandler(authService));
 
         pipeline.addLast(start, "start", new StartHandler(authService, routeService));
+        pipeline.addLast(route, "save_favorite_route", new SaveRouteHandler(routeService, authService));
+        pipeline.addLast(route, "get_favorite_routes", new GetSavedRoutesHandler(routeService, authService));
         pipeline.addLast(route, "route", new GetRouteHandler(routeService));
 
         pipeline.addLast("invalid", new InvalidRequestHandler());

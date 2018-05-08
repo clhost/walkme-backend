@@ -95,7 +95,10 @@ public class RouteService extends AbstractRouteService {
     @Nullable
     @Override
     public List<String> getSavedRoutes(String userId) {
-        return null;
+        List<String> criteria = new ArrayList<>();
+        criteria.add(userId);
+        List<SavedRoute> savedRoutes = savedRouteService.getAll(criteria, SavedRouteFields.ID);
+        return savedRoutes.stream().map(SavedRoute::getJsonRoute).collect(Collectors.toList());
     }
 
     @Override

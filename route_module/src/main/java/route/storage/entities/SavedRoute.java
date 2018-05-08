@@ -1,6 +1,7 @@
 package route.storage.entities;
 
 import com.google.gson.annotations.Expose;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 
@@ -12,15 +13,17 @@ import javax.persistence.*;
 @Table(name = "wm_fav_route")
 public class SavedRoute {
     @Id
-    @Column(name = "id", unique = true, nullable = false)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "route_id", unique = true, nullable = false)
     private long id;
 
     @ManyToOne
-    @JoinColumn(name = "social_id")
+    @JoinColumn(name = "id")
     @Expose
     private User user;
 
     //Нуждается в отдельном парсинге.
+    @Type(type = "text")
     @Column(name = "json_route")
     private String jsonRoute;
 

@@ -35,12 +35,9 @@ public class SaveRouteHandler extends BaseHttpHandler {
         hold((FullHttpRequest) msg);
 
         String[] tokens = getTokens();
-
         try {
             if (!method().equals(HttpMethod.POST)) {
-                ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
-                        HttpResponseStatus.BAD_REQUEST,
-                        ResponseBuilder.JSON_BAD_RESPONSE));
+                ctx.fireChannelRead(msg);
                 return;
             }
 
@@ -48,6 +45,8 @@ public class SaveRouteHandler extends BaseHttpHandler {
                 ctx.fireChannelRead(msg);
             } else if (tokens[0].equals(API_PREFIX) && tokens[1].equals(API_SAVE_ROUTE)) {
                 saveRoute(ctx, readBody());
+            } else {
+                ctx.fireChannelRead(msg);
             }
         } finally {
             ctx.close();
@@ -64,13 +63,11 @@ public class SaveRouteHandler extends BaseHttpHandler {
             ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                     HttpResponseStatus.OK,
                     ResponseBuilder.JSON_BAD_GATEWAY_RESPONSE));
-            ctx.close();
-            release();
             return;
         }
 
         JsonObject user = jsonParser.parse(userInfo).getAsJsonObject();
-        String id = user.get("social_id").getAsString();
+        String id = user.get("id").getAsString();
 
         routeService.saveRoute(id, jsonRoute);
     }
