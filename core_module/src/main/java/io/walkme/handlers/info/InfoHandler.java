@@ -45,7 +45,6 @@ public class InfoHandler extends BaseHttpHandler {
             }
 
             System.out.println("* Method: " + request.method());
-            System.out.println("* Content: " + new String(content));
         }
 
         ctx.fireChannelRead(msg);
