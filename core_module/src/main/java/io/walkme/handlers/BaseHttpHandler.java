@@ -96,4 +96,7 @@ public abstract class BaseHttpHandler extends ChannelInboundHandlerAdapter {
     protected static boolean isNumeric(String str) {
         return str.matches("-?\\d+(\\.\\d+)?");
     }
+
+    public class InternalServerErrorException extends Exception { }
+    public class IllegalParamsException extends Exception { }
 }
