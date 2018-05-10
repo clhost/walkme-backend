@@ -34,7 +34,11 @@ public class AuthService extends AbstractBaseAuthService {
                 .readTimeout(2, TimeUnit.SECONDS)
                 .writeTimeout(2, TimeUnit.SECONDS)
                 .build();
-        this.gson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().create();
+        this.gson = new GsonBuilder()
+                .serializeNulls()
+                .setPrettyPrinting()
+                .excludeFieldsWithoutExposeAnnotation()
+                .create();
     }
 
     @Override
