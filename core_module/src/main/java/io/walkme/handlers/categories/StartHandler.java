@@ -6,6 +6,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.walkme.handlers.BaseHttpHandler;
+import io.walkme.helpers.ConfigHelper;
 import io.walkme.response.ResponseBuilder;
 import io.walkme.response.ResultBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -17,6 +18,8 @@ import route.core.RouteService;
  * handle: /api/start
  */
 public class StartHandler extends BaseHttpHandler {
+    private static final String AVATAR = "avatar";
+    private static final String EMPTY_AVATAR = "/static/pic/profile-empty.png";
     private static final JsonParser jsonParser = new JsonParser();
     private final Logger logger = LogManager.getLogger(StartHandler.class);
     private final AuthService authService;
@@ -53,7 +56,7 @@ public class StartHandler extends BaseHttpHandler {
             }
 
             JsonObject object = new JsonObject();
-            JsonObject user = jsonParser.parse(userInfo).getAsJsonObject();
+            JsonObject user = checkNullAvatar(jsonParser.parse(userInfo).getAsJsonObject());
             JsonArray categories = jsonParser.parse(categoriesInfo).getAsJsonArray();
 
             object.add("user", user);
@@ -67,6 +70,13 @@ public class StartHandler extends BaseHttpHandler {
         } else {
             ctx.fireChannelRead(msg);
         }
+    }
+
+    private JsonObject checkNullAvatar(JsonObject object) {
+        if (object.get(AVATAR).isJsonNull()) {
+            object.addProperty("avatar", ConfigHelper.FULL_DOMAIN + EMPTY_AVATAR);
+        }
+        return object;
     }
 
     @Override

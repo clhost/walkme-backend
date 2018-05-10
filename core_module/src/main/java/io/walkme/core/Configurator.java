@@ -32,6 +32,7 @@ public class Configurator {
                     Configurator.class.getResourceAsStream("/" + ConfigHelper.LOCAL_PROPERTIES)));
             String port = locProps.getProperty("server.port");
             String host = locProps.getProperty("server.host");
+            String fullDomain = locProps.getProperty("server.full_domain");
 
             if (port == null || port.equals("")) {
                 throw new NullPointerException("server.port is missing.");
@@ -41,8 +42,13 @@ public class Configurator {
                 throw new NullPointerException("server.host is missing.");
             }
 
+            if (fullDomain == null || fullDomain.equals("")) {
+                throw new NullPointerException("server.full_domain is missing.");
+            }
+
             checkServerMode();
             startServices();
+            ConfigHelper.setFullDomain(fullDomain);
             server = new Server(host, Integer.parseInt(port), authService, routeService);
         } catch (IOException e) {
             logger.error(e.getCause().getMessage());
