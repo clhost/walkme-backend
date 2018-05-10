@@ -9,7 +9,10 @@ public class JsonResult implements ServerJsonResponse<String, JsonObject, String
     private JsonObject result;
     private String error;
 
-    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();//new Gson();
+    private static final Gson gson = new GsonBuilder()
+            .setPrettyPrinting()
+            .disableHtmlEscaping()
+            .create();
 
     @Override
     public void setStatus(int status) {

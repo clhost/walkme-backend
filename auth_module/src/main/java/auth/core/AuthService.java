@@ -37,6 +37,7 @@ public class AuthService extends AbstractBaseAuthService {
         this.gson = new GsonBuilder()
                 .serializeNulls()
                 .setPrettyPrinting()
+                .disableHtmlEscaping()
                 .excludeFieldsWithoutExposeAnnotation()
                 .create();
     }
