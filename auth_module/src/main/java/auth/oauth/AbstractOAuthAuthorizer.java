@@ -15,12 +15,12 @@ import java.io.IOException;
 import java.util.Optional;
 
 abstract class AbstractOAuthAuthorizer implements OAuthAuthorizer {
+    private final OkHttpClient okHttpClient;
+    private final JsonParser jsonParser;
     final SHA256HEXEncoder tokenEncoder;
     final MD5Encoder md5Encoder;
     final SessionService sessionService;
-    final OkHttpClient okHttpClient;
     final EntityService<User, String, UserFields> userService;
-    final JsonParser jsonParser;
 
     AbstractOAuthAuthorizer(OkHttpClient okHttpClient) {
         this.okHttpClient = okHttpClient;
@@ -76,6 +76,6 @@ abstract class AbstractOAuthAuthorizer implements OAuthAuthorizer {
 
     enum RequestType {
         GET,
-        POST;
+        POST
     }
 }

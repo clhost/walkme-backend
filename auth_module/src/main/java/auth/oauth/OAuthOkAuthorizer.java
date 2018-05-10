@@ -20,6 +20,7 @@ public class OAuthOkAuthorizer extends AbstractOAuthAuthorizer {
     private static final String FIRST_NAME = "first_name";
     private static final String LAST_NAME = "last_name";
     private static final String PHOTO = "pic190x190";
+    private static final String EMPTY_PHOTO_VERIFIER = "stub";
     private static final Logger logger = LogManager.getLogger(OAuthOkAuthorizer.class);
 
     private String salt;
@@ -85,6 +86,9 @@ public class OAuthOkAuthorizer extends AbstractOAuthAuthorizer {
                 }
                 if (element.getKey().equals(PHOTO)) {
                     photo = element.getValue().getAsString();
+                    if (photo.contains(EMPTY_PHOTO_VERIFIER)) {
+                        photo = null;
+                    }
                 }
             }
         } catch (NullPointerException e) {

@@ -21,6 +21,7 @@ public class OAuthVkAuthorizer extends AbstractOAuthAuthorizer {
     private static final String FIRST_NAME = "first_name";
     private static final String LAST_NAME = "last_name";
     private static final String PHOTO = "photo_200";
+    private static final String EMPTY_PHOTO_VERIFIER = "camera";
     private static final Logger logger = LogManager.getLogger(OAuthVkAuthorizer.class);
 
     private String salt;
@@ -76,6 +77,9 @@ public class OAuthVkAuthorizer extends AbstractOAuthAuthorizer {
                     firstName = object.get(FIRST_NAME).getAsString();
                     lastName = object.get(LAST_NAME).getAsString();
                     photo = object.get(PHOTO).getAsString();
+                    if (photo.contains(EMPTY_PHOTO_VERIFIER)) {
+                        photo = null;
+                    }
                 }
             }
         } catch (NullPointerException e) {

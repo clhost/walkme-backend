@@ -22,6 +22,7 @@ public class OAuthFbAuthorizer extends AbstractOAuthAuthorizer {
     private static final String PICTURE = "picture";
     private static final String PICTURE_DATA = "data";
     private static final String PICTURE_URL = "url";
+    private static final String EMPTY_PHOTO_VERIFIER = "173392330040945";
     private static final Logger logger = LogManager.getLogger(OAuthFbAuthorizer.class);
 
     private String salt;
@@ -87,6 +88,9 @@ public class OAuthFbAuthorizer extends AbstractOAuthAuthorizer {
                     .get(PICTURE).getAsJsonObject()
                     .get(PICTURE_DATA).getAsJsonObject()
                     .get(PICTURE_URL).getAsString();
+            if (photo.contains(EMPTY_PHOTO_VERIFIER)) {
+                photo = null;
+            }
         } catch (NullPointerException e) {
             logger.error(e.getMessage());
             return null;
