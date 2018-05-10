@@ -33,7 +33,7 @@ public class User {
     @Column(name = "social_network", nullable = false)
     private String socialNetwork;
 
-    @Column(name = "avatar", nullable = false)
+    @Column(name = "avatar")
     @Expose
     private String avatar;
 
