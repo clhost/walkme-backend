@@ -91,8 +91,8 @@ public class UserService implements EntityService<User, String, UserFields> {
             session.save(user);
 
             session.getTransaction().commit();
-        } finally {
             logger.info("Saved user: " + user + ".");
+        } finally {
             if (session != null) {
                 session.close();
             }
@@ -142,6 +142,7 @@ public class UserService implements EntityService<User, String, UserFields> {
             session.update(user);
 
             session.getTransaction().commit();
+            logger.info("Updated user: " + user + ".");
         } finally {
             if (session != null) {
                 session.close();
