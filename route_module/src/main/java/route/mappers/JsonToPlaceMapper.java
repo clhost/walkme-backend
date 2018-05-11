@@ -24,6 +24,7 @@ public class JsonToPlaceMapper implements Mapper<Place, JsonObject> {
     private static final String REVIEW_COUNT = "review_count";
     private static final String RATING = "rating";
     private static final String AVERAGE_CHECK = "averageCheck";
+    private static final String RUBRIC_ID = "rubricId";
 
     private final Mapper<Schedule, JsonObject> mapper = new JsonToScheduleMapper();
 
@@ -92,6 +93,12 @@ public class JsonToPlaceMapper implements Mapper<Place, JsonObject> {
                     place.setAvgCheck(element.getValue().getAsDouble());
                 }
             } // else average check is 0
+
+            if (element.getKey().equals(RUBRIC_ID)) {
+                if (!element.getValue().isJsonNull()) {
+                    place.setRubricId(element.getValue().getAsLong());
+                }
+            }
         }
 
         return place;

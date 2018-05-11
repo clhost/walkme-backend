@@ -7,7 +7,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "wm_place")
-@Check(constraints = "city in ('spb', 'msk')")
+@Check(constraints = "city in ('spb', 'msk') and state in ('new', 'old')")
 public class Place {
     @Id
     @Column(name = "id", unique = true, nullable = false)
@@ -54,6 +54,12 @@ public class Place {
 
     @Column(name = "city")
     private String city;
+
+    @Column(name = "rubric_id")
+    private long rubricId;
+
+    @Column(name = "state")
+    private String state = "new";
 
     public Place() {
         // The explicit constructor for ORM
@@ -157,6 +163,22 @@ public class Place {
         this.city = city;
     }
 
+    public long getRubricId() {
+        return rubricId;
+    }
+
+    public void setRubricId(long rubricId) {
+        this.rubricId = rubricId;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
     @Override
     public String toString() {
         return "Place{" +
@@ -172,6 +194,8 @@ public class Place {
                 ", avgCheck=" + avgCheck +
                 ", rank=" + rank +
                 ", city='" + city + '\'' +
+                ", rubricId='" + rubricId + '\'' +
+                ", state='" + state + '\'' +
                 '}';
     }
 }
