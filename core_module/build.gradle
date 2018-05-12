@@ -40,3 +40,13 @@ task run_core(type: JavaExec) {
     classpath sourceSets.main.runtimeClasspath
     main = "io.walkme.core.Server"
 }
+
+task drop(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    main = "route.utils.Dropper"
+}
+
+task load(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    main = "route.core.MainLoader"
+}
