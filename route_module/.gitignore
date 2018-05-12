@@ -7,6 +7,7 @@
 !*.java
 !*.md
 !*.json
+!*.osm.pbf
 !*.yaml
 !*.properties
 
