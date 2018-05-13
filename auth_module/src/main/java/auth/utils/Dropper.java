@@ -10,6 +10,7 @@ public class Dropper {
             session = HibernateUtil.getSession();
             session.beginTransaction();
 
+            session.createNativeQuery("drop table wm_fav_route").executeUpdate();
             session.createNativeQuery("drop table wm_session").executeUpdate();
             session.createNativeQuery("drop table wm_user").executeUpdate();
 
