@@ -1,5 +1,6 @@
 package route.graph.ways;
 
+import net.jafama.FastMath;
 import route.graph.*;
 import route.graph.exceptions.NotEnoughPointsException;
 import route.graph.exceptions.NotInitializedException;
@@ -22,7 +23,7 @@ public class SPBWays {
     private Set<Location> alreadyUsed = new HashSet<>();
     private Set<Location> alreadyUsedThisIteration = new HashSet<>();
 
-    private final int NEXT_STEP_POINTS_RANDOM_COUNT = 12;
+    private final int NEXT_STEP_POINTS_RANDOM_COUNT = 8;
     private final double MIN_DISTANCE_BETWEEN_TWO_POINTS = 500;//meters
     private double MAX_DISTANCE_BETWEEN_TWO_POINTS = 1300; //meters
     private final double MAX_WALK_TIME = 240 * 1000 * 60; //mills
@@ -85,7 +86,6 @@ public class SPBWays {
         this.startTime = startTime;
         currentTime = startTime;
         USER_START_LOCATION = startLocation;
-        System.out.println(USER_START_LOCATION);
     }
 
     public RouteHolder getWays() throws StartPointIsNotAvailableException, NotEnoughPointsException {
@@ -138,15 +138,17 @@ public class SPBWays {
             ArrayList<Node> nextStepChecked = new ArrayList<>(NEXT_STEP_POINTS_RANDOM_COUNT);
             List<Location> allLocations = null;
             for(int i=0; i<NEXT_STEP_POINTS_RANDOM_COUNT; i++) {
-                allLocations = getAllPoints(currentLocation, nextStep.get(i).getPoint());
+                int rnd = ThreadLocalRandom.current().nextInt(0, nextStep.size());
+                allLocations = getAllPoints(currentLocation, nextStep.get(rnd).getPoint());
                 if (checkIntersection(allLocations)) continue;
-                nextStepChecked.add(nextStep.get(i));
+                nextStepChecked.add(nextStep.get(rnd));
+                break;
             }
             if(nextStepChecked.size() == 0){
-                System.out.println("RESET");
-                MAX_DISTANCE_BETWEEN_TWO_POINTS += RADIUS_INCREMENT;
-                RESET_TIME = true;
-                return;
+                    MAX_DISTANCE_BETWEEN_TWO_POINTS += RADIUS_INCREMENT;
+                    System.out.println("RESET");
+                    RESET_TIME = true;
+                    return;
             }
             Node tempPoint = nextStepChecked.get(ThreadLocalRandom.current().nextInt(0, nextStepChecked.size()));
             allLocations = getAllPoints(currentLocation, tempPoint.getPoint());
@@ -183,12 +185,13 @@ public class SPBWays {
     private Node getNearestPoint(Location from, List<Node> set) {
         Node resultPoint = null;
         double minDistance = Double.MAX_VALUE;
-        for (Node aSet : set) {
-            double currentDistance = getDistance(from, aSet.getPoint());
+        for (int i=0; i<set.size(); i++) {
+            double currentDistance = getDistance(from, set.get(i).getPoint());
             if(currentDistance < MIN_DISTANCE_BETWEEN_TWO_POINTS || currentDistance > MAX_DISTANCE_BETWEEN_TWO_POINTS || currentDistance >= minDistance) continue;
-            if (!isTimeOk(aSet.getSchedule()) || alreadyUsed.contains(aSet.getPoint()) || alreadyUsedThisIteration.contains(aSet.getPoint())) continue;
+            if (!isTimeOk(set.get(i).getSchedule()) || alreadyUsed.contains(set.get(i).getPoint()) || alreadyUsedThisIteration.contains(set.get(i).getPoint())) continue;
             minDistance = currentDistance;
-            resultPoint = aSet;
+            resultPoint = set.get(i);
+            if(minDistance < MIN_DISTANCE_BETWEEN_TWO_POINTS * 1.5) break;
         }
         return resultPoint;
     }
@@ -201,9 +204,9 @@ public class SPBWays {
         int r = 6371;
         double dLat = deg2rad(lat2 - lat1);
         double dLon = deg2rad(lon2 - lon1);
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-                Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double a = FastMath.sin(dLat / 2) * FastMath.sin(dLat / 2) + FastMath.cos(deg2rad(lat1)) * FastMath.cos(deg2rad(lat2)) *
+                FastMath.sin(dLon / 2) * FastMath.sin(dLon / 2);
+        double c = 2 * FastMath.atan2(FastMath.sqrt(a), FastMath.sqrt(1 - a));
         return r * c * 1000;
     }
 
