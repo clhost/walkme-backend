@@ -70,7 +70,7 @@ public class RouteService extends AbstractRouteService {
             for (Node node : routeHolder.getPlaces()) {
                 entities.add(mapper.map(node));
             }
-            return RouteBuilder.asJson(entities, routeHolder.getPoints());
+            return RouteBuilder.asJson(entities, routeHolder.getPoints(), new Location(lat, lng));
         } catch (NotInitializedException e) {
             throw new IllegalStateException("Service must be started");
         } catch (StartPointIsNotAvailableException e) {
@@ -99,6 +99,14 @@ public class RouteService extends AbstractRouteService {
         criteria.add(userId);
         List<SavedRoute> savedRoutes = savedRouteService.getAll(criteria, SavedRouteFields.ID);
         return savedRoutes.stream().map(SavedRoute::getJsonRoute).collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean isPointAvailable(double lat, double lng) {
+        if (SPBWays.isPointValid(lat, lng) || MSKWays.isPointValid(lat, lng)) {
+            return true;
+        }
+        return false;
     }
 
     @Override

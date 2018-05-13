@@ -13,8 +13,9 @@ class RouteBuilder {
     private static final String JSON_ROUTE = "route";
     private static final String JSON_PLACES = "places";
     private static final String JSON_WAYS = "ways";
+    private static final String START_POS = "startPosition";
 
-    static String asJson(List<ResponseRouteEntity> entities, List<List<Location>> points) {
+    static String asJson(List<ResponseRouteEntity> entities, List<List<Location>> points, Location startPos) {
         Way[] ways = new Way[points.size()];
         for (int i = 0; i < ways.length; i++) {
             ways[i] = new Way(points.get(i));
@@ -22,8 +23,10 @@ class RouteBuilder {
 
         String placePoints = gson.toJson(entities);
         String allPoints = gson.toJson(ways);
+        String startPosition = gson.toJson(startPos);
 
         JsonObject places = new JsonObject();
+        places.add(START_POS, new JsonParser().parse(startPosition));
         places.add(JSON_PLACES, new JsonParser().parse(placePoints));
         places.add(JSON_WAYS, new JsonParser().parse(allPoints));
 

@@ -35,6 +35,14 @@ public interface BaseRouteService {
     List<String> getSavedRoutes(String userId);
 
     /**
+     *
+     * @param lat широта
+     * @param lng долгота
+     * @return принадлежность точки какому-либо городу, обозначенному в реализации
+     */
+    boolean isPointAvailable(double lat, double lng);
+
+    /**
      * Стартует службу
      */
     void start();
