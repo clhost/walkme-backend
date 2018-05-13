@@ -21,6 +21,7 @@ public abstract class BaseHttpHandler extends ChannelInboundHandlerAdapter {
     protected static final String API_GET_ROUTE = "getRoute";
     protected static final String API_SAVE_ROUTE = "saveRoute";
     protected static final String API_GET_SAVED_ROUTES = "getSavedRoutes";
+    protected static final String API_IS_POINT_AVAILABLE = "isPointAvailable";
     private static Set<String> set = new HashSet<>();
 
     static {
@@ -32,6 +33,7 @@ public abstract class BaseHttpHandler extends ChannelInboundHandlerAdapter {
         set.add(API_GET_ROUTE);
         set.add(API_SAVE_ROUTE);
         set.add(API_GET_SAVED_ROUTES);
+        set.add(API_IS_POINT_AVAILABLE);
     }
 
     protected static Set<String> set() {
