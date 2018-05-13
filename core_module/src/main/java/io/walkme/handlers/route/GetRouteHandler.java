@@ -28,7 +28,7 @@ public class GetRouteHandler extends BaseHttpHandler {
     private static final String PARAM_LNG = "lng";
     private static final String PARAM_CATEGORIES = "categories";
     private static final String NEAR = "near";
-    private static final String AVG_CHECK = "avgCheck";
+    //private static final String AVG_CHECK = "avgCheck";
 
     private final Logger logger = LogManager.getLogger(GetRouteHandler.class);
     private final RouteService routeService;
@@ -77,7 +77,10 @@ public class GetRouteHandler extends BaseHttpHandler {
             if (jsonObject.get("error") != null) {
                 ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                         HttpResponseStatus.OK,
-                        ResultBuilder.asJson(500, jsonObject.get("error"), ResultBuilder.ResultType.ERROR)));
+                        ResultBuilder.asJson(
+                                500,
+                                jsonObject.get("error").getAsString(),
+                                ResultBuilder.ResultType.ERROR)));
                 return;
             }
 
@@ -107,9 +110,9 @@ public class GetRouteHandler extends BaseHttpHandler {
                 params.get(PARAM_CATEGORIES) != null &&
                 params.get(PARAM_CATEGORIES).get(0) != null &&
                 params.get(NEAR) != null &&
-                params.get(NEAR).get(0) != null &&
+                params.get(NEAR).get(0) != null /*&&
                 params.get(AVG_CHECK) != null &&
-                params.get(AVG_CHECK).get(0) != null;
+                params.get(AVG_CHECK).get(0) != null*/;
         if (!notNull) {
             return false;
         }
@@ -123,7 +126,7 @@ public class GetRouteHandler extends BaseHttpHandler {
         return isCategoriesValid &&
                 isNumeric(params.get(PARAM_LAT).get(0)) &&
                 isNumeric(params.get(PARAM_LNG).get(0)) &&
-                isNumeric(params.get(AVG_CHECK).get(0)) &&
+                //isNumeric(params.get(AVG_CHECK).get(0)) &&
                 params.get(NEAR).get(0).matches("[0]|[1]");
     }
 
