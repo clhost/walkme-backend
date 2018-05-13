@@ -17,7 +17,7 @@ public class Node {
     private String workingTime;
     private Schedule schedule;
     private double avgCheck;
-    private double raiting;
+    private double rating;
     private String city;
 
     private Node(String name,
@@ -40,7 +40,7 @@ public class Node {
         this.workingTime = workingTime;
         this.schedule = schedule;
         this.avgCheck = avgCheck;
-        this.raiting = rank;
+        this.rating = rank;
         this.city = city;
     }
 
@@ -124,8 +124,8 @@ public class Node {
         return avgCheck;
     }
 
-    public double getRaiting() {
-        return raiting;
+    public double getRating() {
+        return rating;
     }
 
     public String getCity() {
