@@ -37,6 +37,14 @@ public class ResponseRouteEntity {
     @SuppressWarnings("unused")
     private String workingTime;
 
+    @Expose
+    @SuppressWarnings("unused")
+    private double raiting;
+
+    @Expose
+    @SuppressWarnings("unused")
+    private double avgCheck;
+
     public ResponseRouteEntity(
             Location location,
             String name,
@@ -44,7 +52,9 @@ public class ResponseRouteEntity {
             int categoryId,
             String address,
             String addressAdditional,
-            String workingTime) {
+            String workingTime,
+            double raiting,
+            double avgCheck) {
         this.point = location;
         this.name = name;
         this.category = category;
@@ -52,5 +62,7 @@ public class ResponseRouteEntity {
         this.address = address;
         this.addressAdditional = addressAdditional;
         this.workingTime = workingTime;
+        this.raiting = raiting;
+        this.avgCheck = avgCheck;
     }
 }

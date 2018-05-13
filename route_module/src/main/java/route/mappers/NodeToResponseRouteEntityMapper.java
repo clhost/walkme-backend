@@ -13,6 +13,8 @@ public class NodeToResponseRouteEntityMapper implements Mapper<ResponseRouteEnti
                 node.getCategoryId(),
                 node.getAddress(),
                 node.getAddressAdditional(),
-                node.getWorkingTime());
+                node.getWorkingTime(),
+                node.getRaiting(),
+                node.getAvgCheck());
     }
 }
