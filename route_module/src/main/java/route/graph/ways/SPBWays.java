@@ -1,6 +1,5 @@
 package route.graph.ways;
 
-import io.netty.util.internal.ThreadLocalRandom;
 import route.graph.*;
 import route.graph.exceptions.NotEnoughPointsException;
 import route.graph.exceptions.NotInitializedException;
@@ -11,6 +10,7 @@ import route.storage.entities.Schedule;
 import route.storage.entities.ScheduleTime;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 public class SPBWays {
