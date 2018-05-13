@@ -8,7 +8,7 @@
 !*.md
 !*.yaml
 !*.pbf
-
+!*.png
 # Some needed files
 !*.properties
 
