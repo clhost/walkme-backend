@@ -39,7 +39,7 @@ public class SPBWays {
     private List<Node> nodes;
     private static List<Node> cultureNodes = new ArrayList<>();
     private static final RouteChecker routeChecker =
-            new GraphHopperRouteChecker("route_module/maps/RU-SPE.osm.pbf");
+            new GraphHopperRouteChecker("maps/RU-SPE.osm.pbf");
     private static boolean routeCheckerIsRunning = false;
     private long currentTime;
 

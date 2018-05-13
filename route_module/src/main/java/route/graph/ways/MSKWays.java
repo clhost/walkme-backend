@@ -38,7 +38,7 @@ public class MSKWays {
     private List<Node> nodes;
     private static List<Node> cultureNodes = new ArrayList<>();
     private static final RouteChecker routeChecker =
-            new GraphHopperRouteChecker("route_module/maps/RU-MOW.osm.pbf");
+            new GraphHopperRouteChecker("maps/RU-MOW.osm.pbf");
     private static boolean routeCheckerIsRunning = false;
     private long currentTime;
 
