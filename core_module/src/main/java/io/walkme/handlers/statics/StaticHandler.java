@@ -17,8 +17,11 @@ import java.io.IOException;
  */
 public class StaticHandler extends BaseHttpHandler {
     private static final String STATIC_PREFIX = "static";
+    private static final String PRIVACY = "privacy";
     private static final String PIC = "pic";
+    private static final String HTML = "html";
     private static final String PIC_PATH = STATIC_PREFIX + File.separator + PIC + File.separator;
+    private static final String HTML_PATH = STATIC_PREFIX + File.separator + HTML + File.separator;
 
     private final Logger logger = LogManager.getLogger(StaticHandler.class);
 
@@ -28,12 +31,24 @@ public class StaticHandler extends BaseHttpHandler {
 
         String[] tokens = getTokens();
 
+        if (tokens.length == 1 && tokens[0].equals(PRIVACY)) {
+            File htmlFile = new File(HTML_PATH + "privacy.html");
+            if (htmlFile.exists()) {
+                ctx.writeAndFlush(ResponseBuilder.buildStaticResponse(
+                        HttpResponseStatus.OK,
+                        HTML_PATH + "privacy.html",
+                        "text/html; charset=utf-8"));
+            } else {
+                ctx.close();
+            }
+        }
+
         if (tokens.length == 3 && tokens[0].equals(STATIC_PREFIX)) {
             try {
                 switch (tokens[1]) {
                     case PIC:
-                        File file = new File(PIC_PATH + tokens[2]);
-                        if (file.exists()) {
+                        File picFile = new File(PIC_PATH + tokens[2]);
+                        if (picFile.exists()) {
                             ctx.writeAndFlush(ResponseBuilder.buildStaticResponse(
                                     HttpResponseStatus.OK,
                                     PIC_PATH + tokens[2],
@@ -63,5 +78,11 @@ public class StaticHandler extends BaseHttpHandler {
         logger.error(cause.getMessage());
         ctx.close();
         release();
+    }
+
+    public static void main(String[] args) {
+        File htmlFile = new File(HTML_PATH + "privacy.html");
+        System.out.println(HTML_PATH + "privacy.html");
+        System.out.println(htmlFile.exists());
     }
 }
