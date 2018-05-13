@@ -11,6 +11,7 @@ import route.utils.HibernateUtil;
 
 import java.io.File;
 import java.math.BigInteger;
+import java.util.Arrays;
 
 public class MainLoader {
     private final CategoryService categoryService;
@@ -30,7 +31,10 @@ public class MainLoader {
     private void loadPlaces() {
         Loader<File, WalkMeCategory> spbLoader = new JsonLoader("spb");
         Loader<File, WalkMeCategory> mskLoader = new JsonLoader("msk");
-        categoryService.upload();
+
+        if (!categoryService.exists()) {
+            categoryService.upload();
+        }
 
         // load spb
         spbLoader.load(new File(
