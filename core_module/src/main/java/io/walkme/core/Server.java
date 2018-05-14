@@ -65,7 +65,8 @@ public class Server {
                     .group(bossGroup, workerGroup)
                     .channel(socketChannelClass)
                     .childHandler(new Initializer(sslContext, authService, routeService))
-            .option(ChannelOption.SO_BACKLOG, 128);
+            .option(ChannelOption.SO_BACKLOG, 128)
+            .option(ChannelOption.SO_KEEPALIVE, true);
 
             cf = bootstrap.bind(host, port).syncUninterruptibly();
 
