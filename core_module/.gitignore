@@ -9,6 +9,7 @@
 !*.yaml
 !*.pbf
 !*.png
+!*.html
 # Some needed files
 !*.properties
 
