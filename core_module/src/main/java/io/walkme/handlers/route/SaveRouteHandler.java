@@ -35,40 +35,39 @@ public class SaveRouteHandler extends BaseHttpHandler {
         hold((FullHttpRequest) msg);
 
         String[] tokens = getTokens();
-        try {
-            if (!method().equals(HttpMethod.POST)) {
-                ctx.fireChannelRead(msg);
-                return;
-            }
+        if (!method().equals(HttpMethod.POST)) {
+            ctx.fireChannelRead(msg);
+            return;
+        }
 
-            if (tokens.length < 2) {
-                ctx.fireChannelRead(msg);
-            } else if (tokens[0].equals(API_PREFIX) && tokens[1].equals(API_SAVE_ROUTE)) {
-                saveRoute(ctx, readBody());
-            } else {
-                ctx.fireChannelRead(msg);
-            }
-        } finally {
-            ctx.close();
-            release();
+        if (tokens.length < 2) {
+            ctx.fireChannelRead(msg);
+        } else if (tokens[0].equals(API_PREFIX) && tokens[1].equals(API_SAVE_ROUTE)) {
+            saveRoute(ctx, readBody());
+        } else {
+            ctx.fireChannelRead(msg);
         }
     }
 
     private void saveRoute(ChannelHandlerContext ctx, byte[] route) {
-        String token = getParams().get("token").get(0);
-        String jsonRoute = new String(route, StandardCharsets.UTF_8);
+        try {
+            String token = getParams().get("token").get(0);
+            String jsonRoute = new String(route, StandardCharsets.UTF_8);
 
-        String userInfo = authService.getUserInfo(token);
-        if (userInfo == null) {
-            ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
-                    HttpResponseStatus.OK,
-                    ResponseBuilder.JSON_BAD_GATEWAY_RESPONSE));
-            return;
+            String userInfo = authService.getUserInfo(token);
+            if (userInfo == null) {
+                ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
+                        HttpResponseStatus.OK,
+                        ResponseBuilder.JSON_BAD_GATEWAY_RESPONSE));
+                return;
+            }
+
+            JsonObject user = jsonParser.parse(userInfo).getAsJsonObject();
+            String id = user.get("id").getAsString();
+
+            routeService.saveRoute(id, jsonRoute);
+        } finally {
+            release();
         }
-
-        JsonObject user = jsonParser.parse(userInfo).getAsJsonObject();
-        String id = user.get("id").getAsString();
-
-        routeService.saveRoute(id, jsonRoute);
     }
 }

@@ -39,7 +39,9 @@ public class StaticHandler extends BaseHttpHandler {
                         HTML_PATH + "privacy.html",
                         "text/html; charset=utf-8"));
             } else {
-                ctx.close();
+                ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
+                        HttpResponseStatus.NOT_FOUND,
+                        ResponseBuilder.JSON_NOT_FOUND_RESPONSE));
             }
         }
 
@@ -65,7 +67,6 @@ public class StaticHandler extends BaseHttpHandler {
                         HttpResponseStatus.NOT_FOUND,
                         ResponseBuilder.JSON_NOT_FOUND_RESPONSE));
             } finally {
-                ctx.close();
                 release();
             }
         } else {
@@ -78,11 +79,5 @@ public class StaticHandler extends BaseHttpHandler {
         logger.error(cause.getMessage());
         ctx.close();
         release();
-    }
-
-    public static void main(String[] args) {
-        File htmlFile = new File(HTML_PATH + "privacy.html");
-        System.out.println(HTML_PATH + "privacy.html");
-        System.out.println(htmlFile.exists());
     }
 }

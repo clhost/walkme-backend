@@ -53,22 +53,23 @@ public class GetSavedRoutesHandler extends BaseHttpHandler {
             ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                     HttpResponseStatus.OK,
                     ResponseBuilder.JSON_BAD_GATEWAY_RESPONSE));
-        } finally {
-            ctx.close();
-            release();
         }
     }
 
     private void send(ChannelHandlerContext ctx, List<String> routes) {
-        JsonArray objects = new JsonArray();
-        for (String str : routes) {
-            objects.add(jsonParser.parse(str).getAsJsonObject());
-        }
+        try {
+            JsonArray objects = new JsonArray();
+            for (String str : routes) {
+                objects.add(jsonParser.parse(str).getAsJsonObject());
+            }
 
-        JsonObject object = new JsonObject();
-        object.add("ways", objects);
-        ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(HttpResponseStatus.OK,
-                ResultBuilder.asJson(200, object, ResultBuilder.ResultType.RESULT)));
+            JsonObject object = new JsonObject();
+            object.add("ways", objects);
+            ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(HttpResponseStatus.OK,
+                    ResultBuilder.asJson(200, object, ResultBuilder.ResultType.RESULT)));
+        } finally {
+            release();
+        }
     }
 
     private List<String> getSavedRoutes() throws InternalServerErrorException, IllegalParamsException {

@@ -1,5 +1,6 @@
 package io.walkme.handlers.info;
 
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import io.walkme.handlers.BaseHttpHandler;
@@ -45,6 +46,12 @@ public class InfoHandler extends BaseHttpHandler {
         }
 
         ctx.fireChannelRead(msg);
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        logger.info("connection: " + ctx.channel().remoteAddress() + " closed.");
+        ctx.close();
     }
 
     @Override

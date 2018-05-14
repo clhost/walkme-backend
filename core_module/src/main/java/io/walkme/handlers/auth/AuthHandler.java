@@ -51,7 +51,7 @@ public class AuthHandler extends BaseHttpHandler {
             ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                     HttpResponseStatus.OK,
                     ResponseBuilder.JSON_FAKE_RESPONSE));
-            ctx.close();
+            //ctx.close();
             release();
         } else if (tokens[0].equals(API_PREFIX) && tokens[1].equals(API_AUTH)) {
             if (!checkAuth()) { // auth off
@@ -65,7 +65,7 @@ public class AuthHandler extends BaseHttpHandler {
                 ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                         HttpResponseStatus.BAD_REQUEST,
                         ResponseBuilder.JSON_BAD_RESPONSE));
-                ctx.close();
+                //ctx.close();
                 release();
             }
         } else {
@@ -74,30 +74,34 @@ public class AuthHandler extends BaseHttpHandler {
     }
 
     private void handleAuth(ChannelHandlerContext ctx, Map<String, List<String>> params) throws Exception {
-        switch (params.get(STATE).get(0)) {
-            case VK:
-            case OK:
-            case FB:
-                String code = params.get("code").get(0);
-                String state = params.get(STATE).get(0).substring(0, 2);
-                String token = authorizeAndGetToken(code, state);
-                if (token != null) {
+        try {
+            switch (params.get(STATE).get(0)) {
+                case VK:
+                case OK:
+                case FB:
+                    String code = params.get("code").get(0);
+                    String state = params.get(STATE).get(0).substring(0, 2);
+                    String token = authorizeAndGetToken(code, state);
+                    if (token != null) {
+                        ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
+                                HttpResponseStatus.OK,
+                                ResultBuilder.asJson(200, wrapToken(token), ResultBuilder.ResultType.RESULT)));
+                        //ctx.close();
+                    } else {
+                        ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
+                                HttpResponseStatus.BAD_GATEWAY,
+                                ResponseBuilder.JSON_BAD_GATEWAY_RESPONSE));
+                        //ctx.close();
+                    }
+                    return;
+                default:
                     ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
-                            HttpResponseStatus.OK,
-                            ResultBuilder.asJson(200, wrapToken(token), ResultBuilder.ResultType.RESULT)));
-                    ctx.close();
-                } else {
-                    ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
-                            HttpResponseStatus.BAD_GATEWAY,
-                            ResponseBuilder.JSON_BAD_GATEWAY_RESPONSE));
-                    ctx.close();
-                }
-                return;
-            default:
-                ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
-                        HttpResponseStatus.BAD_REQUEST,
-                        ResponseBuilder.JSON_BAD_RESPONSE));
-                ctx.close();
+                            HttpResponseStatus.BAD_REQUEST,
+                            ResponseBuilder.JSON_BAD_RESPONSE));
+                    //ctx.close();
+            }
+        } finally {
+            release();
         }
     }
 

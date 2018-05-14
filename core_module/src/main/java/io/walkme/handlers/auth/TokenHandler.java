@@ -35,7 +35,6 @@ public class TokenHandler extends BaseHttpHandler {
         // if main page
         if (tokens.length == 1 && tokens[0].equals("")) {
             ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(HttpResponseStatus.OK, "hi"));
-            ctx.close();
             release();
             return;
         }
@@ -56,7 +55,6 @@ public class TokenHandler extends BaseHttpHandler {
             ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                     HttpResponseStatus.BAD_REQUEST,
                     ResponseBuilder.JSON_BAD_RESPONSE));
-            ctx.close();
             release();
             return;
         }
@@ -66,7 +64,6 @@ public class TokenHandler extends BaseHttpHandler {
                 ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                         HttpResponseStatus.BAD_REQUEST,
                         ResponseBuilder.JSON_BAD_RESPONSE));
-                ctx.close();
                 release();
                 return;
             }
@@ -79,7 +76,6 @@ public class TokenHandler extends BaseHttpHandler {
             ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                     HttpResponseStatus.FORBIDDEN,
                     ResponseBuilder.JSON_UNAUTHORIZED_RESPONSE));
-            ctx.close();
             release();
         }
     }
