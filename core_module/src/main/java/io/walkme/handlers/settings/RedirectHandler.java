@@ -12,7 +12,8 @@ public class RedirectHandler extends BaseHttpHandler {
         FullHttpRequest fullHttpRequest = (FullHttpRequest) msg;
         fullHttpRequest.protocolVersion();
 
-        if (fullHttpRequest.protocolVersion().toString().toLowerCase().contains("http")) {
+        if (fullHttpRequest.protocolVersion().toString().toLowerCase().contains("http") &&
+                !fullHttpRequest.protocolVersion().toString().toLowerCase().contains("https")) {
             FullHttpResponse fullHttpResponse = new DefaultFullHttpResponse(
                     HttpVersion.HTTP_1_1, HttpResponseStatus.TEMPORARY_REDIRECT);
             fullHttpResponse.headers().set(
