@@ -19,6 +19,8 @@ public class RedirectHandler extends BaseHttpHandler {
                     HttpHeaderNames.LOCATION,
                     "https://" + fullHttpRequest.uri().replaceAll("http://", ""));
             ctx.writeAndFlush(fullHttpResponse);
+        } else {
+            ctx.fireChannelRead(msg);
         }
     }
 }
