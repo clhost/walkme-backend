@@ -19,6 +19,7 @@ import io.netty.util.concurrent.EventExecutorGroup;
 import io.walkme.handlers.route.GetSavedRoutesHandler;
 import io.walkme.handlers.route.IsPointAvailableHandler;
 import io.walkme.handlers.route.SaveRouteHandler;
+import io.walkme.handlers.settings.RedirectHandler;
 import io.walkme.handlers.statics.StaticHandler;
 import route.core.RouteService;
 
@@ -55,6 +56,7 @@ public class Initializer extends ChannelInitializer<SocketChannel> {
 
         // AUTH handlers
         pipeline.addLast("info", new InfoHandler(true));
+        pipeline.addLast("redirect", new RedirectHandler());
         pipeline.addLast("static", new StaticHandler());
 
         pipeline.addLast("token", new TokenHandler(authService));
