@@ -25,36 +25,29 @@ public class Configurator {
         locProps = new Properties();
     }
 
-    public static Server configure() {
-        Server server = null;
-        try {
-            locProps.load(new InputStreamReader(
-                    Configurator.class.getResourceAsStream("/" + ConfigHelper.LOCAL_PROPERTIES)));
-            String port = locProps.getProperty("server.port");
-            String host = locProps.getProperty("server.host");
-            String fullDomain = locProps.getProperty("server.full_domain");
+    public static Server configure() throws IOException {
+        locProps.load(new InputStreamReader(
+                Configurator.class.getResourceAsStream("/" + ConfigHelper.LOCAL_PROPERTIES)));
+        String port = locProps.getProperty("server.port");
+        String host = locProps.getProperty("server.host");
+        String fullDomain = locProps.getProperty("server.full_domain");
 
-            if (port == null || port.equals("")) {
-                throw new NullPointerException("server.port is missing.");
-            }
-
-            if (host == null || host.equals("")) {
-                throw new NullPointerException("server.host is missing.");
-            }
-
-            if (fullDomain == null || fullDomain.equals("")) {
-                throw new NullPointerException("server.full_domain is missing.");
-            }
-
-            checkServerMode();
-            startServices();
-            ConfigHelper.setFullDomain(fullDomain);
-            server = new Server(host, Integer.parseInt(port), authService, routeService);
-        } catch (IOException e) {
-            logger.error(e.getCause().getMessage());
+        if (port == null || port.equals("")) {
+            throw new NullPointerException("server.port is missing.");
         }
 
-        return server;
+        if (host == null || host.equals("")) {
+            throw new NullPointerException("server.host is missing.");
+        }
+
+        if (fullDomain == null || fullDomain.equals("")) {
+            throw new NullPointerException("server.full_domain is missing.");
+        }
+
+        checkServerMode();
+        startServices();
+        ConfigHelper.setFullDomain(fullDomain);
+        return new Server(host, Integer.parseInt(port), authService, routeService);
     }
 
     private static void checkServerMode() {

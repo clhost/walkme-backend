@@ -11,11 +11,13 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
+import io.walkme.http.RedirectServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import route.core.RouteService;
 
 import javax.net.ssl.SSLException;
+import java.io.IOException;
 
 
 public class Server {
@@ -103,13 +105,20 @@ public class Server {
         close();
     }
 
-    public static Server configuredServer() {
+    public static Server configuredServer() throws IOException {
         Server server = Configurator.configure();
         Runtime.getRuntime().addShutdownHook(new Thread(server::shutdown));
         return server;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        new Thread(() -> {
+            try {
+                RedirectServer.build().start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
         Server.configuredServer().start();
     }
 }
