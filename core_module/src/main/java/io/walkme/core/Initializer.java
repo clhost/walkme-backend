@@ -56,7 +56,7 @@ public class Initializer extends ChannelInitializer<SocketChannel> {
 
         // AUTH handlers
         pipeline.addLast("info", new InfoHandler(true));
-        //pipeline.addLast("redirect", new RedirectHandler());
+        pipeline.addLast("redirect", new RedirectHandler());
         pipeline.addLast("static", new StaticHandler());
 
         pipeline.addLast("token", new TokenHandler(authService));
