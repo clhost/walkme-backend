@@ -39,7 +39,7 @@ public class RedirectServer {
         }
 
         this.host = host;
-        this.port = 8080;
+        this.port = 80;
     }
 
     @SuppressWarnings("unchecked")
