@@ -38,10 +38,14 @@ public class StaticHandler extends BaseHttpHandler {
                         HttpResponseStatus.OK,
                         HTML_PATH + "privacy.html",
                         "text/html; charset=utf-8"));
+                ctx.close();
+                release();
             } else {
                 ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                         HttpResponseStatus.NOT_FOUND,
                         ResponseBuilder.JSON_NOT_FOUND_RESPONSE));
+                ctx.close();
+                release();
             }
         }
 
@@ -67,6 +71,7 @@ public class StaticHandler extends BaseHttpHandler {
                         HttpResponseStatus.NOT_FOUND,
                         ResponseBuilder.JSON_NOT_FOUND_RESPONSE));
             } finally {
+                ctx.close();
                 release();
             }
         } else {

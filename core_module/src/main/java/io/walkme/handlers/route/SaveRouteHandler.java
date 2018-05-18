@@ -67,6 +67,7 @@ public class SaveRouteHandler extends BaseHttpHandler {
 
             routeService.saveRoute(id, jsonRoute);
         } finally {
+            ctx.close();
             release();
         }
     }

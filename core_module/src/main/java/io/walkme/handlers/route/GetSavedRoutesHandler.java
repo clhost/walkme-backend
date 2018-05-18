@@ -49,10 +49,14 @@ public class GetSavedRoutesHandler extends BaseHttpHandler {
             ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                     HttpResponseStatus.OK,
                     ResponseBuilder.JSON_BAD_RESPONSE));
+            ctx.close();
+            release();
         } catch (InternalServerErrorException e) {
             ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                     HttpResponseStatus.OK,
                     ResponseBuilder.JSON_BAD_GATEWAY_RESPONSE));
+            ctx.close();
+            release();
         }
     }
 
@@ -68,6 +72,7 @@ public class GetSavedRoutesHandler extends BaseHttpHandler {
             ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(HttpResponseStatus.OK,
                     ResultBuilder.asJson(200, object, ResultBuilder.ResultType.RESULT)));
         } finally {
+            ctx.close();
             release();
         }
     }

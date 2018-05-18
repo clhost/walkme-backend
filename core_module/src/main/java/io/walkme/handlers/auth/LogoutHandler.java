@@ -38,6 +38,7 @@ public class LogoutHandler extends BaseHttpHandler {
             ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                     HttpResponseStatus.OK,
                     ResponseBuilder.JSON_LOGOUT_RESPONSE));
+            ctx.close();
             release();
         } else {
             ctx.fireChannelRead(msg);

@@ -50,6 +50,7 @@ public class StartHandler extends BaseHttpHandler {
                 ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                         HttpResponseStatus.OK,
                         ResponseBuilder.JSON_BAD_GATEWAY_RESPONSE));
+                ctx.close();
                 release();
                 return;
             }
@@ -64,6 +65,7 @@ public class StartHandler extends BaseHttpHandler {
             ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                     HttpResponseStatus.OK,
                     ResultBuilder.asJson(200, object, ResultBuilder.ResultType.RESULT)));
+            ctx.close();
             release();
         } else {
             ctx.fireChannelRead(msg);

@@ -41,6 +41,7 @@ public class IsPointAvailableHandler extends BaseHttpHandler {
                 ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                         HttpResponseStatus.BAD_REQUEST,
                         ResponseBuilder.JSON_BAD_RESPONSE));
+                ctx.close();
                 release();
             }
         } else {
@@ -60,6 +61,7 @@ public class IsPointAvailableHandler extends BaseHttpHandler {
                     HttpResponseStatus.OK,
                     ResultBuilder.asJson(200, jsonObject, ResultBuilder.ResultType.RESULT)));
         } finally {
+            ctx.close();
             release();
         }
     }

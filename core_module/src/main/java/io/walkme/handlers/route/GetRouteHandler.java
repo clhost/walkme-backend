@@ -53,7 +53,7 @@ public class GetRouteHandler extends BaseHttpHandler {
                 ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                         HttpResponseStatus.BAD_REQUEST,
                         ResponseBuilder.JSON_BAD_RESPONSE));
-                //ctx.close();
+                ctx.close();
                 release();
             }
         } else {
@@ -98,6 +98,7 @@ public class GetRouteHandler extends BaseHttpHandler {
                     HttpResponseStatus.OK,
                     ResponseBuilder.JSON_BAD_GATEWAY_RESPONSE));
         } finally {
+            ctx.close();
             release();
         }
     }

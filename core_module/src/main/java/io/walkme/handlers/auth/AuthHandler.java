@@ -51,7 +51,7 @@ public class AuthHandler extends BaseHttpHandler {
             ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                     HttpResponseStatus.OK,
                     ResponseBuilder.JSON_FAKE_RESPONSE));
-            //ctx.close();
+            ctx.close();
             release();
         } else if (tokens[0].equals(API_PREFIX) && tokens[1].equals(API_AUTH)) {
             if (!checkAuth()) { // auth off
@@ -65,7 +65,7 @@ public class AuthHandler extends BaseHttpHandler {
                 ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                         HttpResponseStatus.BAD_REQUEST,
                         ResponseBuilder.JSON_BAD_RESPONSE));
-                //ctx.close();
+                ctx.close();
                 release();
             }
         } else {
