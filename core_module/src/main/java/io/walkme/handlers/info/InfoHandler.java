@@ -50,8 +50,8 @@ public class InfoHandler extends BaseHttpHandler {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        logger.info("connection: " + ctx.channel().remoteAddress() + " closed.");
-        ctx.close();
+        //logger.info("connection: " + ctx.channel().remoteAddress() + " closed.");
+        //ctx.close();
     }
 
     @Override
