@@ -1,6 +1,6 @@
 package route.graph.ways;
 
-import net.jafama.FastMath;
+import net.jafama.*;
 import route.graph.*;
 import route.graph.exceptions.NotEnoughPointsException;
 import route.graph.exceptions.NotInitializedException;
@@ -10,6 +10,7 @@ import route.storage.entities.Location;
 import route.storage.entities.Schedule;
 import route.storage.entities.ScheduleTime;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -32,10 +33,15 @@ public class SPBWays {
     private final int RADIUS_INCREMENT = 100;
     private boolean RESET_TIME = false;
     private final int MAX_DISTANCE_OF_INTERSECTION = 30;
+    private static final int MAX_CATEGORIES_NUMBER = 5;
+    private static final int MAX_RESET_TIMES = 3;
+    private int currentResets = 0;
 
     private final Location USER_START_LOCATION;
     private boolean CULTURE_ONLY = false;
     private boolean OTHER_ONLY = true;
+    private int[] categoryDistribution = new int[MAX_CATEGORIES_NUMBER+1];
+    private static List<Node>[] nodesByCategories = new List[MAX_CATEGORIES_NUMBER+1];
     private static List<Node> inputNodes;
     private List<Node> nodes;
     private static List<Node> cultureNodes = new ArrayList<>();
@@ -57,10 +63,11 @@ public class SPBWays {
     public static void initializePlaces(List<Node> places) {
         if (inputNodes == null) {
             inputNodes = places;
+            for(int i=1; i<=MAX_CATEGORIES_NUMBER; i++){
+                nodesByCategories[i] = new ArrayList<>();
+            }
             for (Node inputNode : inputNodes) {
-                if (inputNode.getCategoryId() == 4 || inputNode.getCategoryId() == 5) {
-                    cultureNodes.add(inputNode);
-                }
+                nodesByCategories[inputNode.getCategoryId()].add(inputNode);
             }
         } else {
             System.out.println("ALREADY INITIALIZED");
@@ -95,6 +102,7 @@ public class SPBWays {
             RESET_TIME = false;
             execute();
             if (RESET_TIME) reset();
+            ++currentResets;
         } while (RESET_TIME);
         System.out.println("***********************ready*********************");
         if (resultPlaces.size() < MIN_POINTS_PER_ONE_ROUTE) throw new NotEnoughPointsException();
@@ -110,18 +118,12 @@ public class SPBWays {
 
     private void execute() throws StartPointIsNotAvailableException {
         Node currentPoint = null;
+        int iteration = 0;
         double summaryTime = 0;
         List<Node> nodes1;
         boolean isOtherOk = true;
         while (true) {
-            if((Math.random() > 0.38 || CULTURE_ONLY || !isOtherOk) && !OTHER_ONLY ) {
-                nodes1 = cultureNodes;
-                isOtherOk = true;
-            } else
-            {
-                nodes1 = nodes;
-                isOtherOk = false;
-            }
+            nodes1 = nodesByCategories[categoryDistribution[iteration]];
             Location currentLocation = currentPoint == null ? USER_START_LOCATION:currentPoint.getPoint();
             ArrayList<Node> nextStep = new ArrayList<>(NEXT_STEP_POINTS_RANDOM_COUNT);
             alreadyUsedThisIteration = new HashSet<>();
@@ -140,7 +142,7 @@ public class SPBWays {
             for(int i=0; i<NEXT_STEP_POINTS_RANDOM_COUNT; i++) {
                 int rnd = ThreadLocalRandom.current().nextInt(0, nextStep.size());
                 allLocations = getAllPoints(currentLocation, nextStep.get(rnd).getPoint());
-                if (checkIntersection(allLocations)) continue;
+                if (currentResets != MAX_RESET_TIMES && checkIntersection(allLocations)) continue;
                 nextStepChecked.add(nextStep.get(rnd));
                 break;
             }
@@ -160,6 +162,7 @@ public class SPBWays {
             alreadyUsed.add(tempPoint.getPoint());
             currentPoint = tempPoint;
             resultPlaces.add(currentPoint);
+            ++iteration;
             if (summaryTime >= MAX_WALK_TIME || resultPlaces.size() >= MAX_POINTS_PER_ONE_ROUTE) break;
         }
     }
@@ -280,25 +283,72 @@ public class SPBWays {
     }
 
     private void filterNodes() {
-        if (ids == null || ids.length == 0) {
-            CULTURE_ONLY = true;
-            for (Node inputNode : inputNodes) {
-                if (inputNode.getCategoryId() != 4 && inputNode.getCategoryId() != 5) {
-                    nodes.add(inputNode);
-                }
+        if (ids == null || ids.length == 0 || ids.length == MAX_CATEGORIES_NUMBER) {
+            for(int i=0; i<MAX_CATEGORIES_NUMBER; i++){
+                categoryDistribution[i] = i+1;
             }
-            return;
         }
-        for (Node inputNode : inputNodes) {
-            for (int id : ids) {
-                if(inputNode.getCategoryId() == id && (inputNode.getCategoryId() == 4 || inputNode.getCategoryId() == 5))
-                    OTHER_ONLY = false;
-                if (inputNode.getCategoryId() == id && inputNode.getCategoryId() != 4 && inputNode.getCategoryId() != 5) {
-                    nodes.add(inputNode);
+        else{
+            Arrays.sort(ids);
+            switch (ids.length){
+                case 1:
+                    for(int i=0; i< MAX_CATEGORIES_NUMBER; i++) categoryDistribution[i] = ids[0];
                     break;
-                }
+                case 2:
+                    categoryDistribution[0] = ids[0];
+                    categoryDistribution[1] = ids[1];
+                    if((ids[1] != 4 && ids[1] !=5) || (ids[0] == 4 && ids[1] == 5)){
+                        for(int i=2; i< MAX_CATEGORIES_NUMBER; i++)
+                            if(Math.random() > 0.5)
+                                categoryDistribution[i] = ids[0];
+                            else
+                                categoryDistribution[i] = ids[1];
+                    }
+                    else{
+                        for(int i=2; i<MAX_CATEGORIES_NUMBER; i++) categoryDistribution[i] = ids[1];
+                    }
+                    break;
+                case 3:
+                    categoryDistribution[0] = ids[0];
+                    categoryDistribution[1] = ids[1];
+                    categoryDistribution[2] = ids[2];
+                    if(ids[1] == 4){
+                        categoryDistribution[3] = ids[1];
+                        categoryDistribution[4] = ids[2];
+                    }
+                    else if(ids[2] == 5){
+                        categoryDistribution[3] = ids[2];
+                        categoryDistribution[4] = ids[2];
+                    }
+                    else{
+                        categoryDistribution[3] = ids[1];
+                        categoryDistribution[4] = ids[2];
+                    }
+                    break;
+                case 4:
+                    categoryDistribution[0] = ids[3]; //last category [parks or culture]
+                    for(int i= 1; i<MAX_CATEGORIES_NUMBER; i++) categoryDistribution[i] = ids[i-1];
+                    break;
+                default: // to avoid crash in future
+                    System.out.println("CATEGORIES CORRUPTED!");
+                    for(int i=0; i<MAX_CATEGORIES_NUMBER; i++){
+                        categoryDistribution[i] = i+1;
+                    }
             }
+
         }
-        if(nodes.size() == 0) CULTURE_ONLY = true;
+        shuffle(categoryDistribution);
+    }
+
+    private static void shuffle(int[] ar)
+    {
+        Random rnd = ThreadLocalRandom.current();
+        for (int i = ar.length - 1; i > 0; i--)
+        {
+            int index = rnd.nextInt(i + 1);
+            int a = ar[index];
+            ar[index] = ar[i];
+            ar[i] = a;
+        }
     }
 }
