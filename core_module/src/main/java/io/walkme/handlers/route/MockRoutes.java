@@ -33,6 +33,7 @@ public class MockRoutes {
             }
             mockRoutes.add(builder.toString());
             builder.setLength(0);
+            System.out.println("Loaded " + f.getName());
         }
         System.out.println("Successfully loaded!");
     }
