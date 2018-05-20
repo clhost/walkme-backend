@@ -57,7 +57,7 @@ public class PlaceHolder {
             }
 
             printer.interrupt();
-            System.out.println("OK");
+            System.out.println("OK. Place count: " + nodeList.size());
             isLoaded = true;
         }
     }
