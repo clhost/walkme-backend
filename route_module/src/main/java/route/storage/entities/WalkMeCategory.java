@@ -3,11 +3,11 @@ package route.storage.entities;
 import java.util.EnumSet;
 
 public enum WalkMeCategory {
-    ALCOHOL(1, "Выпить"),
-    EAT(2, "Покушать"),
-    AMUSEMENT(3, "Развлечься"),
-    PARKS(4, "Прогуляться"),
-    CULTURE(5, "Окультуриться");
+    ALCOHOL(1, "Выпивка"),
+    EAT(2, "Еда"),
+    AMUSEMENT(3, "Развлечения"),
+    PARKS(4, "Прогулки"),
+    CULTURE(5, "Культура");
 
     private final String description;
     private final int id;
