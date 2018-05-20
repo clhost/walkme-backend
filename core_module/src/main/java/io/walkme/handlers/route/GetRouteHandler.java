@@ -14,9 +14,11 @@ import route.core.RouteService;
 import route.services.CategoryService;
 import route.storage.entities.WalkMeCategory;
 
+import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * handle: /api/getRoute
@@ -28,6 +30,8 @@ public class GetRouteHandler extends BaseHttpHandler {
     private static final String PARAM_LNG = "lng";
     private static final String PARAM_CATEGORIES = "categories";
     private static final String NEAR = "near";
+    private int mockPointer = -1;
+    private static AtomicInteger filePointer = new AtomicInteger(0);
     //private static final String AVG_CHECK = "avgCheck";
 
     private final Logger logger = LogManager.getLogger(GetRouteHandler.class);
@@ -48,7 +52,11 @@ public class GetRouteHandler extends BaseHttpHandler {
             ctx.fireChannelRead(msg);
         } else if (tokens[0].equals(API_PREFIX) && tokens[1].equals(API_GET_ROUTE)) {
             if (checkParams(params)) {
-                handleRoute(ctx, params);
+                if (isMock(params)) {
+                    mock(ctx);
+                } else {
+                    handleRoute(ctx, params);
+                }
             } else {
                 ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                         HttpResponseStatus.BAD_REQUEST,
@@ -91,6 +99,11 @@ public class GetRouteHandler extends BaseHttpHandler {
                 ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                         HttpResponseStatus.OK,
                         ResultBuilder.asJson(200, resultJsonObject, ResultBuilder.ResultType.RESULT)));
+                BufferedWriter writer = new BufferedWriter(new FileWriter(new File(String.valueOf(filePointer.get()))));
+                filePointer.incrementAndGet();
+                writer.write(ResultBuilder.asJson(200, resultJsonObject, ResultBuilder.ResultType.RESULT));
+                writer.flush();
+                writer.close();
                 return;
             }
 
@@ -138,6 +151,34 @@ public class GetRouteHandler extends BaseHttpHandler {
             }
         }
         return false;
+    }
+
+    private boolean isMock(Map<String, List<String>> params) {
+        double lng = Double.parseDouble(params.get(PARAM_LNG).get(0));
+        double lat = Double.parseDouble(params.get(PARAM_LAT).get(0));
+
+        /*if (lng > 10) { // condition here
+            return true;
+        }*/
+
+        return false;
+    }
+
+    private void mock(ChannelHandlerContext ctx) {
+        try {
+            List<String> routes = MockRoutes.mockRoutes();
+            mockPointer++;
+            if (mockPointer == 5) {
+                mockPointer = 0;
+            }
+            String route = routes.get(mockPointer);
+            ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
+                    HttpResponseStatus.OK,
+                    route));
+        } finally {
+            ctx.close();
+            release();
+        }
     }
 
     @Override
