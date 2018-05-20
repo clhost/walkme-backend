@@ -167,7 +167,7 @@ public class GetRouteHandler extends BaseHttpHandler {
 
     private void mock(ChannelHandlerContext ctx) {
         try {
-            System.err.println("Зашел в mock");
+            System.out.println("Зашел в mock");
             List<String> routes = MockRoutes.mockRoutes();
             mockPointer++;
             if (mockPointer == 5) {
@@ -182,6 +182,7 @@ public class GetRouteHandler extends BaseHttpHandler {
             ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                     HttpResponseStatus.OK,
                     route));
+            System.out.println("Вышел из mock");
         } finally {
             ctx.close();
             release();
