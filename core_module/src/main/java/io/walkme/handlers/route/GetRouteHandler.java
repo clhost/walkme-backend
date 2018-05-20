@@ -99,8 +99,7 @@ public class GetRouteHandler extends BaseHttpHandler {
                 ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                         HttpResponseStatus.OK,
                         ResultBuilder.asJson(200, resultJsonObject, ResultBuilder.ResultType.RESULT)));
-                BufferedWriter writer = new BufferedWriter(new FileWriter(new File("routes/" +
-                        String.valueOf(filePointer.get()))));
+                BufferedWriter writer = new BufferedWriter(new FileWriter(new File(String.valueOf(filePointer.get()))));
                 filePointer.incrementAndGet();
                 writer.write(ResultBuilder.asJson(200, resultJsonObject, ResultBuilder.ResultType.RESULT));
                 writer.flush();
@@ -158,9 +157,9 @@ public class GetRouteHandler extends BaseHttpHandler {
         double lng = Double.parseDouble(params.get(PARAM_LNG).get(0));
         double lat = Double.parseDouble(params.get(PARAM_LAT).get(0));
 
-        /*if (lng > 10) { // condition here
+        if (lat >= 55.7649183 && lng >= 37.6066878 && lat <= 55.7663971 && lng <= 37.6022676) {
             return true;
-        }*/
+        }
 
         return false;
     }

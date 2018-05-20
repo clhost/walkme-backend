@@ -1,6 +1,7 @@
 package io.walkme.core;
 
 import auth.core.AuthService;
+import io.walkme.handlers.route.MockRoutes;
 import io.walkme.helpers.ConfigHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,6 +32,7 @@ public class Configurator {
         String port = locProps.getProperty("server.port");
         String host = locProps.getProperty("server.host");
         String fullDomain = locProps.getProperty("server.full_domain");
+        String mockPath = locProps.getProperty("server.mock_path");
 
         if (port == null || port.equals("")) {
             throw new NullPointerException("server.port is missing.");
@@ -44,9 +46,14 @@ public class Configurator {
             throw new NullPointerException("server.full_domain is missing.");
         }
 
+        if (mockPath == null || mockPath.equals("")) {
+            throw new NullPointerException("server.mock_path is missing.");
+        }
+
         checkServerMode();
         startServices();
         ConfigHelper.setFullDomain(fullDomain);
+        MockRoutes.load(mockPath);
         return new Server(host, Integer.parseInt(port), authService, routeService);
     }
 
