@@ -158,7 +158,7 @@ public class GetRouteHandler extends BaseHttpHandler {
         double lng = Double.parseDouble(params.get(PARAM_LNG).get(0));
         double lat = Double.parseDouble(params.get(PARAM_LAT).get(0));
 
-        if (lat >= 55.7649183 && lng >= 37.6066878 && lat <= 55.7663971 && lng <= 37.6022676) {
+        if (lat <= 55.7649183 && lng <= 37.6066878 && lat >= 55.7663971 && lng >= 37.6022676) {
             return true;
         }
 
