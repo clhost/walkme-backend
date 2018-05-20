@@ -18,6 +18,7 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -166,12 +167,18 @@ public class GetRouteHandler extends BaseHttpHandler {
 
     private void mock(ChannelHandlerContext ctx) {
         try {
+            System.err.println("Зашел в mock");
             List<String> routes = MockRoutes.mockRoutes();
             mockPointer++;
             if (mockPointer == 5) {
                 mockPointer = 0;
             }
             String route = routes.get(mockPointer);
+            try {
+                TimeUnit.MILLISECONDS.sleep(600);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                     HttpResponseStatus.OK,
                     route));
