@@ -99,7 +99,8 @@ public class GetRouteHandler extends BaseHttpHandler {
                 ctx.writeAndFlush(ResponseBuilder.buildJsonResponse(
                         HttpResponseStatus.OK,
                         ResultBuilder.asJson(200, resultJsonObject, ResultBuilder.ResultType.RESULT)));
-                BufferedWriter writer = new BufferedWriter(new FileWriter(new File(String.valueOf(filePointer.get()))));
+                BufferedWriter writer = new BufferedWriter(new FileWriter(new File("routes/" +
+                        String.valueOf(filePointer.get()))));
                 filePointer.incrementAndGet();
                 writer.write(ResultBuilder.asJson(200, resultJsonObject, ResultBuilder.ResultType.RESULT));
                 writer.flush();
