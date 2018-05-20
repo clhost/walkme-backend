@@ -31,7 +31,7 @@ public class GetRouteHandler extends BaseHttpHandler {
     private static final String PARAM_LNG = "lng";
     private static final String PARAM_CATEGORIES = "categories";
     private static final String NEAR = "near";
-    private int mockPointer = -1;
+    private static int mockPointer = -1;
     private static AtomicInteger filePointer = new AtomicInteger(0);
     //private static final String AVG_CHECK = "avgCheck";
 
