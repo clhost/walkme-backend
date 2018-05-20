@@ -1,5 +1,6 @@
 package route.graph.ways;
 
+import net.jafama.FastMath;
 import route.graph.*;
 import route.graph.exceptions.NotEnoughPointsException;
 import route.graph.exceptions.NotInitializedException;
@@ -21,25 +22,25 @@ public class MSKWays {
     private Set<Location> alreadyUsed = new HashSet<>();
     private Set<Location> alreadyUsedThisIteration = new HashSet<>();
 
-    private final int NEXT_STEP_POINTS_RANDOM_COUNT = 12;
+    private final int NEXT_STEP_POINTS_RANDOM_COUNT = 8;
     private final double MIN_DISTANCE_BETWEEN_TWO_POINTS = 500;//meters
     private double MAX_DISTANCE_BETWEEN_TWO_POINTS = 1300; //meters
     private final double MAX_WALK_TIME = 240 * 1000 * 60; //mills
     private final int MAX_POINTS_PER_ONE_ROUTE = 5;
     private final int MIN_POINTS_PER_ONE_ROUTE = 3;
-    private final int RADIUS_INCREMENT = 100;
+    private final int RADIUS_INCREMENT = 400;
     private boolean RESET_TIME = false;
-    private final int MAX_DISTANCE_OF_INTERSECTION = 30;
+    private final int MAX_DISTANCE_OF_INTERSECTION = 150;
+    private static final int MAX_CATEGORIES_NUMBER = 5;
+    private static final int MAX_RESET_TIMES = 3;
+    private int currentResets = 0;
 
     private final Location USER_START_LOCATION;
-    private boolean CULTURE_ONLY = false;
-    private boolean OTHER_ONLY = true;
-    private static List<Node> inputNodes;
-    private List<Node> nodes;
-    private static List<Node> cultureNodes = new ArrayList<>();
-    private static final RouteChecker routeChecker =
-            new GraphHopperRouteChecker("maps/RU-MOW.osm.pbf");
+    private int[] categoryDistribution = new int[MAX_CATEGORIES_NUMBER];
+    private static List<Node>[] nodesByCategories = new List[MAX_CATEGORIES_NUMBER + 1];
+    private static final RouteChecker routeChecker = new GraphHopperRouteChecker("maps/RU-MOW.osm.pbf");
     private static boolean routeCheckerIsRunning = false;
+    private static boolean nodesIsInitialized = false;
     private long currentTime;
 
 
@@ -48,21 +49,22 @@ public class MSKWays {
             routeChecker.start();
             routeCheckerIsRunning = true;
         } else {
-            System.out.println("GH ALREADY WORKS");
+            System.out.println("Graph hooper already works");
         }
     }
 
     public static void initializePlaces(List<Node> places) {
-        if (inputNodes == null) {
-            inputNodes = places;
-            for (Node inputNode : inputNodes) {
-                if (inputNode.getCategoryId() == 4 || inputNode.getCategoryId() == 5) {
-                    cultureNodes.add(inputNode);
-                }
-            }
-        } else {
-            System.out.println("ALREADY INITIALIZED");
+        if (nodesIsInitialized) {
+            System.out.println("Nodes already initialized!");
+            return;
         }
+        for (int i = 1; i <= MAX_CATEGORIES_NUMBER; i++) {
+            nodesByCategories[i] = new ArrayList<>();
+        }
+        for (Node inputNode : places) {
+            nodesByCategories[inputNode.getCategoryId()].add(inputNode);
+        }
+        nodesIsInitialized = true;
     }
 
     public static boolean isPointValid(double lat, double lon) {
@@ -73,18 +75,16 @@ public class MSKWays {
     }
 
     public MSKWays(long startTime, Location startLocation, int[] ids) throws NotInitializedException {
-        if (inputNodes == null || !routeCheckerIsRunning) {
+        if (!routeCheckerIsRunning || !nodesIsInitialized) {
             throw new NotInitializedException();
         }
         this.ids = ids;
         resultPlaces = new ArrayList<>();
         resultLocations = new ArrayList<>();
         allResultLocations = new ArrayList<>();
-        nodes = new ArrayList<>();
         this.startTime = startTime;
         currentTime = startTime;
         USER_START_LOCATION = startLocation;
-        System.out.println(USER_START_LOCATION);
     }
 
     public RouteHolder getWays() throws StartPointIsNotAvailableException, NotEnoughPointsException {
@@ -94,6 +94,7 @@ public class MSKWays {
             RESET_TIME = false;
             execute();
             if (RESET_TIME) reset();
+            ++currentResets;
         } while (RESET_TIME);
         System.out.println("***********************ready*********************");
         if (resultPlaces.size() < MIN_POINTS_PER_ONE_ROUTE) throw new NotEnoughPointsException();
@@ -107,43 +108,40 @@ public class MSKWays {
         allResultLocations = new ArrayList<>();
     }
 
-    private void execute() throws StartPointIsNotAvailableException {
+    private void execute() throws StartPointIsNotAvailableException, NotEnoughPointsException {
         Node currentPoint = null;
+        int iteration = 0;
         double summaryTime = 0;
         List<Node> nodes1;
-        boolean isOtherOk = true;
         while (true) {
-            if((Math.random() > 0.38 || CULTURE_ONLY || !isOtherOk) && !OTHER_ONLY ) {
-                nodes1 = cultureNodes;
-                isOtherOk = true;
-            } else
-            {
-                nodes1 = nodes;
-                isOtherOk = false;
-            }
-            Location currentLocation = currentPoint == null ? USER_START_LOCATION:currentPoint.getPoint();
+            if(currentResets == 10) throw new NotEnoughPointsException();
+            nodes1 = nodesByCategories[categoryDistribution[iteration]];
+            Location currentLocation = currentPoint == null ? USER_START_LOCATION : currentPoint.getPoint();
             ArrayList<Node> nextStep = new ArrayList<>(NEXT_STEP_POINTS_RANDOM_COUNT);
             alreadyUsedThisIteration = new HashSet<>();
+            int real = 0;
             for (int i = 0; i < NEXT_STEP_POINTS_RANDOM_COUNT; i++) {
                 Node nearestPoint = getNearestPoint(currentLocation, nodes1);
-                if(nearestPoint == null){
-                    --i;
+                if (nearestPoint == null) {
                     MAX_DISTANCE_BETWEEN_TWO_POINTS += RADIUS_INCREMENT;
                     continue;
                 }
                 nextStep.add(nearestPoint);
                 alreadyUsedThisIteration.add(nearestPoint.getPoint());
+                ++real;
             }
             ArrayList<Node> nextStepChecked = new ArrayList<>(NEXT_STEP_POINTS_RANDOM_COUNT);
             List<Location> allLocations = null;
-            for(int i=0; i<NEXT_STEP_POINTS_RANDOM_COUNT; i++) {
-                allLocations = getAllPoints(currentLocation, nextStep.get(i).getPoint());
-                if (checkIntersection(allLocations)) continue;
-                nextStepChecked.add(nextStep.get(i));
+            for (int i = 0; i < real; i++) {
+                int rnd = ThreadLocalRandom.current().nextInt(0, nextStep.size());
+                allLocations = getAllPoints(currentLocation, nextStep.get(rnd).getPoint());
+                if (currentResets != MAX_RESET_TIMES && checkIntersection(allLocations)) continue;
+                nextStepChecked.add(nextStep.get(rnd));
+                break;
             }
-            if(nextStepChecked.size() == 0){
-                System.out.println("RESET");
+            if (nextStepChecked.size() == 0) {
                 MAX_DISTANCE_BETWEEN_TWO_POINTS += RADIUS_INCREMENT;
+                System.out.println("RESET");
                 RESET_TIME = true;
                 return;
             }
@@ -157,6 +155,7 @@ public class MSKWays {
             alreadyUsed.add(tempPoint.getPoint());
             currentPoint = tempPoint;
             resultPlaces.add(currentPoint);
+            ++iteration;
             if (summaryTime >= MAX_WALK_TIME || resultPlaces.size() >= MAX_POINTS_PER_ONE_ROUTE) break;
         }
     }
@@ -182,12 +181,15 @@ public class MSKWays {
     private Node getNearestPoint(Location from, List<Node> set) {
         Node resultPoint = null;
         double minDistance = Double.MAX_VALUE;
-        for (Node aSet : set) {
-            double currentDistance = getDistance(from, aSet.getPoint());
-            if(currentDistance < MIN_DISTANCE_BETWEEN_TWO_POINTS || currentDistance > MAX_DISTANCE_BETWEEN_TWO_POINTS || currentDistance >= minDistance) continue;
-            if (!isTimeOk(aSet.getSchedule()) || alreadyUsed.contains(aSet.getPoint()) || alreadyUsedThisIteration.contains(aSet.getPoint())) continue;
+        for (int i = 0; i < set.size(); i++) {
+            double currentDistance = getDistance(from, set.get(i).getPoint());
+            if (currentDistance < MIN_DISTANCE_BETWEEN_TWO_POINTS || currentDistance > MAX_DISTANCE_BETWEEN_TWO_POINTS || currentDistance >= minDistance)
+                continue;
+            if (!isTimeOk(set.get(i).getSchedule()) || alreadyUsed.contains(set.get(i).getPoint()) || alreadyUsedThisIteration.contains(set.get(i).getPoint()))
+                continue;
             minDistance = currentDistance;
-            resultPoint = aSet;
+            resultPoint = set.get(i);
+            if (minDistance < MIN_DISTANCE_BETWEEN_TWO_POINTS * 1.5) break;
         }
         return resultPoint;
     }
@@ -200,9 +202,9 @@ public class MSKWays {
         int r = 6371;
         double dLat = deg2rad(lat2 - lat1);
         double dLon = deg2rad(lon2 - lon1);
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-                Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double a = FastMath.sin(dLat / 2) * FastMath.sin(dLat / 2) + FastMath.cos(deg2rad(lat1)) * FastMath.cos(deg2rad(lat2)) *
+                FastMath.sin(dLon / 2) * FastMath.sin(dLon / 2);
+        double c = 2 * FastMath.atan2(FastMath.sqrt(a), FastMath.sqrt(1 - a));
         return r * c * 1000;
     }
 
@@ -276,25 +278,66 @@ public class MSKWays {
     }
 
     private void filterNodes() {
-        if (ids == null || ids.length == 0) {
-            CULTURE_ONLY = true;
-            for (Node inputNode : inputNodes) {
-                if (inputNode.getCategoryId() != 4 && inputNode.getCategoryId() != 5) {
-                    nodes.add(inputNode);
-                }
+        if (ids == null || ids.length == 0 || ids.length == MAX_CATEGORIES_NUMBER) {
+            for (int i = 0; i < MAX_CATEGORIES_NUMBER; i++) {
+                categoryDistribution[i] = i + 1;
             }
-            return;
-        }
-        for (Node inputNode : inputNodes) {
-            for (int id : ids) {
-                if(inputNode.getCategoryId() == id && (inputNode.getCategoryId() == 4 || inputNode.getCategoryId() == 5))
-                    OTHER_ONLY = false;
-                if (inputNode.getCategoryId() == id && inputNode.getCategoryId() != 4 && inputNode.getCategoryId() != 5) {
-                    nodes.add(inputNode);
+        } else {
+            Arrays.sort(ids);
+            switch (ids.length) {
+                case 1:
+                    for (int i = 0; i < MAX_CATEGORIES_NUMBER; i++) categoryDistribution[i] = ids[0];
                     break;
-                }
+                case 2:
+                    categoryDistribution[0] = ids[0];
+                    categoryDistribution[1] = ids[1];
+                    if ((ids[1] != 4 && ids[1] != 5) || (ids[0] == 4 && ids[1] == 5)) {
+                        for (int i = 2; i < MAX_CATEGORIES_NUMBER; i++)
+                            if (Math.random() > 0.5)
+                                categoryDistribution[i] = ids[0];
+                            else
+                                categoryDistribution[i] = ids[1];
+                    } else {
+                        for (int i = 2; i < MAX_CATEGORIES_NUMBER; i++) categoryDistribution[i] = ids[1];
+                    }
+                    break;
+                case 3:
+                    categoryDistribution[0] = ids[0];
+                    categoryDistribution[1] = ids[1];
+                    categoryDistribution[2] = ids[2];
+                    if (ids[1] == 4) {
+                        categoryDistribution[3] = ids[1];
+                        categoryDistribution[4] = ids[2];
+                    } else if (ids[2] == 5) {
+                        categoryDistribution[3] = ids[2];
+                        categoryDistribution[4] = ids[2];
+                    } else {
+                        categoryDistribution[3] = ids[1];
+                        categoryDistribution[4] = ids[2];
+                    }
+                    break;
+                case 4:
+                    categoryDistribution[0] = ids[3]; //last category [parks or culture]
+                    for (int i = 1; i < MAX_CATEGORIES_NUMBER; i++) categoryDistribution[i] = ids[i - 1];
+                    break;
+                default: // to avoid crash in future
+                    System.out.println("CATEGORIES CORRUPTED!");
+                    for (int i = 0; i < MAX_CATEGORIES_NUMBER; i++) {
+                        categoryDistribution[i] = i + 1;
+                    }
             }
+
         }
-        if(nodes.size() == 0) CULTURE_ONLY = true;
+        shuffle(categoryDistribution);
+    }
+
+    private static void shuffle(int[] ar) {
+        Random rnd = ThreadLocalRandom.current();
+        for (int i = ar.length - 1; i > 0; i--) {
+            int index = rnd.nextInt(i + 1);
+            int a = ar[index];
+            ar[index] = ar[i];
+            ar[i] = a;
+        }
     }
 }
