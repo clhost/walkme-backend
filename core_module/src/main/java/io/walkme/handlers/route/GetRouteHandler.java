@@ -170,7 +170,7 @@ public class GetRouteHandler extends BaseHttpHandler {
             System.out.println("Зашел в mock");
             List<String> routes = MockRoutes.mockRoutes();
             mockPointer++;
-            if (mockPointer == 5) {
+            if (mockPointer == 4) {
                 mockPointer = 0;
             }
             String route = routes.get(mockPointer);
