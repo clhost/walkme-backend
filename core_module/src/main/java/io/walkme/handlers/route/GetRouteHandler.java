@@ -158,11 +158,29 @@ public class GetRouteHandler extends BaseHttpHandler {
         double lng = Double.parseDouble(params.get(PARAM_LNG).get(0));
         double lat = Double.parseDouble(params.get(PARAM_LAT).get(0));
 
+        boolean isLatLng = false;
         if (lat >= 55.7649183 && lng <= 37.6066878 && lat <= 55.7663971 && lng >= 37.6022676) {
-            return true;
+            isLatLng = true;
         }
 
-        return false;
+        boolean isCategoriesValid1 = false;
+        boolean isCategoriesValid3 = false;
+        boolean isCategoriesValid5 = false;
+        for (String num : params.get(PARAM_CATEGORIES).get(0).split(",")) {
+            if (Integer.parseInt(num) == 1) {
+                isCategoriesValid1 = true;
+            }
+
+            if (Integer.parseInt(num) == 3) {
+                isCategoriesValid3 = true;
+            }
+
+            if (Integer.parseInt(num) == 5) {
+                isCategoriesValid5 = true;
+            }
+        }
+
+        return isLatLng && isCategoriesValid1 && isCategoriesValid3 && isCategoriesValid5;
     }
 
     private void mock(ChannelHandlerContext ctx) {
