@@ -167,6 +167,10 @@ public class GetRouteHandler extends BaseHttpHandler {
         boolean isCategoriesValid3 = false;
         boolean isCategoriesValid5 = false;
         for (String num : params.get(PARAM_CATEGORIES).get(0).split(",")) {
+            if (Integer.parseInt(num) == 2 || Integer.parseInt(num) == 4) {
+                return false;
+            }
+
             if (Integer.parseInt(num) == 1) {
                 isCategoriesValid1 = true;
             }
