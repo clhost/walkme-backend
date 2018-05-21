@@ -64,6 +64,9 @@ public class MainLoader {
                         new File("nodejs-dataset/msk-3.json").getAbsolutePath()),
                 WalkMeCategory.AMUSEMENT);
         mskLoader.load(new File(
+                        new File("nodejs-dataset/msk-4.json").getAbsolutePath()),
+                WalkMeCategory.PARKS);
+        mskLoader.load(new File(
                         new File("nodejs-dataset/msk-5.json").getAbsolutePath()),
                 WalkMeCategory.CULTURE);
     }
