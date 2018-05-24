@@ -19,26 +19,7 @@ public class PlaceHolder {
 
     public static void load() {
         if (!isLoaded) {
-            Thread printer = new Thread(() -> {
-                while (!Thread.interrupted()) {
-                    try {
-                        System.out.print("\rLoading to RAM.");
-                        Thread.sleep(300);
-                        System.out.print("\rLoading to RAM..");
-                        Thread.sleep(300);
-                        System.out.print("\rLoading to RAM...");
-                        Thread.sleep(300);
-                        System.out.print("\rLoading to RAM....");
-                        Thread.sleep(300);
-                    } catch (InterruptedException e) {
-                        logger.info("LoadPrinter thread interrupted.");
-                        return;
-                    }
-                }
-            }, "LoadPrinter");
-
-            printer.start();
-
+            System.out.println("Loading to RAM. Please, wait.");
             try {
                 List<String> criteria = new ArrayList<>();
 
@@ -53,11 +34,9 @@ public class PlaceHolder {
                 }
             } catch (Exception e) {
                 logger.error("Can't load to RAM. Message: " + e.getMessage());
-                printer.interrupt();
             }
 
-            printer.interrupt();
-            System.out.println("OK. Place count: " + nodeList.size());
+            System.out.println("Successfully loaded. Places count: " + nodeList.size());
             isLoaded = true;
         }
     }
